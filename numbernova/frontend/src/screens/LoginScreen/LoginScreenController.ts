@@ -2,7 +2,9 @@ import { LoginScreenView } from './LoginScreenView';
 import { LoginScreenModel } from './LoginScreenModel';
 import { BaseScreen } from '../../core/BaseScreen';
 import { MenuScreenController } from '../MenuScreen/MenuScreenController';
+import { SignUpScreenController } from '../SignUpScreen/SignUpScreenController';
 import { signInWithEmail } from '../../lib/supabase';
+import Konva from 'konva';
 export class LoginScreenController extends BaseScreen {
     private view: LoginScreenView;
     private model: LoginScreenModel;
@@ -76,8 +78,20 @@ export class LoginScreenController extends BaseScreen {
     
     private handleCreateAccount(): void {
         console.log('Create account clicked!');
-        // In the future: switch to signup screen
-        // this.screenManager.switchTo('signup');
+        this.switchToSignupScreen();
+    }
+    
+    private switchToSignupScreen(): void {
+        const stage = this.container.getStage();
+        if (!stage) return;
+    
+        stage.destroyChildren();
+    
+        const signupScreen = new SignUpScreenController(this.screenManager);
+        stage.add(signupScreen.container);
+        signupScreen.show();
+        stage.draw();
+        console.log('Switched to signup screen!');
     }
     
     public show(): void {
