@@ -1,6 +1,7 @@
 import { LoginScreenView } from './LoginScreenView';
 import { LoginScreenModel } from './LoginScreenModel';
 import { BaseScreen } from '../../core/BaseScreen';
+import { MenuScreenController } from '../MenuScreen/MenuScreenController';
 
 export class LoginScreenController extends BaseScreen {
     private view: LoginScreenView;
@@ -10,9 +11,14 @@ export class LoginScreenController extends BaseScreen {
         this.model = new LoginScreenModel();
         this.view = new LoginScreenView(this.container);
         
+        // TEMPORARY: Test if we can manually trigger login
+        setTimeout(() => {
+            console.log('Auto-triggering login in 2 seconds...');
+            this.handleLogin();
+        }, 2000);
+        
         this.setupEventListeners();
         
-        // Trigger a draw to position inputs correctly
         setTimeout(() => {
             this.container.getStage()?.draw();
         }, 100);
@@ -29,23 +35,38 @@ export class LoginScreenController extends BaseScreen {
             this.handleCreateAccount();
         });
     }
-    
+    private switchToMenuScreen(): void {
+        // Get the current stage and layer
+        const stage = this.container.getStage();
+        if (!stage) return;
+        
+        // Remove ALL layers from the stage
+        stage.destroyChildren(); // This removes everything
+        
+        // Create and add menu layer
+        const menuLayer = new Konva.Layer();
+        stage.add(menuLayer);
+        
+        // Initialize menu screen
+        new MenuScreenController(menuLayer);
+        
+        stage.draw();
+        console.log('Switched to menu screen!');
+    }
+
     private handleLogin(): void {
         const email = this.view.getEmailValue().trim();
         const password = this.view.getPasswordValue().trim();
         
-        // Validate inputs
         if (!email || !password) {
             console.log('Please fill in all fields');
-            // In the future: show error message to user
             return;
         }
         
         console.log('Login clicked!', { email, password });
         
-        // For now, just log the values
-        // In the future: validate credentials, then switch to menu
-        // this.screenManager.switchTo('menu');
+        // SIMPLE NAVIGATION: Switch to menu screen
+        this.switchToMenuScreen();
     }
     
     private handleCreateAccount(): void {
