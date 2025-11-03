@@ -18,6 +18,15 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   },
 });
 
+// Helper function to sign in with email and password
+export async function signInWithEmail(email: string, password: string) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password,
+  })
+  return { data, error };
+}
+
 // Helper function to get the current user
 export const getCurrentUser = async () => {
   const { data: { user }, error } = await supabase.auth.getUser();

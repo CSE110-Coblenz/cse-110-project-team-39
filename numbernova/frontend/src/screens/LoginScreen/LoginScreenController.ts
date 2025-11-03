@@ -2,7 +2,7 @@ import { LoginScreenView } from './LoginScreenView';
 import { LoginScreenModel } from './LoginScreenModel';
 import { BaseScreen } from '../../core/BaseScreen';
 import { MenuScreenController } from '../MenuScreen/MenuScreenController';
-
+import { signInWithEmail } from '../../lib/supabase';
 export class LoginScreenController extends BaseScreen {
     private view: LoginScreenView;
     private model: LoginScreenModel;
@@ -54,7 +54,7 @@ export class LoginScreenController extends BaseScreen {
         console.log('Switched to menu screen!');
     }
 
-    private handleLogin(): void {
+    private async handleLogin(): Promise<void> {
         const email = this.view.getEmailValue().trim();
         const password = this.view.getPasswordValue().trim();
         
@@ -65,7 +65,12 @@ export class LoginScreenController extends BaseScreen {
         
         console.log('Login clicked!', { email, password });
         
-        // SIMPLE NAVIGATION: Switch to menu screen
+        const { data, error } = await signInWithEmail(email, password);
+        if (error) {
+            console.error('Error signing in:', error);
+            return;
+        }
+        console.log('Signed in successfully:', data);
         this.switchToMenuScreen();
     }
     
