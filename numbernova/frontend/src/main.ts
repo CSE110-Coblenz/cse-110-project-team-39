@@ -32,7 +32,8 @@ class NumberNovaApp {
         // TODO: Register other screens as they are implemented
         // this.screenManager.registerScreen('signup', new SignUpScreenController(this.screenManager));
         // this.screenManager.registerScreen('menu', new MenuScreenController(this.screenManager));
-        // etc...
+        // etc...     
+
     }
 }
 
