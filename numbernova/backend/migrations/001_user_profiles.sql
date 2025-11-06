@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
     games_played INTEGER NOT NULL DEFAULT 0,
     games_won INTEGER NOT NULL DEFAULT 0,
     profile_picture_url TEXT NULL DEFAULT NULL,
+    profile_name TEXT NULL DEFAULT NULL,
     
 
     -- Timestamps
