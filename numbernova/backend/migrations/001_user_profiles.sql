@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
     -- Game-related fields
     score INTEGER NOT NULL DEFAULT 0,
     rank INTEGER NULL DEFAULT NULL,
+    tokens INTEGER NOT NULL DEFAULT 0,
     level INTEGER NOT NULL DEFAULT 1,
     ship_color TEXT NOT NULL DEFAULT 'blue',
     games_played INTEGER NOT NULL DEFAULT 0,
