@@ -10,6 +10,7 @@ export class SignUpScreenView {
     
     // Form elements
     private emailInput: KonvaInput;
+    private displayNameInput: KonvaInput;
     private passwordInput: KonvaInput;
     private confirmPasswordInput: KonvaInput;
     private signupButton: Konva.Group;
@@ -86,13 +87,13 @@ export class SignUpScreenView {
             x: -DIMENSIONS.loginBoxWidth / 2,
             y: -100,
             width: DIMENSIONS.loginBoxWidth,
-            height: DIMENSIONS.loginBoxHeight + 70, // Extra space for confirm password
+            height: DIMENSIONS.loginBoxHeight + 140, // Extra space for display name + confirm password
             fill: 'rgba(123, 95, 178, 0.1)',
             cornerRadius: 20,
             stroke: COLORS.inputBorder,
             strokeWidth: 2
         });
-        
+
         // Create input fields
         this.emailInput = new KonvaInput({
             x: -150,
@@ -102,32 +103,41 @@ export class SignUpScreenView {
             placeholder: 'Email',
             type: 'text'
         });
-        
-        this.passwordInput = new KonvaInput({
+
+        this.displayNameInput = new KonvaInput({
             x: -150,
             y: 40,
+            width: DIMENSIONS.inputWidth,
+            height: DIMENSIONS.inputHeight,
+            placeholder: 'Display Name (optional)',
+            type: 'text'
+        });
+
+        this.passwordInput = new KonvaInput({
+            x: -150,
+            y: 110,
             width: DIMENSIONS.inputWidth,
             height: DIMENSIONS.inputHeight,
             placeholder: 'Password',
             type: 'password'
         });
-        
+
         this.confirmPasswordInput = new KonvaInput({
             x: -150,
-            y: 110,
+            y: 180,
             width: DIMENSIONS.inputWidth,
             height: DIMENSIONS.inputHeight,
             placeholder: 'Confirm Password',
             type: 'password'
         });
-        
+
         // Signup button - moved down to accommodate extra field
-        this.signupButton = this.createButton(-150, 190, 'Launch Mission');
-        
+        this.signupButton = this.createButton(-150, 260, 'Launch Mission');
+
         // Already have account link
         this.loginButton = new Konva.Text({
             x: -100,
-            y: 260,
+            y: 330,
             width: 200,
             text: 'Already have an account?',
             fontSize: 16,
@@ -151,6 +161,7 @@ export class SignUpScreenView {
         this.signupForm.add(subtitle);
         this.signupForm.add(signupBox);
         this.signupForm.add(this.emailInput);
+        this.signupForm.add(this.displayNameInput);
         this.signupForm.add(this.passwordInput);
         this.signupForm.add(this.confirmPasswordInput);
         this.signupForm.add(this.signupButton);
@@ -161,8 +172,8 @@ export class SignUpScreenView {
     
     private setupTabNavigation(): void {
         // Keep track of all inputs for management
-        const inputs = [this.emailInput, this.passwordInput, this.confirmPasswordInput];
-        
+        const inputs = [this.emailInput, this.displayNameInput, this.passwordInput, this.confirmPasswordInput];
+
         // When clicking on one input, blur all others
         inputs.forEach(input => {
             input.on('click', () => {
@@ -173,7 +184,7 @@ export class SignUpScreenView {
                 });
             });
         });
-        
+
         // Handle tab navigation between inputs
         this.emailInput.on('tab', (e: any) => {
             e.evt.preventDefault(); // Prevent default tab behavior
@@ -182,23 +193,35 @@ export class SignUpScreenView {
                 // Tab backwards - loop to confirm password
                 this.confirmPasswordInput.focus();
             } else {
+                // Tab forward to display name
+                this.displayNameInput.focus();
+            }
+        });
+
+        this.displayNameInput.on('tab', (e: any) => {
+            e.evt.preventDefault(); // Prevent default tab behavior
+            this.displayNameInput.blur();
+            if (e.shiftKey) {
+                // Tab backwards to email
+                this.emailInput.focus();
+            } else {
                 // Tab forward to password
                 this.passwordInput.focus();
             }
         });
-        
+
         this.passwordInput.on('tab', (e: any) => {
             e.evt.preventDefault(); // Prevent default tab behavior
             this.passwordInput.blur();
             if (e.shiftKey) {
-                // Tab backwards to email
-                this.emailInput.focus();
+                // Tab backwards to display name
+                this.displayNameInput.focus();
             } else {
                 // Tab forward to confirm password
                 this.confirmPasswordInput.focus();
             }
         });
-        
+
         this.confirmPasswordInput.on('tab', (e: any) => {
             e.evt.preventDefault(); // Prevent default tab behavior
             this.confirmPasswordInput.blur();
@@ -210,23 +233,25 @@ export class SignUpScreenView {
                 this.emailInput.focus();
             }
         });
-        
+
         // Click outside to unfocus all inputs
         this.layer.on('click', (e) => {
             // If clicking on empty space, blur all inputs
             if (e.target === this.layer || e.target === this.background) {
                 this.emailInput.blur();
+                this.displayNameInput.blur();
                 this.passwordInput.blur();
                 this.confirmPasswordInput.blur();
             }
         });
-        
+
         // Handle Enter key from inputs
         const handleEnter = () => {
             this.signupButton.fire('click');
         };
-        
+
         this.emailInput.on('enter', handleEnter);
+        this.displayNameInput.on('enter', handleEnter);
         this.passwordInput.on('enter', handleEnter);
         this.confirmPasswordInput.on('enter', handleEnter);
     }
@@ -286,11 +311,15 @@ export class SignUpScreenView {
     public getEmailValue(): string {
         return this.emailInput.getValue();
     }
-    
+
+    public getDisplayNameValue(): string {
+        return this.displayNameInput.getValue();
+    }
+
     public getPasswordValue(): string {
         return this.passwordInput.getValue();
     }
-    
+
     public getConfirmPasswordValue(): string {
         return this.confirmPasswordInput.getValue();
     }
