@@ -41,24 +41,31 @@ export class SignUpScreenController extends BaseScreen {
         const stage = this.container.getStage();
         if (!stage) return;
 
+
         // Remove ALL layers from the stage
         stage.destroyChildren(); // This removes everything
+
 
         // Create and add menu layer
         const menuLayer = new Konva.Layer();
         stage.add(menuLayer);
 
+
         // Initialize menu screen
         new MenuScreenController(menuLayer);
 
+
         stage.draw();
     }
+
 
     private switchToLoginScreen(): void {
         const stage = this.container.getStage();
         if (!stage) return;
 
+
         stage.destroyChildren();
+
 
         const loginScreen = new LoginScreenController(this.screenManager);
         stage.add(loginScreen.container);
@@ -79,6 +86,7 @@ export class SignUpScreenController extends BaseScreen {
             return;
         }
 
+
         if (!this.model.validateEmail(email)) {
             createNotification('Please enter a valid email', 'error');
             return;
@@ -95,10 +103,13 @@ export class SignUpScreenController extends BaseScreen {
 
         if (!this.model.validatePassword(password)) {
             createNotification('Password must be at least 6 characters', 'error');
+            createNotification('Password must be at least 6 characters', 'error');
             return;
         }
 
+
         if (!this.model.validatePasswordsMatch(password, confirmPassword)) {
+            createNotification('Passwords do not match', 'error');
             createNotification('Passwords do not match', 'error');
             return;
         }
@@ -109,6 +120,7 @@ export class SignUpScreenController extends BaseScreen {
 
         if (error) {
             console.error('Error signing up:', error);
+            createNotification('Error creating account. Please try again. ' + error.message, 'error');
             createNotification('Error creating account. Please try again. ' + error.message, 'error');
             return;
         }
