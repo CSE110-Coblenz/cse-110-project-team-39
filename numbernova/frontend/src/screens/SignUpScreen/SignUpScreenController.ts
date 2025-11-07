@@ -3,7 +3,7 @@ import { SignUpScreenModel } from './SignUpScreenModel';
 import { BaseScreen } from '../../core/BaseScreen';
 import { MenuScreenController } from '../MenuScreen/MenuScreenController';
 import { LoginScreenController } from '../LoginScreen/LoginScreenController';
-import { signUpWithEmail } from '../../lib/supabase';
+import { signUpWithEmail, updateUserProfile } from '../../lib/supabase';
 import Konva from 'konva';
 
 export class SignUpScreenController extends BaseScreen {
@@ -67,37 +67,57 @@ export class SignUpScreenController extends BaseScreen {
     
     private async handleSignup(): Promise<void> {
         const email = this.view.getEmailValue().trim();
+        const displayName = this.view.getDisplayNameValue().trim();
         const password = this.view.getPasswordValue().trim();
         const confirmPassword = this.view.getConfirmPasswordValue().trim();
-        
+
+        // Required fields check (display name is optional)
         if (!email || !password || !confirmPassword) {
-            console.log('Please fill in all fields');
+            console.log('Please fill in all required fields');
             return;
         }
-        
+
         if (!this.model.validateEmail(email)) {
             console.log('Please enter a valid email');
             return;
         }
-        
+
+        // Validate display name if provided
+        if (displayName && !this.model.validateDisplayName(displayName)) {
+            console.log('Display name must be 30 characters or less and contain only letters, numbers, spaces, hyphens, underscores, and periods');
+            return;
+        }
+
         if (!this.model.validatePassword(password)) {
             console.log('Password must be at least 6 characters');
             return;
         }
-        
+
         if (!this.model.validatePasswordsMatch(password, confirmPassword)) {
             console.log('Passwords do not match');
             return;
         }
-        
-        console.log('Signup clicked!', { email });
-        
+
+        console.log('Signup clicked!', { email, displayName });
+
         const { data, error } = await signUpWithEmail(email, password);
         if (error) {
             console.error('Error signing up:', error);
             return;
         }
+
         console.log('Signed up successfully:', data);
+
+        // Update user profile with display name if provided
+        if (data?.user?.id && displayName) {
+            const updateResult = await updateUserProfile(data.user.id, {
+                profile_name: displayName
+            });
+            if (updateResult) {
+                console.log('Profile updated with display name:', displayName);
+            }
+        }
+
         this.switchToMenuScreen();
     }
     
