@@ -17,26 +17,44 @@ export type Database = {
       user_profiles: {
         Row: {
           created_at: string
+          games_played: number
+          games_won: number
           id: string
           level: number
+          profile_name: string | null
+          profile_picture_url: string | null
+          rank: number | null
           score: number
           ship_color: string
+          tokens: number
           updated_at: string
         }
         Insert: {
           created_at?: string
+          games_played?: number
+          games_won?: number
           id: string
           level?: number
+          profile_name?: string | null
+          profile_picture_url?: string | null
+          rank?: number | null
           score?: number
           ship_color?: string
+          tokens?: number
           updated_at?: string
         }
         Update: {
           created_at?: string
+          games_played?: number
+          games_won?: number
           id?: string
           level?: number
+          profile_name?: string | null
+          profile_picture_url?: string | null
+          rank?: number | null
           score?: number
           ship_color?: string
+          tokens?: number
           updated_at?: string
         }
         Relationships: []

@@ -1,12 +1,12 @@
 -- Enable Row Level Security on user_profiles table
 ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
 
--- Policy: Users can view their own profile (drop and recreate to ensure consistency)
-DROP POLICY IF EXISTS "Users can view own profile" ON public.user_profiles;
-CREATE POLICY "Users can view own profile"
+-- Policy: Users can view their any profile (drop and recreate to ensure consistency) (all users can view any profile for leaderboard purposes)
+DROP POLICY IF EXISTS "Users can view any profile" ON public.user_profiles;
+CREATE POLICY "Users can view any profile"
     ON public.user_profiles
     FOR SELECT
-    USING (auth.uid() = id);
+    USING (true);
 
 -- Policy: Users can update their own profile (drop and recreate to ensure consistency)
 DROP POLICY IF EXISTS "Users can update own profile" ON public.user_profiles;
