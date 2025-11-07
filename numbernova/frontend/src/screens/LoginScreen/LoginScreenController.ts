@@ -4,6 +4,7 @@ import { BaseScreen } from '../../core/BaseScreen';
 import { MenuScreenController } from '../MenuScreen/MenuScreenController';
 import { SignUpScreenController } from '../SignUpScreen/SignUpScreenController';
 import { signInWithEmail } from '../../lib/supabase';
+import { createNotification } from '../../lib/toast';
 import Konva from 'konva';
 export class LoginScreenController extends BaseScreen {
     private view: LoginScreenView;
@@ -12,15 +13,9 @@ export class LoginScreenController extends BaseScreen {
     protected initialize(): void {
         this.model = new LoginScreenModel();
         this.view = new LoginScreenView(this.container);
-        
-        // TEMPORARY: Test if we can manually trigger login
-        setTimeout(() => {
-            console.log('Auto-triggering login in 2 seconds...');
-            this.handleLogin();
-        }, 2000);
-        
+
         this.setupEventListeners();
-        
+
         setTimeout(() => {
             this.container.getStage()?.draw();
         }, 100);
@@ -41,57 +36,54 @@ export class LoginScreenController extends BaseScreen {
         // Get the current stage and layer
         const stage = this.container.getStage();
         if (!stage) return;
-        
+
         // Remove ALL layers from the stage
         stage.destroyChildren(); // This removes everything
-        
+
         // Create and add menu layer
         const menuLayer = new Konva.Layer();
         stage.add(menuLayer);
-        
+
         // Initialize menu screen
         new MenuScreenController(menuLayer);
-        
+
         stage.draw();
-        console.log('Switched to menu screen!');
     }
 
     private async handleLogin(): Promise<void> {
         const email = this.view.getEmailValue().trim();
         const password = this.view.getPasswordValue().trim();
-        
+
         if (!email || !password) {
-            console.log('Please fill in all fields');
+            createNotification('Please fill in all fields', 'warning');
             return;
         }
-        
-        console.log('Login clicked!', { email, password });
-        
+
         const { data, error } = await signInWithEmail(email, password);
         if (error) {
             console.error('Error signing in:', error);
+            createNotification('Invalid email or password', 'error');
             return;
         }
-        console.log('Signed in successfully:', data);
+
+        createNotification('Login successful!', 'success');
         this.switchToMenuScreen();
     }
     
     private handleCreateAccount(): void {
-        console.log('Create account clicked!');
         this.switchToSignupScreen();
     }
-    
+
     private switchToSignupScreen(): void {
         const stage = this.container.getStage();
         if (!stage) return;
-    
+
         stage.destroyChildren();
-    
+
         const signupScreen = new SignUpScreenController(this.screenManager);
         stage.add(signupScreen.container);
         signupScreen.show();
         stage.draw();
-        console.log('Switched to signup screen!');
     }
     
     public show(): void {
