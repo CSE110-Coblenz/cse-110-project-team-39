@@ -6,15 +6,14 @@ type VoidFn = () => void;
 export class MenuScreenView {
   private layer: Konva.Layer;
   private bg: Konva.Rect;
-  private nebulaGroup: Konva.Group;
   private starGroupBack: Konva.Group;
   private starGroupFront: Konva.Group;
   private shooting: Konva.Line | null = null;
   private menuGroup: Konva.Group;
   private title: Konva.Text;
 
-  private playBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text; shine: Konva.Rect };
-  private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text; shine: Konva.Rect };
+  private playBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text }; // REMOVED shine
+  private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text }; // REMOVED shine
 
   private twinkleAnim?: Konva.Animation;
   private driftAnim?: Konva.Animation;
@@ -40,10 +39,6 @@ export class MenuScreenView {
       fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
     });
 
-    this.nebulaGroup = new Konva.Group();
-    const nebula = this.makeNebula();
-    nebula.forEach(n => this.nebulaGroup.add(n));
-
     this.starGroupBack = new Konva.Group();
     this.starGroupFront = new Konva.Group();
     this.spawnStars(this.starGroupBack, 140, 0.25, 1.2);
@@ -67,7 +62,6 @@ export class MenuScreenView {
 
     this.layer.add(this.bg);
     this.layer.add(this.starGroupBack);
-    this.layer.add(this.nebulaGroup);
     this.layer.add(this.starGroupFront);
 
     this.menuGroup.add(this.title);
@@ -94,21 +88,21 @@ export class MenuScreenView {
       text: label, fontSize: 20, fontFamily: 'Arial', fill: '#fff', listening: true
     });
     text.offsetX(text.width() / 2);
-    const shine = new Konva.Rect({
-      x: rect.x() - 120, y: y + 4, width: 90, height: 48, rotation: -20,
-      fill: 'rgba(255,255,255,0.25)', listening: false
-    });
-    group.add(rect); group.add(text); group.add(shine);
-    return { group, rect, text, shine };
+    
+    // REMOVED THE SHINE RECTANGLE ENTIRELY
+    group.add(rect);
+    group.add(text);
+    
+    return { group, rect, text }; // REMOVED shine from return object
   }
 
-  private bindButton(btn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text; shine: Konva.Rect }, click: VoidFn) {
+  private bindButton(btn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text }, click: VoidFn) {
     const enter = () => { document.body.style.cursor = 'pointer'; this.bump(btn, true); };
     const leave = () => { document.body.style.cursor = 'default'; this.bump(btn, false); };
     const down = () => { btn.rect.scale({ x: 0.98, y: 0.98 }); this.layer.batchDraw(); };
     const up = () => { btn.rect.scale({ x: 1, y: 1 }); this.layer.batchDraw(); };
     const handler = () => click();
-
+  
     btn.rect.on('mouseenter', enter);
     btn.text.on('mouseenter', enter);
     btn.rect.on('mouseleave', leave);
@@ -119,38 +113,8 @@ export class MenuScreenView {
     btn.text.on('mouseup', up);
     btn.rect.on('click', handler);
     btn.text.on('click', handler);
-
-    const anim = new Konva.Animation((frame) => {
-      if (!frame) return;
-      const t = frame.time / 1000;
-      const start = btn.rect.x() - 130;
-      const end = btn.rect.x() + btn.rect.width() + 50;
-      const p = (t % 2.4) / 2.4;
-      btn.shine.x(start + (end - start) * p);
-    }, this.layer);
-    anim.start();
-  }
-
-  private bump(btn: { rect: Konva.Rect }, hover: boolean) {
-    this.pulse?.destroy();
-    this.pulse = new Konva.Tween({
-      node: btn.rect,
-      duration: 0.16,
-      scaleX: hover ? 1.05 : 1,
-      scaleY: hover ? 1.05 : 1,
-      shadowBlur: hover ? 30 : 24
-    });
-    this.pulse.play();
-  }
-
-  private makeNebula() {
-    const a = new Konva.Circle({ x: DIMENSIONS.width * 0.25, y: DIMENSIONS.height * 0.35, radius: 180, fill: 'rgba(120,90,255,0.18)' });
-    const b = new Konva.Circle({ x: DIMENSIONS.width * 0.65, y: DIMENSIONS.height * 0.25, radius: 220, fill: 'rgba(255,80,180,0.12)' });
-    const c = new Konva.Circle({ x: DIMENSIONS.width * 0.55, y: DIMENSIONS.height * 0.6, radius: 260, fill: 'rgba(80,200,255,0.10)' });
-    a.cache(); b.cache(); c.cache();
-    a.filters([Konva.Filters.Blur]); b.filters([Konva.Filters.Blur]); c.filters([Konva.Filters.Blur]);
-    a.blurRadius(40); b.blurRadius(50); c.blurRadius(60);
-    return [a, b, c];
+  
+    // REMOVED THE ENTIRE SHINE ANIMATION BLOCK
   }
 
   private spawnStars(group: Konva.Group, count: number, opacityBase: number, maxRadius: number) {
@@ -194,9 +158,7 @@ export class MenuScreenView {
 
     this.driftAnim = new Konva.Animation((frame) => {
       if (!frame) return;
-      const dx = 0.02, dy = 0.01;
-      this.nebulaGroup.x((this.nebulaGroup.x() + dx) % 50);
-      this.nebulaGroup.y((this.nebulaGroup.y() + dy) % 30);
+      // Simplified drift without nebula
       this.starGroupBack.x((this.starGroupBack.x() - 0.03) % 100);
       this.starGroupFront.x((this.starGroupFront.x() - 0.06) % 100);
     }, this.layer);
@@ -245,7 +207,6 @@ export class MenuScreenView {
     this.menuGroup.destroy();
     this.starGroupFront.destroy();
     this.starGroupBack.destroy();
-    this.nebulaGroup.destroy();
     this.bg.destroy();
     this.layer.batchDraw();
   }
