@@ -1,28 +1,34 @@
-// src/screens/MenuScreen/MenuScreenController.ts
 import Konva from 'konva'
 import { MenuScreenView } from './MenuScreenView'
 import { MenuScreenModel } from './MenuScreenModel'
+import { BaseScreen } from '../../core/BaseScreen' // ADD THIS
 
-export class MenuScreenController {
-  private layer: Konva.Layer
+export class MenuScreenController extends BaseScreen { // EXTEND BaseScreen
   private view: MenuScreenView
   private model: MenuScreenModel
-  private onPlay?: () => void   // <-- add
 
-  constructor(layer: Konva.Layer) {
-    this.layer = layer
+  // REMOVE the constructor and use initialize() instead
+  protected initialize(): void {
     this.model = new MenuScreenModel()
-    this.view  = new MenuScreenView(layer)
+    this.view = new MenuScreenView(this.container)
 
-    // forward view click to whoever binds onPlay
-    this.view.onPlay?.(() => this.onPlay && this.onPlay())
+    // Handle logout button - use screenManager to switch back to login
+    this.view.onLogout?.(() => {
+      this.screenManager.switchTo('login')
+    })
 
-    this.layer.draw()
+    // Handle play button
+    this.view.onPlay?.(() => {
+      console.log('Play button clicked!')
+      // this.screenManager.switchTo('gameplay') // When ready
+    })
+
+    this.container.getStage()?.draw()
     console.log('MenuScreen loaded successfully!')
   }
 
-  // <-- add: ScreenManager/main can bind this
-  public setOnPlay(handler: () => void) {
-    this.onPlay = handler
+  public show(): void {
+    super.show()
+    // Add any menu-specific show logic here if needed
   }
 }

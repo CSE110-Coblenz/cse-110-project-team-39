@@ -1,5 +1,6 @@
 import { ScreenManager } from './core/ScreenManager';
 import { LoginScreenController } from './screens/LoginScreen/LoginScreenController';
+import { MenuScreenController } from './screens/MenuScreen/MenuScreenController'; // ADD THIS
 import { DIMENSIONS } from './constants';
 
 class NumberNovaApp {
@@ -29,11 +30,13 @@ class NumberNovaApp {
         const loginScreen = new LoginScreenController(this.screenManager);
         this.screenManager.registerScreen('login', loginScreen);
         
+        // REGISTER MENU SCREEN
+        const menuScreen = new MenuScreenController(this.screenManager);
+        this.screenManager.registerScreen('menu', menuScreen);
+        
         // TODO: Register other screens as they are implemented
         // this.screenManager.registerScreen('signup', new SignUpScreenController(this.screenManager));
-        // this.screenManager.registerScreen('menu', new MenuScreenController(this.screenManager));
         // etc...     
-
     }
 }
 

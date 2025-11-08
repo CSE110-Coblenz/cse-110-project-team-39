@@ -12,8 +12,9 @@ export class MenuScreenView {
   private menuGroup: Konva.Group;
   private title: Konva.Text;
 
-  private playBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text }; // REMOVED shine
-  private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text }; // REMOVED shine
+  private playBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
+  private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
+  private logoutBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text }; 
 
   private twinkleAnim?: Konva.Animation;
   private driftAnim?: Konva.Animation;
@@ -23,11 +24,14 @@ export class MenuScreenView {
 
   private playHandlers: VoidFn[] = [];
   private inventoryHandlers: VoidFn[] = [];
+  private logoutHandlers: VoidFn[] = []; 
 
   onPlay(cb: VoidFn) { this.playHandlers.push(cb); }
   onInventory(cb: VoidFn) { this.inventoryHandlers.push(cb); }
+  onLogout(cb: VoidFn) { this.logoutHandlers.push(cb); } 
   private emitPlay() { for (const cb of this.playHandlers) cb(); }
   private emitInventory() { for (const cb of this.inventoryHandlers) cb(); }
+  private emitLogout() { for (const cb of this.logoutHandlers) cb(); } 
 
   constructor(layer: Konva.Layer) {
     this.layer = layer;
@@ -57,6 +61,9 @@ export class MenuScreenView {
     });
     this.title.offsetX(this.title.width() / 2);
 
+    // LOGOUT BUTTON - Top left corner
+    this.logoutBtn = this.makeButton(80, 40, 'LOG OUT', 120, 40); // Smaller button
+    
     this.playBtn = this.makeButton(DIMENSIONS.width / 2, 200, 'PLAY');
     this.invBtn = this.makeButton(DIMENSIONS.width / 2, 275, 'INVENTORY');
 
@@ -65,10 +72,12 @@ export class MenuScreenView {
     this.layer.add(this.starGroupFront);
 
     this.menuGroup.add(this.title);
+    this.menuGroup.add(this.logoutBtn.group); 
     this.menuGroup.add(this.playBtn.group);
     this.menuGroup.add(this.invBtn.group);
     this.layer.add(this.menuGroup);
 
+    this.bindButton(this.logoutBtn, () => this.emitLogout()); 
     this.bindButton(this.playBtn, () => this.emitPlay());
     this.bindButton(this.invBtn, () => this.emitInventory());
 
@@ -76,24 +85,36 @@ export class MenuScreenView {
     this.layer.draw();
   }
 
-  private makeButton(cx: number, y: number, label: string) {
+  // UPDATED makeButton to support custom sizes
+  private makeButton(cx: number, y: number, label: string, width: number = 240, height: number = 56) {
     const group = new Konva.Group();
     const rect = new Konva.Rect({
-      x: cx - 120, y, width: 240, height: 56, cornerRadius: 16,
+      x: cx - width / 2, 
+      y, 
+      width: width, 
+      height: height, 
+      cornerRadius: 12, // Slightly smaller radius for smaller button
       fill: COLORS?.primary ?? '#7b61ff',
-      shadowColor: '#000', shadowBlur: 24, shadowOpacity: 0.35, listening: true
+      shadowColor: '#000', 
+      shadowBlur: 16, 
+      shadowOpacity: 0.3, 
+      listening: true
     });
     const text = new Konva.Text({
-      x: cx, y: y + 56 / 2 - 10,
-      text: label, fontSize: 20, fontFamily: 'Arial', fill: '#fff', listening: true
+      x: cx, 
+      y: y + height / 2 - 10,
+      text: label, 
+      fontSize: width === 120 ? 14 : 20, // Smaller font for logout button
+      fontFamily: 'Arial', 
+      fill: '#fff', 
+      listening: true
     });
     text.offsetX(text.width() / 2);
     
-    // REMOVED THE SHINE RECTANGLE ENTIRELY
     group.add(rect);
     group.add(text);
     
-    return { group, rect, text }; // REMOVED shine from return object
+    return { group, rect, text };
   }
 
   private bindButton(btn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text }, click: VoidFn) {
@@ -102,7 +123,7 @@ export class MenuScreenView {
     const down = () => { btn.rect.scale({ x: 0.98, y: 0.98 }); this.layer.batchDraw(); };
     const up = () => { btn.rect.scale({ x: 1, y: 1 }); this.layer.batchDraw(); };
     const handler = () => click();
-  
+
     btn.rect.on('mouseenter', enter);
     btn.text.on('mouseenter', enter);
     btn.rect.on('mouseleave', leave);
@@ -113,8 +134,18 @@ export class MenuScreenView {
     btn.text.on('mouseup', up);
     btn.rect.on('click', handler);
     btn.text.on('click', handler);
-  
-    // REMOVED THE ENTIRE SHINE ANIMATION BLOCK
+  }
+
+  private bump(btn: { rect: Konva.Rect }, hover: boolean) {
+    this.pulse?.destroy();
+    this.pulse = new Konva.Tween({
+      node: btn.rect,
+      duration: 0.16,
+      scaleX: hover ? 1.05 : 1,
+      scaleY: hover ? 1.05 : 1,
+      shadowBlur: hover ? 20 : 16, // Adjusted for smaller button
+    });
+    this.pulse.play();
   }
 
   private spawnStars(group: Konva.Group, count: number, opacityBase: number, maxRadius: number) {
@@ -158,7 +189,6 @@ export class MenuScreenView {
 
     this.driftAnim = new Konva.Animation((frame) => {
       if (!frame) return;
-      // Simplified drift without nebula
       this.starGroupBack.x((this.starGroupBack.x() - 0.03) % 100);
       this.starGroupFront.x((this.starGroupFront.x() - 0.06) % 100);
     }, this.layer);

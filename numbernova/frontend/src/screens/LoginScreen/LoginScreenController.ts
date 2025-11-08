@@ -35,6 +35,7 @@ export class LoginScreenController extends BaseScreen {
             this.handleCreateAccount();
         });
     }
+    
     private switchToMenuScreen(): void {
         // Get the current stage and layer
         const stage = this.container.getStage();
@@ -65,15 +66,11 @@ export class LoginScreenController extends BaseScreen {
         
         console.log('Login clicked!', { email, password });
         
-        // SIMPLE NAVIGATION: Switch to menu screen
-        this.switchToMenuScreen();
+        // USE SCREEN MANAGER instead of direct layer switching
+        this.screenManager.switchTo('menu');
     }
     
-    private handleCreateAccount(): void {
-        console.log('Create account clicked!');
-        // In the future: switch to signup screen
-        // this.screenManager.switchTo('signup');
-    }
+    // REMOVE the switchToMenuScreen() method entirely - it's no longer needed
     
     public show(): void {
         super.show();
