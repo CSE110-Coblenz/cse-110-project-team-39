@@ -14,7 +14,12 @@ export class MenuScreenView {
 
   private playBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
-  private logoutBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text }; 
+  private logoutBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
+  
+  // ADDED: Top right buttons
+  private leaderboardBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
+  private shopBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
+  private playerIconBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
 
   private twinkleAnim?: Konva.Animation;
   private driftAnim?: Konva.Animation;
@@ -24,14 +29,30 @@ export class MenuScreenView {
 
   private playHandlers: VoidFn[] = [];
   private inventoryHandlers: VoidFn[] = [];
-  private logoutHandlers: VoidFn[] = []; 
+  private logoutHandlers: VoidFn[] = [];
+  
+  // ADDED: Event handlers for new buttons
+  private leaderboardHandlers: VoidFn[] = [];
+  private shopHandlers: VoidFn[] = [];
+  private playerIconHandlers: VoidFn[] = [];
 
   onPlay(cb: VoidFn) { this.playHandlers.push(cb); }
   onInventory(cb: VoidFn) { this.inventoryHandlers.push(cb); }
-  onLogout(cb: VoidFn) { this.logoutHandlers.push(cb); } 
+  onLogout(cb: VoidFn) { this.logoutHandlers.push(cb); }
+  
+  // ADDED: Event handlers for new buttons
+  onLeaderboard(cb: VoidFn) { this.leaderboardHandlers.push(cb); }
+  onShop(cb: VoidFn) { this.shopHandlers.push(cb); }
+  onPlayerIcon(cb: VoidFn) { this.playerIconHandlers.push(cb); }
+
   private emitPlay() { for (const cb of this.playHandlers) cb(); }
   private emitInventory() { for (const cb of this.inventoryHandlers) cb(); }
-  private emitLogout() { for (const cb of this.logoutHandlers) cb(); } 
+  private emitLogout() { for (const cb of this.logoutHandlers) cb(); }
+  
+  // ADDED: Emit methods for new buttons
+  private emitLeaderboard() { for (const cb of this.leaderboardHandlers) cb(); }
+  private emitShop() { for (const cb of this.shopHandlers) cb(); }
+  private emitPlayerIcon() { for (const cb of this.playerIconHandlers) cb(); }
 
   constructor(layer: Konva.Layer) {
     this.layer = layer;
@@ -61,9 +82,24 @@ export class MenuScreenView {
     });
     this.title.offsetX(this.title.width() / 2);
 
-    // LOGOUT BUTTON - Top left corner
-    this.logoutBtn = this.makeButton(80, 40, 'LOG OUT', 120, 40); // Smaller button
+    // Top left: Logout button
+    this.logoutBtn = this.makeButton(80, 40, 'LOG OUT', 120, 40);
     
+    // ADDED: Top right buttons - Leaderboard | Shop | Player Icon
+    const buttonSpacing = 10;
+    const buttonWidth = 50;
+    const buttonHeight = 50;
+    const rightMargin = 40;
+    
+    // Calculate positions from right to left
+    const playerIconX = DIMENSIONS.width - rightMargin - buttonWidth / 2;
+    const shopX = playerIconX - buttonWidth - buttonSpacing;
+    const leaderboardX = shopX - buttonWidth - buttonSpacing;
+    
+    this.leaderboardBtn = this.makeIconButton(leaderboardX, 40, '🏆', buttonWidth, buttonHeight);
+    this.shopBtn = this.makeIconButton(shopX, 40, '🛒', buttonWidth, buttonHeight);
+    this.playerIconBtn = this.makeIconButton(playerIconX, 40, '👤', buttonWidth, buttonHeight);
+
     this.playBtn = this.makeButton(DIMENSIONS.width / 2, 200, 'PLAY');
     this.invBtn = this.makeButton(DIMENSIONS.width / 2, 275, 'INVENTORY');
 
@@ -72,12 +108,22 @@ export class MenuScreenView {
     this.layer.add(this.starGroupFront);
 
     this.menuGroup.add(this.title);
-    this.menuGroup.add(this.logoutBtn.group); 
+    this.menuGroup.add(this.logoutBtn.group);
+    
+    // ADDED: Top right buttons to menu group
+    this.menuGroup.add(this.leaderboardBtn.group);
+    this.menuGroup.add(this.shopBtn.group);
+    this.menuGroup.add(this.playerIconBtn.group);
+    
     this.menuGroup.add(this.playBtn.group);
     this.menuGroup.add(this.invBtn.group);
     this.layer.add(this.menuGroup);
 
-    this.bindButton(this.logoutBtn, () => this.emitLogout()); 
+    // Bind button events
+    this.bindButton(this.logoutBtn, () => this.emitLogout());
+    this.bindButton(this.leaderboardBtn, () => this.emitLeaderboard()); // ADDED
+    this.bindButton(this.shopBtn, () => this.emitShop()); // ADDED
+    this.bindButton(this.playerIconBtn, () => this.emitPlayerIcon()); // ADDED
     this.bindButton(this.playBtn, () => this.emitPlay());
     this.bindButton(this.invBtn, () => this.emitInventory());
 
@@ -85,7 +131,7 @@ export class MenuScreenView {
     this.layer.draw();
   }
 
-  // UPDATED makeButton to support custom sizes
+  // Existing button creation method
   private makeButton(cx: number, y: number, label: string, width: number = 240, height: number = 56) {
     const group = new Konva.Group();
     const rect = new Konva.Rect({
@@ -93,7 +139,7 @@ export class MenuScreenView {
       y, 
       width: width, 
       height: height, 
-      cornerRadius: 12, // Slightly smaller radius for smaller button
+      cornerRadius: 12,
       fill: COLORS?.primary ?? '#7b61ff',
       shadowColor: '#000', 
       shadowBlur: 16, 
@@ -104,10 +150,43 @@ export class MenuScreenView {
       x: cx, 
       y: y + height / 2 - 10,
       text: label, 
-      fontSize: width === 120 ? 14 : 20, // Smaller font for logout button
+      fontSize: width === 120 ? 14 : 20,
       fontFamily: 'Arial', 
       fill: '#fff', 
       listening: true
+    });
+    text.offsetX(text.width() / 2);
+    
+    group.add(rect);
+    group.add(text);
+    
+    return { group, rect, text };
+  }
+
+  // ADDED: Method for creating icon buttons (circular)
+  private makeIconButton(cx: number, y: number, icon: string, width: number = 50, height: number = 50) {
+    const group = new Konva.Group();
+    const rect = new Konva.Rect({
+      x: cx - width / 2, 
+      y, 
+      width: width, 
+      height: height, 
+      cornerRadius: width / 2, // Circular buttons
+      fill: COLORS?.primary ?? '#7b61ff',
+      shadowColor: '#000', 
+      shadowBlur: 12, 
+      shadowOpacity: 0.3, 
+      listening: true
+    });
+    const text = new Konva.Text({
+      x: cx, 
+      y: y + height / 2 - 12,
+      text: icon, 
+      fontSize: 20,
+      fontFamily: 'Arial', 
+      fill: '#fff', 
+      listening: true,
+      align: 'center'
     });
     text.offsetX(text.width() / 2);
     
@@ -143,7 +222,7 @@ export class MenuScreenView {
       duration: 0.16,
       scaleX: hover ? 1.05 : 1,
       scaleY: hover ? 1.05 : 1,
-      shadowBlur: hover ? 20 : 16, // Adjusted for smaller button
+      shadowBlur: hover ? 20 : 16,
     });
     this.pulse.play();
   }
