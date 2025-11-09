@@ -12,14 +12,13 @@ export class MenuScreenView {
   private menuGroup: Konva.Group;
   private title: Konva.Text;
 
-  private playBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private logoutBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private leaderboardBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private shopBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private playerIconBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   
-  // ADDED: Planet buttons
+  // Planet buttons
   private planetButtons: { group: Konva.Group; circle: Konva.Circle; text: Konva.Text }[] = [];
 
   private twinkleAnim?: Konva.Animation;
@@ -28,34 +27,31 @@ export class MenuScreenView {
   private floatTitle?: Konva.Tween;
   private pulse?: Konva.Tween;
 
-  private playHandlers: VoidFn[] = [];
   private inventoryHandlers: VoidFn[] = [];
   private logoutHandlers: VoidFn[] = [];
   private leaderboardHandlers: VoidFn[] = [];
   private shopHandlers: VoidFn[] = [];
   private playerIconHandlers: VoidFn[] = [];
   
-  // ADDED: Planet click handlers
+  // Planet click handlers
   private planetHandlers: ((planetIndex: number) => void)[] = [];
 
-  onPlay(cb: VoidFn) { this.playHandlers.push(cb); }
   onInventory(cb: VoidFn) { this.inventoryHandlers.push(cb); }
   onLogout(cb: VoidFn) { this.logoutHandlers.push(cb); }
   onLeaderboard(cb: VoidFn) { this.leaderboardHandlers.push(cb); }
   onShop(cb: VoidFn) { this.shopHandlers.push(cb); }
   onPlayerIcon(cb: VoidFn) { this.playerIconHandlers.push(cb); }
   
-  // ADDED: Planet click event
+  // Planet click event
   onPlanetClick(cb: (planetIndex: number) => void) { this.planetHandlers.push(cb); }
 
-  private emitPlay() { for (const cb of this.playHandlers) cb(); }
   private emitInventory() { for (const cb of this.inventoryHandlers) cb(); }
   private emitLogout() { for (const cb of this.logoutHandlers) cb(); }
   private emitLeaderboard() { for (const cb of this.leaderboardHandlers) cb(); }
   private emitShop() { for (const cb of this.shopHandlers) cb(); }
   private emitPlayerIcon() { for (const cb of this.playerIconHandlers) cb(); }
   
-  // ADDED: Emit planet click
+  // Emit planet click
   private emitPlanetClick(planetIndex: number) { for (const cb of this.planetHandlers) cb(planetIndex); }
 
   constructor(layer: Konva.Layer) {
@@ -103,11 +99,16 @@ export class MenuScreenView {
     this.shopBtn = this.makeIconButton(shopX, 40, '🛒', buttonWidth, buttonHeight);
     this.playerIconBtn = this.makeIconButton(playerIconX, 40, '👤', buttonWidth, buttonHeight);
 
-    // ADDED: Create 5 planets between title and buttons
+    // Create 5 planets between title and buttons
     this.createPlanets();
+    
+    // DEBUG: Check if planets were created
+    console.log('Planets created:', this.planetButtons.length);
+    this.planetButtons.forEach((planet, index) => {
+        console.log(`Planet ${index}:`, planet.circle.getAbsolutePosition());
+    });
 
-    this.playBtn = this.makeButton(DIMENSIONS.width / 2, 350, 'PLAY'); // Moved down
-    this.invBtn = this.makeButton(DIMENSIONS.width / 2, 425, 'INVENTORY'); // Moved down
+    this.invBtn = this.makeButton(DIMENSIONS.width / 2, 500, 'INVENTORY'); // Moved up from 425
 
     this.layer.add(this.bg);
     this.layer.add(this.starGroupBack);
@@ -119,12 +120,11 @@ export class MenuScreenView {
     this.menuGroup.add(this.shopBtn.group);
     this.menuGroup.add(this.playerIconBtn.group);
     
-    // ADDED: Add planet buttons to menu group
+    // Add planet buttons to menu group
     this.planetButtons.forEach(planet => {
       this.menuGroup.add(planet.group);
     });
     
-    this.menuGroup.add(this.playBtn.group);
     this.menuGroup.add(this.invBtn.group);
     this.layer.add(this.menuGroup);
 
@@ -133,70 +133,68 @@ export class MenuScreenView {
     this.bindButton(this.leaderboardBtn, () => this.emitLeaderboard());
     this.bindButton(this.shopBtn, () => this.emitShop());
     this.bindButton(this.playerIconBtn, () => this.emitPlayerIcon());
-    this.bindButton(this.playBtn, () => this.emitPlay());
     this.bindButton(this.invBtn, () => this.emitInventory());
     
-    // ADDED: Bind planet events
+    // Bind planet events
     this.bindPlanetEvents();
 
     this.startAnimations();
     this.layer.draw();
   }
 
-  // ADDED: Create 5 planets
+  // Create 5 planets
   private createPlanets(): void {
-    const planetColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57']; // Different colors for each planet
-    const planetIcons = ['🪐', '🌍', '🛸', '🚀', '⭐']; // Different icons for each planet
+    const planetColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
+    const planetIcons = ['🪐', '🌍', '🛸', '🚀', '⭐'];
     const centerX = DIMENSIONS.width / 2;
-    const startY = 160; // Below title
-    const planetSpacing = 70;
+    const startY = 300; 
+    const planetSpacing = 220; 
     
     for (let i = 0; i < 5; i++) {
-      const planetX = centerX + (i - 2) * planetSpacing; // Center the planets
-      const planet = this.createPlanet(planetX, startY, planetColors[i], planetIcons[i], i);
-      this.planetButtons.push(planet);
+        const planetX = centerX + (i - 2) * planetSpacing;
+        const planet = this.createPlanet(planetX, startY, planetColors[i], planetIcons[i], i);
+        this.planetButtons.push(planet);
     }
-  }
-
-  // ADDED: Create individual planet
+}
+  // Create individual planet
   private createPlanet(x: number, y: number, color: string, icon: string, index: number) {
     const group = new Konva.Group();
     
-    // Planet circle
+   
     const circle = new Konva.Circle({
-      x: x,
-      y: y,
-      radius: 25,
-      fill: color,
-      shadowColor: '#000',
-      shadowBlur: 15,
-      shadowOpacity: 0.6,
-      listening: true
+        x: x,
+        y: y,
+        radius: 100,
+        fill: color,
+        shadowColor: color, 
+        shadowBlur: 20, 
+        shadowOpacity: 0.8,
+        listening: true
     });
     
-    // Planet icon/text
+   
     const text = new Konva.Text({
-      x: x,
-      y: y - 8,
-      text: icon,
-      fontSize: 20,
-      fontFamily: 'Arial',
-      fill: '#ffffff',
-      align: 'center',
-      listening: true
+        x: x,
+        y: y - 10, 
+        text: icon,
+        fontSize: 24, 
+        fontFamily: 'Arial',
+        fill: '#ffffff',
+        align: 'center',
+        listening: true
     });
     text.offsetX(text.width() / 2);
     
-    // Planet label (Level 1, Level 2, etc.)
+    
     const label = new Konva.Text({
-      x: x,
-      y: y + 35,
-      text: `Level ${index + 1}`,
-      fontSize: 12,
-      fontFamily: 'Arial',
-      fill: '#ffffff',
-      align: 'center',
-      listening: false
+        x: x,
+        y: y + 45, 
+        text: `Level ${index + 1}`,
+        fontSize: 14, 
+        fontFamily: 'Arial',
+        fill: '#ffffff',
+        align: 'center',
+        listening: false
     });
     label.offsetX(label.width() / 2);
     
@@ -205,9 +203,9 @@ export class MenuScreenView {
     group.add(label);
     
     return { group, circle, text };
-  }
+}
 
-  // ADDED: Bind planet click events
+  // Bind planet click events
   private bindPlanetEvents(): void {
     this.planetButtons.forEach((planet, index) => {
       const enter = () => {
@@ -234,7 +232,7 @@ export class MenuScreenView {
     });
   }
 
-  // ADDED: Planet hover animation
+  // Planet hover animation
   private bumpPlanet(planet: { circle: Konva.Circle }, hover: boolean) {
     this.pulse?.destroy();
     this.pulse = new Konva.Tween({
