@@ -2,7 +2,7 @@ import Konva from 'konva';
 import { BaseScreen } from '../../core/BaseScreen';
 import { COLORS, DIMENSIONS } from '../../constants';
 
-export class ShopScreenController extends BaseScreen {
+export class ProfileScreenController extends BaseScreen {
     protected initialize(): void {
         // Use the same background color as Leaderboard
         const background = new Konva.Rect({
@@ -17,7 +17,7 @@ export class ShopScreenController extends BaseScreen {
         const title = new Konva.Text({
             x: DIMENSIONS.width / 2,
             y: 80,
-            text: 'SHOP - Coming Soon!',
+            text: 'PROFILE - Coming Soon!',
             fontSize: 36,
             fontFamily: 'Jersey 10',
             fill: '#ffffff',

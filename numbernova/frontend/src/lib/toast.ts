@@ -123,7 +123,7 @@ class ToastManager {
             y: 22,
             text: this.getToastIcon(toast.type),
             fontSize: 20,
-            fontFamily: 'Arial',
+            fontFamily: 'Jersey 10',
             fill: '#ffffff',
             align: 'center',
             offsetX: 5
@@ -136,7 +136,7 @@ class ToastManager {
             width: 320,
             text: toast.message,
             fontSize: 16,
-            fontFamily: 'Arial',
+            fontFamily: 'Jersey 10',
             fill: '#ffffff',
             align: 'left'
         });
