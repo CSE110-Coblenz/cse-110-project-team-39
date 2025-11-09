@@ -24,9 +24,10 @@ export const DIMENSIONS = {
 };
 
 export const FONTS = {
-    title: '48px Arial',
-    subtitle: '18px Arial',
-    button: '20px Arial',
-    input: '18px Arial',
-    label: '16px Arial'
+    primary: 'Jersey 10, Arial, sans-serif',
+    title: 'Jersey 10, Arial, sans-serif',
+    subtitle: 'Jersey 10, Arial, sans-serif',
+    button: 'Jersey 10, Arial, sans-serif',
+    input: 'Jersey 10, Arial, sans-serif',
+    label: 'Jersey 10, Arial, sans-serif'
 };

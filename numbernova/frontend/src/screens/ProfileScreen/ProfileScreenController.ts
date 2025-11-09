@@ -19,7 +19,7 @@ export class ProfileScreenController extends BaseScreen {
             y: 80,
             text: 'PROFILE - Coming Soon!',
             fontSize: 36,
-            fontFamily: 'Arial',
+            fontFamily: 'Jersey 10',
             fill: '#ffffff',
             align: 'center'
         });
@@ -51,7 +51,7 @@ export class ProfileScreenController extends BaseScreen {
             y: 50 + 20 - 8,
             text: 'Return to Main Menu',
             fontSize: 16,
-            fontFamily: 'Arial',
+            fontFamily: 'Jersey 10',
             fill: '#ffffff',
             align: 'center'
         });

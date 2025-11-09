@@ -74,9 +74,9 @@ export class MenuScreenView {
     this.title = new Konva.Text({
       x: DIMENSIONS.width / 2,
       y: 90,
-      text: 'MAIN MENU — WELCOME!',
+      text: 'NOVA NUMBER',
       fontSize: 36,
-      fontFamily: 'Arial',
+      fontFamily: 'Jersey 10',
       fill: '#ffffff',
       align: 'center'
     });
@@ -178,7 +178,7 @@ export class MenuScreenView {
         y: y - 10, 
         text: icon,
         fontSize: 24, 
-        fontFamily: 'Arial',
+        fontFamily: 'Jersey 10',
         fill: '#ffffff',
         align: 'center',
         listening: true
@@ -191,7 +191,7 @@ export class MenuScreenView {
         y: y + 45, 
         text: `Level ${index + 1}`,
         fontSize: 14, 
-        fontFamily: 'Arial',
+        fontFamily: 'Jersey 10',
         fill: '#ffffff',
         align: 'center',
         listening: false
@@ -265,7 +265,7 @@ export class MenuScreenView {
       y: y + height / 2 - 10,
       text: label, 
       fontSize: width === 120 ? 14 : 20,
-      fontFamily: 'Arial', 
+      fontFamily: 'Jersey 10', 
       fill: '#fff', 
       listening: true
     });
@@ -296,7 +296,7 @@ export class MenuScreenView {
       y: y + height / 2 - 12,
       text: icon, 
       fontSize: 20,
-      fontFamily: 'Arial', 
+      fontFamily: 'Jersey 10', 
       fill: '#fff', 
       listening: true,
       align: 'center'

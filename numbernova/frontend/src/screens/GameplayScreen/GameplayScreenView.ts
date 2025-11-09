@@ -12,7 +12,7 @@ export class GamePlayScreenView {
     this.layer = layer;
     this.group = new Konva.Group();
     const bg = new Konva.Rect({ x: 0, y: 0, width: DIMENSIONS.width, height: DIMENSIONS.height, fill: COLORS.background });
-    this.scoreText = new Konva.Text({ x: 20, y: 20, text: 'Score: 0', fontSize: 24, fontFamily: 'Arial', fill: COLORS.text });
+    this.scoreText = new Konva.Text({ x: 20, y: 20, text: 'Score: 0', fontSize: 24, fontFamily: 'Jersey 10', fill: COLORS.text });
     this.target = new Konva.Circle({ x: DIMENSIONS.width / 2, y: DIMENSIONS.height / 2, radius: 30, fill: COLORS.primary, listening: true });
 
     this.group.add(bg);
