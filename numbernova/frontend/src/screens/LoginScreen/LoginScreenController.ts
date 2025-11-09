@@ -1,7 +1,8 @@
 import { LoginScreenView } from './LoginScreenView';
 import { LoginScreenModel } from './LoginScreenModel';
 import { BaseScreen } from '../../core/BaseScreen';
-import { MenuScreenController } from '../MenuScreen/MenuScreenController';
+import { signInWithEmail } from '../../lib/supabase';
+import { createNotification } from '../../lib/toast';
 
 export class LoginScreenController extends BaseScreen {
     private view: LoginScreenView;
@@ -9,16 +10,12 @@ export class LoginScreenController extends BaseScreen {
     
     protected initialize(): void {
         this.model = new LoginScreenModel();
+        
+        // Use the container that BaseScreen provides (from ScreenManager)
         this.view = new LoginScreenView(this.container);
-        
-        // TEMPORARY: Test if we can manually trigger login
-        setTimeout(() => {
-            console.log('Auto-triggering login in 2 seconds...');
-            this.handleLogin();
-        }, 2000);
-        
+
         this.setupEventListeners();
-        
+
         setTimeout(() => {
             this.container.getStage()?.draw();
         }, 100);
@@ -35,42 +32,34 @@ export class LoginScreenController extends BaseScreen {
             this.handleCreateAccount();
         });
     }
-    
-    private switchToMenuScreen(): void {
-        // Get the current stage and layer
-        const stage = this.container.getStage();
-        if (!stage) return;
-        
-        // Remove ALL layers from the stage
-        stage.destroyChildren(); // This removes everything
-        
-        // Create and add menu layer
-        const menuLayer = new Konva.Layer();
-        stage.add(menuLayer);
-        
-        // Initialize menu screen
-        new MenuScreenController(menuLayer);
-        
-        stage.draw();
-        console.log('Switched to menu screen!');
-    }
 
-    private handleLogin(): void {
+    private async handleLogin(): Promise<void> {
         const email = this.view.getEmailValue().trim();
         const password = this.view.getPasswordValue().trim();
-        
+
         if (!email || !password) {
-            console.log('Please fill in all fields');
+            createNotification('Please fill in all fields', 'warning');
             return;
         }
+
+        const { data, error } = await signInWithEmail(email, password);
+        if (error) {
+            console.error('Error signing in:', error);
+            createNotification('Invalid email or password', 'error');
+            return;
+        }
+
+        createNotification('Login successful!', 'success');
         
-        console.log('Login clicked!', { email, password });
-        
-        // USE SCREEN MANAGER instead of direct layer switching
+        // Use screen manager to switch screens
         this.screenManager.switchTo('menu');
     }
     
-    // REMOVE the switchToMenuScreen() method entirely - it's no longer needed
+    private handleCreateAccount(): void {
+        // TODO: Switch to signup screen when implemented
+        createNotification('Sign up feature coming soon!', 'info');
+        // this.screenManager.switchTo('signup');
+    }
     
     public show(): void {
         super.show();

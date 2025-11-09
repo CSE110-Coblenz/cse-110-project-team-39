@@ -15,11 +15,12 @@ export class MenuScreenView {
   private playBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private logoutBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
-  
-  // ADDED: Top right buttons
   private leaderboardBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private shopBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private playerIconBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
+  
+  // ADDED: Planet buttons
+  private planetButtons: { group: Konva.Group; circle: Konva.Circle; text: Konva.Text }[] = [];
 
   private twinkleAnim?: Konva.Animation;
   private driftAnim?: Konva.Animation;
@@ -30,29 +31,32 @@ export class MenuScreenView {
   private playHandlers: VoidFn[] = [];
   private inventoryHandlers: VoidFn[] = [];
   private logoutHandlers: VoidFn[] = [];
-  
-  // ADDED: Event handlers for new buttons
   private leaderboardHandlers: VoidFn[] = [];
   private shopHandlers: VoidFn[] = [];
   private playerIconHandlers: VoidFn[] = [];
+  
+  // ADDED: Planet click handlers
+  private planetHandlers: ((planetIndex: number) => void)[] = [];
 
   onPlay(cb: VoidFn) { this.playHandlers.push(cb); }
   onInventory(cb: VoidFn) { this.inventoryHandlers.push(cb); }
   onLogout(cb: VoidFn) { this.logoutHandlers.push(cb); }
-  
-  // ADDED: Event handlers for new buttons
   onLeaderboard(cb: VoidFn) { this.leaderboardHandlers.push(cb); }
   onShop(cb: VoidFn) { this.shopHandlers.push(cb); }
   onPlayerIcon(cb: VoidFn) { this.playerIconHandlers.push(cb); }
+  
+  // ADDED: Planet click event
+  onPlanetClick(cb: (planetIndex: number) => void) { this.planetHandlers.push(cb); }
 
   private emitPlay() { for (const cb of this.playHandlers) cb(); }
   private emitInventory() { for (const cb of this.inventoryHandlers) cb(); }
   private emitLogout() { for (const cb of this.logoutHandlers) cb(); }
-  
-  // ADDED: Emit methods for new buttons
   private emitLeaderboard() { for (const cb of this.leaderboardHandlers) cb(); }
   private emitShop() { for (const cb of this.shopHandlers) cb(); }
   private emitPlayerIcon() { for (const cb of this.playerIconHandlers) cb(); }
+  
+  // ADDED: Emit planet click
+  private emitPlanetClick(planetIndex: number) { for (const cb of this.planetHandlers) cb(planetIndex); }
 
   constructor(layer: Konva.Layer) {
     this.layer = layer;
@@ -85,13 +89,12 @@ export class MenuScreenView {
     // Top left: Logout button
     this.logoutBtn = this.makeButton(80, 40, 'LOG OUT', 120, 40);
     
-    // ADDED: Top right buttons - Leaderboard | Shop | Player Icon
+    // Top right buttons
     const buttonSpacing = 10;
     const buttonWidth = 50;
     const buttonHeight = 50;
     const rightMargin = 40;
     
-    // Calculate positions from right to left
     const playerIconX = DIMENSIONS.width - rightMargin - buttonWidth / 2;
     const shopX = playerIconX - buttonWidth - buttonSpacing;
     const leaderboardX = shopX - buttonWidth - buttonSpacing;
@@ -100,8 +103,11 @@ export class MenuScreenView {
     this.shopBtn = this.makeIconButton(shopX, 40, '🛒', buttonWidth, buttonHeight);
     this.playerIconBtn = this.makeIconButton(playerIconX, 40, '👤', buttonWidth, buttonHeight);
 
-    this.playBtn = this.makeButton(DIMENSIONS.width / 2, 200, 'PLAY');
-    this.invBtn = this.makeButton(DIMENSIONS.width / 2, 275, 'INVENTORY');
+    // ADDED: Create 5 planets between title and buttons
+    this.createPlanets();
+
+    this.playBtn = this.makeButton(DIMENSIONS.width / 2, 350, 'PLAY'); // Moved down
+    this.invBtn = this.makeButton(DIMENSIONS.width / 2, 425, 'INVENTORY'); // Moved down
 
     this.layer.add(this.bg);
     this.layer.add(this.starGroupBack);
@@ -109,11 +115,14 @@ export class MenuScreenView {
 
     this.menuGroup.add(this.title);
     this.menuGroup.add(this.logoutBtn.group);
-    
-    // ADDED: Top right buttons to menu group
     this.menuGroup.add(this.leaderboardBtn.group);
     this.menuGroup.add(this.shopBtn.group);
     this.menuGroup.add(this.playerIconBtn.group);
+    
+    // ADDED: Add planet buttons to menu group
+    this.planetButtons.forEach(planet => {
+      this.menuGroup.add(planet.group);
+    });
     
     this.menuGroup.add(this.playBtn.group);
     this.menuGroup.add(this.invBtn.group);
@@ -121,17 +130,124 @@ export class MenuScreenView {
 
     // Bind button events
     this.bindButton(this.logoutBtn, () => this.emitLogout());
-    this.bindButton(this.leaderboardBtn, () => this.emitLeaderboard()); // ADDED
-    this.bindButton(this.shopBtn, () => this.emitShop()); // ADDED
-    this.bindButton(this.playerIconBtn, () => this.emitPlayerIcon()); // ADDED
+    this.bindButton(this.leaderboardBtn, () => this.emitLeaderboard());
+    this.bindButton(this.shopBtn, () => this.emitShop());
+    this.bindButton(this.playerIconBtn, () => this.emitPlayerIcon());
     this.bindButton(this.playBtn, () => this.emitPlay());
     this.bindButton(this.invBtn, () => this.emitInventory());
+    
+    // ADDED: Bind planet events
+    this.bindPlanetEvents();
 
     this.startAnimations();
     this.layer.draw();
   }
 
-  // Existing button creation method
+  // ADDED: Create 5 planets
+  private createPlanets(): void {
+    const planetColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57']; // Different colors for each planet
+    const planetIcons = ['🪐', '🌍', '🛸', '🚀', '⭐']; // Different icons for each planet
+    const centerX = DIMENSIONS.width / 2;
+    const startY = 160; // Below title
+    const planetSpacing = 70;
+    
+    for (let i = 0; i < 5; i++) {
+      const planetX = centerX + (i - 2) * planetSpacing; // Center the planets
+      const planet = this.createPlanet(planetX, startY, planetColors[i], planetIcons[i], i);
+      this.planetButtons.push(planet);
+    }
+  }
+
+  // ADDED: Create individual planet
+  private createPlanet(x: number, y: number, color: string, icon: string, index: number) {
+    const group = new Konva.Group();
+    
+    // Planet circle
+    const circle = new Konva.Circle({
+      x: x,
+      y: y,
+      radius: 25,
+      fill: color,
+      shadowColor: '#000',
+      shadowBlur: 15,
+      shadowOpacity: 0.6,
+      listening: true
+    });
+    
+    // Planet icon/text
+    const text = new Konva.Text({
+      x: x,
+      y: y - 8,
+      text: icon,
+      fontSize: 20,
+      fontFamily: 'Arial',
+      fill: '#ffffff',
+      align: 'center',
+      listening: true
+    });
+    text.offsetX(text.width() / 2);
+    
+    // Planet label (Level 1, Level 2, etc.)
+    const label = new Konva.Text({
+      x: x,
+      y: y + 35,
+      text: `Level ${index + 1}`,
+      fontSize: 12,
+      fontFamily: 'Arial',
+      fill: '#ffffff',
+      align: 'center',
+      listening: false
+    });
+    label.offsetX(label.width() / 2);
+    
+    group.add(circle);
+    group.add(text);
+    group.add(label);
+    
+    return { group, circle, text };
+  }
+
+  // ADDED: Bind planet click events
+  private bindPlanetEvents(): void {
+    this.planetButtons.forEach((planet, index) => {
+      const enter = () => {
+        document.body.style.cursor = 'pointer';
+        this.bumpPlanet(planet, true);
+      };
+      
+      const leave = () => {
+        document.body.style.cursor = 'default';
+        this.bumpPlanet(planet, false);
+      };
+      
+      const click = () => {
+        console.log(`Planet ${index + 1} clicked!`);
+        this.emitPlanetClick(index);
+      };
+      
+      planet.circle.on('mouseenter', enter);
+      planet.text.on('mouseenter', enter);
+      planet.circle.on('mouseleave', leave);
+      planet.text.on('mouseleave', leave);
+      planet.circle.on('click', click);
+      planet.text.on('click', click);
+    });
+  }
+
+  // ADDED: Planet hover animation
+  private bumpPlanet(planet: { circle: Konva.Circle }, hover: boolean) {
+    this.pulse?.destroy();
+    this.pulse = new Konva.Tween({
+      node: planet.circle,
+      duration: 0.2,
+      scaleX: hover ? 1.15 : 1,
+      scaleY: hover ? 1.15 : 1,
+      shadowBlur: hover ? 25 : 15
+    });
+    this.pulse.play();
+  }
+
+  // Existing button creation methods...
   private makeButton(cx: number, y: number, label: string, width: number = 240, height: number = 56) {
     const group = new Konva.Group();
     const rect = new Konva.Rect({
@@ -163,7 +279,6 @@ export class MenuScreenView {
     return { group, rect, text };
   }
 
-  // ADDED: Method for creating icon buttons (circular)
   private makeIconButton(cx: number, y: number, icon: string, width: number = 50, height: number = 50) {
     const group = new Konva.Group();
     const rect = new Konva.Rect({
@@ -171,7 +286,7 @@ export class MenuScreenView {
       y, 
       width: width, 
       height: height, 
-      cornerRadius: width / 2, // Circular buttons
+      cornerRadius: width / 2,
       fill: COLORS?.primary ?? '#7b61ff',
       shadowColor: '#000', 
       shadowBlur: 12, 
