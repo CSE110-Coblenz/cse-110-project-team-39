@@ -17,13 +17,30 @@ export class LeaderboardScreenController extends BaseScreen {
 
     private async loadLeaderboardData(): Promise<void> {
         try {
-            // For now, just create a basic view
             console.log('Loading leaderboard data...');
             
-            // TODO: Add actual leaderboard loading logic here
-            // const leaderboard = await this.model.getLeaderboard();
-            // this.view.displayLeaderboard(leaderboard);
+            // ACTUALLY LOAD THE DATA NOW
+            const leaderboard = await this.model.getLeaderboard();
+            const currentUserId = await this.model.getCurrentUser();
             
+            console.log('Leaderboard data:', leaderboard);
+            console.log('Current user ID:', currentUserId);
+            
+            // Check if user is in top 10 and add them if not
+            let finalLeaderboard = [...leaderboard];
+            
+            if (currentUserId) {
+                const userInTop = leaderboard.some(user => user.id === currentUserId);
+                if (!userInTop) {
+                    const currentUserProfile = await this.model.getUserProfile(currentUserId);
+                    if (currentUserProfile) {
+                        finalLeaderboard.push(currentUserProfile);
+                    }
+                }
+            }
+            
+            this.view.displayLeaderboard(finalLeaderboard, currentUserId);
+            console.log('LeaderboardScreen loaded successfully!');
         } catch (error) {
             console.error('Error loading leaderboard:', error);
         }
@@ -38,6 +55,5 @@ export class LeaderboardScreenController extends BaseScreen {
 
     public show(): void {
         super.show();
-        // Add any leaderboard-specific show logic here
     }
 }

@@ -132,10 +132,16 @@ export class LeaderboardScreenView {
         const topEntries = leaderboard.slice(0, 10);
         topEntries.forEach((user, index) => {
             const isCurrentUser = currentUserId && user.id === currentUserId;
+            
+            // Use username if available, otherwise fall back to profile_name or 'Anonymous'
+            const displayName = user.username || (user as any).profile_name || 'Anonymous';
+            const displayScore = user.score || 0;
+            const displayRank = user.rank || (index + 1);
+            
             const entry = this.createLeaderboardEntry(
-                index + 1,
-                user.profile_name || 'Anonymous',
-                user.score,
+                displayRank,
+                displayName,
+                displayScore,
                 index,
                 isCurrentUser
             );
@@ -145,10 +151,14 @@ export class LeaderboardScreenView {
 
         // If current user is not in top 10, add them at the bottom
         if (currentUserId && !currentUserInTop10 && currentUserData) {
+            const displayName = currentUserData.username || (currentUserData as any).profile_name || 'You';
+            const displayScore = currentUserData.score || 0;
+            const displayRank = currentUserData.rank || leaderboard.length + 1;
+            
             const userEntry = this.createLeaderboardEntry(
-                currentUserData.rank || 0,
-                currentUserData.profile_name || 'Anonymous',
-                currentUserData.score,
+                displayRank,
+                displayName,
+                displayScore,
                 10, // Position at index 10 (11th position)
                 true // Always highlight as current user
             );
