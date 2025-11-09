@@ -6,8 +6,8 @@ numbernova/frontend/node_modules/
 numbernova/frontend/package-lock.json
 
 # Backend
-numbernova/backend/.env
-numbernova/backend/.env.local
+numbernova/frontend/.env
+numbernova/frontend/.env.local
 
 # Environment variables (general)
 .env
