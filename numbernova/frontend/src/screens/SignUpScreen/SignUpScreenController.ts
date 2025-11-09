@@ -1,13 +1,9 @@
 import { SignUpScreenView } from './SignUpScreenView';
 import { SignUpScreenModel } from './SignUpScreenModel';
 import { BaseScreen } from '../../core/BaseScreen';
-import { MenuScreenController } from '../MenuScreen/MenuScreenController';
-import { LoginScreenController } from '../LoginScreen/LoginScreenController';
 
 import { signUpWithEmail, updateUserProfile } from '../../lib/supabase';
 import { createNotification } from '../../lib/toast';
-
-import Konva from 'konva';
 
 export class SignUpScreenController extends BaseScreen {
     private view: SignUpScreenView;
@@ -37,40 +33,11 @@ export class SignUpScreenController extends BaseScreen {
     }
     
     private switchToMenuScreen(): void {
-        // Get the current stage and layer
-        const stage = this.container.getStage();
-        if (!stage) return;
-
-
-        // Remove ALL layers from the stage
-        stage.destroyChildren(); // This removes everything
-
-
-        // Create and add menu layer
-        const menuLayer = new Konva.Layer();
-        stage.add(menuLayer);
-
-
-        // Initialize menu screen
-        new MenuScreenController(menuLayer);
-
-
-        stage.draw();
+        this.screenManager.switchTo('menu');
     }
 
-
     private switchToLoginScreen(): void {
-        const stage = this.container.getStage();
-        if (!stage) return;
-
-
-        stage.destroyChildren();
-
-
-        const loginScreen = new LoginScreenController(this.screenManager);
-        stage.add(loginScreen.container);
-        loginScreen.show();
-        stage.draw();
+        this.screenManager.switchTo('login');
     }
     
     private async handleSignup(): Promise<void> {
@@ -103,13 +70,11 @@ export class SignUpScreenController extends BaseScreen {
 
         if (!this.model.validatePassword(password)) {
             createNotification('Password must be at least 6 characters', 'error');
-            createNotification('Password must be at least 6 characters', 'error');
             return;
         }
 
 
         if (!this.model.validatePasswordsMatch(password, confirmPassword)) {
-            createNotification('Passwords do not match', 'error');
             createNotification('Passwords do not match', 'error');
             return;
         }
@@ -120,7 +85,6 @@ export class SignUpScreenController extends BaseScreen {
 
         if (error) {
             console.error('Error signing up:', error);
-            createNotification('Error creating account. Please try again. ' + error.message, 'error');
             createNotification('Error creating account. Please try again. ' + error.message, 'error');
             return;
         }

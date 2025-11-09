@@ -56,9 +56,7 @@ export class LoginScreenController extends BaseScreen {
     }
     
     private handleCreateAccount(): void {
-        // TODO: Switch to signup screen when implemented
-        createNotification('Sign up feature coming soon!', 'info');
-        // this.screenManager.switchTo('signup');
+        this.screenManager.switchTo('signup');
     }
     
     public show(): void {

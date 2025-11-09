@@ -1,5 +1,6 @@
 import { ScreenManager } from './core/ScreenManager';
 import { LoginScreenController } from './screens/LoginScreen/LoginScreenController';
+import { SignUpScreenController } from './screens/SignUpScreen/SignUpScreenController';
 import { MenuScreenController } from './screens/MenuScreen/MenuScreenController';
 import { ShopScreenController } from './screens/ShopScreen/ShopScreenController';
 import { LeaderboardScreenController } from './screens/LeaderboardScreen/LeaderboardScreenController';
@@ -27,6 +28,7 @@ class NumberNovaApp {
     private registerScreens(): void {
         // Register all screens
         this.screenManager.registerScreen('login', new LoginScreenController(this.screenManager));
+        this.screenManager.registerScreen('signup', new SignUpScreenController(this.screenManager));
         this.screenManager.registerScreen('menu', new MenuScreenController(this.screenManager));
         this.screenManager.registerScreen('shop', new ShopScreenController(this.screenManager));
         this.screenManager.registerScreen('leaderboard', new LeaderboardScreenController(this.screenManager));

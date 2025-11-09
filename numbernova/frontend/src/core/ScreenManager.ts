@@ -68,7 +68,7 @@ export class ScreenManager {
 
     public switchTo(screenName: string): void {
         const nextScreen = this.screens.get(screenName);
-        
+
         if (!nextScreen) {
             console.error(`Screen "${screenName}" not found!`);
             return;
