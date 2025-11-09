@@ -31,6 +31,7 @@ export function createNotification(message: string, type: ToastType = 'info', du
     }).showToast();
 }
 
+
 function getToastColor(type: ToastType): string {
     switch (type) {
         case 'success':
@@ -43,5 +44,6 @@ function getToastColor(type: ToastType): string {
             return 'linear-gradient(to right, #3b82f6, #2563eb)'; // Blue gradient
         default:
             return 'linear-gradient(to right, #3b82f6, #2563eb)'; // Default to blue
+
     }
 }

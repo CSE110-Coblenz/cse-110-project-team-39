@@ -5,6 +5,7 @@ import { MenuScreenController } from './screens/MenuScreen/MenuScreenController'
 import { ShopScreenController } from './screens/ShopScreen/ShopScreenController';
 import { LeaderboardScreenController } from './screens/LeaderboardScreen/LeaderboardScreenController';
 import { ProfileScreenController } from './screens/ProfileScreen/ProfileScreenController';
+
 import { DIMENSIONS } from './constants';
 
 class NumberNovaApp {
@@ -15,13 +16,17 @@ class NumberNovaApp {
     }
     
     private initialize(): void {
+        // Create screen manager
         this.screenManager = new ScreenManager(
             'game-container',
             DIMENSIONS.width,
             DIMENSIONS.height
         );
         
+        // Register screens
         this.registerScreens();
+        
+        // Start with login screen
         this.screenManager.switchTo('login');
     }
     
@@ -36,6 +41,7 @@ class NumberNovaApp {
     }
 }
 
+// Start the application when DOM is loaded
 window.addEventListener('DOMContentLoaded', () => {
     new NumberNovaApp();
 });

@@ -64,7 +64,7 @@ export class LoginScreenView {
             width: 400,
             text: 'Number Nova',
             fontSize: 48,
-            fontFamily: 'Jersey 10',
+            fontFamily: 'Arial',
             fill: COLORS.text,
             align: 'center'
         });
@@ -75,7 +75,7 @@ export class LoginScreenView {
             width: 400,
             text: 'Log in to help us save the galaxy with the power of math',
             fontSize: 16,
-            fontFamily: 'Jersey 10',
+            fontFamily: 'Arial',
             fill: COLORS.textSecondary,
             align: 'center'
         });
@@ -121,7 +121,7 @@ export class LoginScreenView {
             width: 200,
             text: 'Create Account',
             fontSize: 16,
-            fontFamily: 'Jersey 10',
+            fontFamily: 'Arial',
             fill: COLORS.primaryLight,
             align: 'center'
         });
@@ -225,7 +225,7 @@ export class LoginScreenView {
             height: DIMENSIONS.buttonHeight,
             text: text,
             fontSize: 20,
-            fontFamily: 'Jersey 10',
+            fontFamily: 'Arial',
             fill: COLORS.text,
             align: 'center',
             verticalAlign: 'middle'

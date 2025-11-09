@@ -1,17 +1,17 @@
 import { LoginScreenView } from './LoginScreenView';
 import { LoginScreenModel } from './LoginScreenModel';
 import { BaseScreen } from '../../core/BaseScreen';
+import { MenuScreenController } from '../MenuScreen/MenuScreenController';
+import { SignUpScreenController } from '../SignUpScreen/SignUpScreenController';
 import { signInWithEmail } from '../../lib/supabase';
 import { createNotification } from '../../lib/toast';
-
+import Konva from 'konva';
 export class LoginScreenController extends BaseScreen {
     private view: LoginScreenView;
     private model: LoginScreenModel;
     
     protected initialize(): void {
         this.model = new LoginScreenModel();
-        
-        // Use the container that BaseScreen provides (from ScreenManager)
         this.view = new LoginScreenView(this.container);
 
         this.setupEventListeners();
@@ -32,6 +32,23 @@ export class LoginScreenController extends BaseScreen {
             this.handleCreateAccount();
         });
     }
+    private switchToMenuScreen(): void {
+        // Get the current stage and layer
+        const stage = this.container.getStage();
+        if (!stage) return;
+
+        // Remove ALL layers from the stage
+        stage.destroyChildren(); // This removes everything
+
+        // Create and add menu layer
+        const menuLayer = new Konva.Layer();
+        stage.add(menuLayer);
+
+        // Initialize menu screen
+        new MenuScreenController(menuLayer);
+
+        stage.draw();
+    }
 
     private async handleLogin(): Promise<void> {
         const email = this.view.getEmailValue().trim();
@@ -50,9 +67,7 @@ export class LoginScreenController extends BaseScreen {
         }
 
         createNotification('Login successful!', 'success');
-        
-        // Use screen manager to switch screens
-        this.screenManager.switchTo('menu');
+        this.switchToMenuScreen();
     }
     
     private handleCreateAccount(): void {
