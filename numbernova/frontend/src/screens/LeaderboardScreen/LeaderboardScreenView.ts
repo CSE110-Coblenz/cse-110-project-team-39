@@ -123,7 +123,7 @@ export class LeaderboardScreenView {
         if (currentUserId) {
             const userIndex = leaderboard.findIndex(user => user.id === currentUserId);
             if (userIndex !== -1) {
-                currentUserInTop10 = true;
+                currentUserInTop10 = userIndex < 10;
                 currentUserData = leaderboard[userIndex];
             }
         }
