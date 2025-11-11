@@ -16,5 +16,21 @@ export class ShopScreenController extends BaseScreen {
         this.view = new ShopScreenView(this.container, 
             this.model.getColors(), this.model.getColorsUnlocked(), this.model.getCurrentColor(),
             this.model.getCurrency());
+
+        this.setupEventListeners();
+
+        setTimeout(() => {
+            this.container.getStage()?.draw();
+        }, 100);
+    }
+
+    private setupEventListeners(): void {
+        this.view.getMenuButton().on('click', () => {
+            this.returnToMenu();
+        });
+    }
+
+    private returnToMenu(): void {
+        this.screenManager.switchTo('menu');
     }
 }

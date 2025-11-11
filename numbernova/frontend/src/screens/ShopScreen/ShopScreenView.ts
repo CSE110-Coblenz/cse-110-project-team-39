@@ -235,6 +235,7 @@ export class ShopScreenView {
         this.layer.add(this.personGroup);
     }
 
+    //private method to draw the currency display
     private drawCurrencyDisplay(currency: number){
         this.currencyText = new Konva.Text({
             x: DIMENSIONS.width - 150,
@@ -262,5 +263,60 @@ export class ShopScreenView {
           });
           group.add(s);
         }
+    }
+    //below are public methods to update various parts of the view
+
+    //getter methods for event targets
+    public getMenuButton(): Konva.Group {
+        return this.menuButton.group;
+    }
+
+    public getRedCircle(): Konva.Circle {
+        return this.red;
+    }
+
+    public getOrangeCircle(): Konva.Circle {
+        return this.orange;
+    }
+
+    public getYellowCircle(): Konva.Circle {
+        return this.yellow;
+    }
+
+    public getGreenCircle(): Konva.Circle {
+        return this.green;
+    }
+
+    public getBlueCircle(): Konva.Circle {
+        return this.blue;
+    }
+
+    public getPurpleCircle(): Konva.Circle {
+        return this.purple;
+    }
+
+
+    //redraw the person with a new color
+    public updatePerson(color: string){
+        this.personGroup.destroyChildren();
+        this.drawPerson(color);
+        this.layer.draw();
+    }
+
+    //redraw the currency display with a new amount
+    public updateCurrencyDisplay(currency: number){
+        this.currencyText.text(`Currency: ${currency}`);
+        this.currencyText.offsetX(this.currencyText.width() / 2);
+        this.layer.draw();
+    }
+
+    //redraw the shop with ne= unlocked colors
+    public updateShop(colorsAvailable: string[], colorsUnlocked: boolean[]){
+        this.shopGroup.destroyChildren();
+        this.createShop(
+            colorsAvailable,
+            colorsUnlocked
+        );
+        this.layer.draw();
     }
 }
