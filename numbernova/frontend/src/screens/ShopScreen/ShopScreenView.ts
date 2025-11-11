@@ -41,13 +41,13 @@ export class ShopScreenView {
 
     //event functions to register handlers
 
-    onMenuClick(fn: VoidFn) {this.menuHandler.push(fn);}
-    onRedClick(fn: VoidFn) {this.redHandler.push(fn);}
-    onOrangeClick(fn: VoidFn) {this.orangeHandler.push(fn);}
-    onYellowClick(fn: VoidFn) {this.yellowHandler.push(fn);}
-    onGreenClick(fn: VoidFn) {this.greenHandler.push(fn);}
-    onBlueClick(fn: VoidFn) {this.blueHandler.push(fn);}
-    onPurpleClick(fn: VoidFn) {this.purpleHandler.push(fn);}
+    onMenuClick(cb: VoidFn) {this.menuHandler.push(cb);}
+    onRedClick(cb: VoidFn) {this.redHandler.push(cb);}
+    onOrangeClick(cb: VoidFn) {this.orangeHandler.push(cb);}
+    onYellowClick(cb: VoidFn) {this.yellowHandler.push(cb);}
+    onGreenClick(cb: VoidFn) {this.greenHandler.push(cb);}
+    onBlueClick(cb: VoidFn) {this.blueHandler.push(cb);}
+    onPurpleClick(cb: VoidFn) {this.purpleHandler.push(cb);}
 
     constructor(layer: Konva.Layer, colors: string[], colorsUnlocked: boolean[], currentColor: string,
         currency: number
@@ -132,6 +132,7 @@ export class ShopScreenView {
         this.purple = new Konva.Circle();
         //create the shop elements
         this.createShop(colors, colorsUnlocked);
+        this.attachEventHandlers();
 
         //create the person wearing the current color
         this.personGroup = new Konva.Group();
@@ -178,6 +179,17 @@ export class ShopScreenView {
         }); 
 
         this.shopGroup.add(item.circle);
+
+        // Ensure instance properties reference the actual circles added to the group
+        // so attachEventHandlers binds listeners to the visible shapes.
+        switch (index) {
+            case 0: this.red = item.circle; break;
+            case 1: this.orange = item.circle; break;
+            case 2: this.yellow = item.circle; break;
+            case 3: this.green = item.circle; break;
+            case 4: this.blue = item.circle; break;
+            case 5: this.purple = item.circle; break;
+        }
 
         if(!item.locked){
             const lockIcon = new Konva.Text({
@@ -266,35 +278,30 @@ export class ShopScreenView {
     }
     //below are public methods to update various parts of the view
 
-    //getter methods for event targets
-    public getMenuButton(): Konva.Group {
-        return this.menuButton.group;
+    // Attach event handlers for color circle clicks
+    public attachEventHandlers() {
+        this.menuButton.group.on('click', () => {
+            this.menuHandler.forEach(fn => fn());
+        });
+        this.red.on('click', () => {
+            this.redHandler.forEach(fn => fn());
+        });
+        this.orange.on('click', () => {
+            this.orangeHandler.forEach(fn => fn());
+        });
+        this.yellow.on('click', () => {
+            this.yellowHandler.forEach(fn => fn());
+        });
+        this.green.on('click', () => {
+            this.greenHandler.forEach(fn => fn());
+        });
+        this.blue.on('click', () => {
+            this.blueHandler.forEach(fn => fn());
+        });
+        this.purple.on('click', () => {
+            this.purpleHandler.forEach(fn => fn());
+        });
     }
-
-    public getRedCircle(): Konva.Circle {
-        return this.red;
-    }
-
-    public getOrangeCircle(): Konva.Circle {
-        return this.orange;
-    }
-
-    public getYellowCircle(): Konva.Circle {
-        return this.yellow;
-    }
-
-    public getGreenCircle(): Konva.Circle {
-        return this.green;
-    }
-
-    public getBlueCircle(): Konva.Circle {
-        return this.blue;
-    }
-
-    public getPurpleCircle(): Konva.Circle {
-        return this.purple;
-    }
-
 
     //redraw the person with a new color
     public updatePerson(color: string){

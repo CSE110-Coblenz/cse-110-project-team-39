@@ -5,7 +5,7 @@ export class ShopScreenModel{
     
     //TODO: connect to backend later based on the player's data
     private currenColor = COLORS.red;
-    private colorsUnlocked = [true, false, false, false, false, false];
+    private colorsUnlocked = [true, true, true, false, false, false];
     private currency = 100;
 
 
@@ -18,6 +18,18 @@ export class ShopScreenModel{
 
             //TODO: update backend with new currency and unlocked colors
         }
+    }
+
+    public setCurrentColor(color: string): boolean{
+        //check if color is unlocked
+        const colorIndex = this.colors.indexOf(color);
+        if(this.colorsUnlocked[colorIndex]){
+            this.currenColor = color;
+            return true;
+
+            //TODO: update backend with new current color
+        }
+        return false;
     }
 
     public getCurrentColor(): string{

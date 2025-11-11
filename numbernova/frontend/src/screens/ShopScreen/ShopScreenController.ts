@@ -17,18 +17,49 @@ export class ShopScreenController extends BaseScreen {
             this.model.getColors(), this.model.getColorsUnlocked(), this.model.getCurrentColor(),
             this.model.getCurrency());
 
-        this.setupEventListeners();
-
-        setTimeout(() => {
-            this.container.getStage()?.draw();
-        }, 100);
-    }
-
-    private setupEventListeners(): void {
-        this.view.getMenuButton().on('click', () => {
+        this.view.onMenuClick(() => {
             this.returnToMenu();
         });
+
+        this.view.onRedClick(() => {
+            if(this.model.setCurrentColor(COLORS.red)){
+                this.view.updatePerson(COLORS.red);
+            }     
+        });
+
+        this.view.onOrangeClick(() => {
+            if(this.model.setCurrentColor(COLORS.orange)){
+                this.view.updatePerson(COLORS.orange);
+            }     
+        });
+
+        this.view.onYellowClick(() => {
+            if(this.model.setCurrentColor(COLORS.yellow)){
+                this.view.updatePerson(COLORS.yellow);
+            }     
+        });
+
+        this.view.onGreenClick(() => {
+            if(this.model.setCurrentColor(COLORS.green)){
+                this.view.updatePerson(COLORS.green);
+            }     
+        });
+
+        this.view.onBlueClick(() => {
+            if(this.model.setCurrentColor(COLORS.blue)){
+                this.view.updatePerson(COLORS.blue);
+            }     
+        });
+
+        this.view.onPurpleClick(() => {
+            if(this.model.setCurrentColor(COLORS.purple)){
+                this.view.updatePerson(COLORS.purple);
+            }     
+        });
+
+        this.container.getStage()?.draw();
     }
+
 
     private returnToMenu(): void {
         this.screenManager.switchTo('menu');
