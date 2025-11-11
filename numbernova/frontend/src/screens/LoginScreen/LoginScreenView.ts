@@ -25,27 +25,16 @@ export class LoginScreenView {
     
     private createBackground(): void {
         this.background = new Konva.Rect({
-            x: 0,
+            x: -170,
             y: 0,
-            width: DIMENSIONS.width,
-            height: DIMENSIONS.height,
+            width: window.innerWidth,
+            height: window.innerHeight,
             fillLinearGradientStartPoint: { x: 0, y: 0 },
             fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
             fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
             
         });
         this.layer.add(this.background);
-        // subtle radial nebula
-        const nebula = new Konva.Rect({
-        x: 0,
-        y: 0,
-        width: DIMENSIONS.width,
-        height: DIMENSIONS.height,
-        listening: false,
-        globalCompositeOperation: 'lighter',
-        });
-
-        this.layer.add(nebula);
     }
     
     private createStars(): void {
@@ -56,9 +45,9 @@ export class LoginScreenView {
         g.setAttr('speed', speed);
         for (let i = 0; i < count; i++) {
         g.add(new Konva.Circle({
-            x: Math.random() * DIMENSIONS.width,
-            y: Math.random() * DIMENSIONS.height,
-            radius: Math.random() * radiusMax + 0.3,
+            x: Math.random() * window.innerWidth - 200,
+            y: Math.random() * window.innerHeight,
+            radius: Math.random() * radiusMax + 0.4,
             fill: '#ffffff',
             opacity: opacity * (0.5 + Math.random() * 0.5)
         }));
