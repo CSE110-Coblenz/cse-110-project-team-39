@@ -69,32 +69,39 @@ export class ShopScreenView {
         this.title.offsetX(this.title.width() / 2);
 
 
-        //create the menu button
+        //create the menu button (bigger and aligned to upper left)
+        const menuBtnWidth = 220;
+        const menuBtnHeight = 60;
+        const menuBtnX = 30;
+        const menuBtnY = 30;
+
         this.menuButton = {
             group: new Konva.Group(),
             rect: new Konva.Rect({
-                x: DIMENSIONS.width - 200,
-                y: 30,
-                width: 160,
-                height: 40,
-                fill: COLORS?.primary || '#7b61ff',
-                cornerRadius: 10,
-                listening: true
+            x: menuBtnX,
+            y: menuBtnY,
+            width: menuBtnWidth,
+            height: menuBtnHeight,
+            fill: COLORS?.primary || '#7b61ff',
+            cornerRadius: 16,
+            listening: true
             }),
             text: new Konva.Text({
-                x: DIMENSIONS.width - 200 + 80,
-                y: 30 + 20 - 8,
-                text: 'Return to Main Menu',
-                fontSize: 16,
-                fontFamily: FONTS.label || 'Arial',
-                fill: '#ffffff',
-                align: 'center'
+            x: menuBtnX + menuBtnWidth / 2,
+            y: menuBtnY + menuBtnHeight / 2,
+            text: 'Return to Main Menu',
+            fontSize: 22,
+            fontFamily: FONTS.label || 'Arial',
+            fill: '#ffffff',
+            align: 'center',
+            verticalAlign: 'middle'
             })
         };
+        // Center the text in the button
         this.menuButton.text.offsetX(this.menuButton.text.width() / 2);
+        this.menuButton.text.offsetY(this.menuButton.text.height() / 2);
         this.menuButton.group.add(this.menuButton.rect);
         this.menuButton.group.add(this.menuButton.text);
-        
         //add all elements to the layer
         this.layer.add(this.bg);
         this.layer.add(this.stars);
