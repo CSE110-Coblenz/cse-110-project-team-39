@@ -129,7 +129,7 @@ export class ShopScreenView {
         this.layer.draw();
     }
 
-    private createShop(colorsAvailable: string[], colorsUnlocked: boolean[]): void {
+    protected createShop(colorsAvailable: string[], colorsUnlocked: boolean[]): void {
        //add the color swatches to the shop group so that they take up the right half of the screen and are evenly spaced in a 3x2 grid
        const colors = [
         { color: colorsAvailable[0], locked: colorsUnlocked[0], circle: this.red},    // Red
@@ -192,7 +192,7 @@ export class ShopScreenView {
         this.layer.add(this.shopGroup);
     }
 
-    private drawPerson(color: string){
+    protected drawPerson(color: string){
         //draw the person on the left side of the screen
         const head = new Konva.Circle({
             x: 150,
