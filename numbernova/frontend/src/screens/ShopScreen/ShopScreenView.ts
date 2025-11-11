@@ -37,7 +37,7 @@ export class ShopScreenView {
     onBlueClick(fn: VoidFn) {this.blueHandler.push(fn);}
     onPurpleClick(fn: VoidFn) {this.purpleHandler.push(fn);}
 
-    constructor(layer: Konva.Layer) {
+    constructor(layer: Konva.Layer, colors: string[], colorsUnlocked: boolean[]) {
         
         //create the background of the view
         this.layer = layer;
@@ -117,22 +117,22 @@ export class ShopScreenView {
         this.blue = new Konva.Circle();
         this.purple = new Konva.Circle();
         //create the shop elements
-        this.createShop();
+        this.createShop(colors, colorsUnlocked);
 
         this.layer.add(this.shopGroup);
 
         this.layer.draw();
     }
 
-    private createShop(): void {
+    private createShop(colorsAvailable: string[], colorsUnlocked: boolean[]): void {
        //add the color swatches to the shop group so that they take up the right half of the screen and are evenly spaced in a 3x2 grid
        const colors = [
-        { color: COLORS.red, circle: this.red},    // Red
-        { color: COLORS.orange, circle: this.orange }, // Orange
-        { color: COLORS.yellow, circle: this.yellow }, // Yellow
-        { color: COLORS.green, circle: this.green },  // Green
-        { color: COLORS.blue, circle: this.blue },   // Blue
-        { color: COLORS.purple, circle: this.purple }  // Purple
+        { color: colorsAvailable[0], locked: colorsUnlocked[0], circle: this.red},    // Red
+        { color: colorsAvailable[1], locked: colorsUnlocked[1], circle: this.orange }, // Orange
+        { color: colorsAvailable[2], locked: colorsUnlocked[2], circle: this.yellow }, // Yellow
+        { color: colorsAvailable[3], locked: colorsUnlocked[3], circle: this.green },  // Green
+        { color: colorsAvailable[4], locked: colorsUnlocked[4], circle: this.blue },   // Blue
+        { color: colorsAvailable[5], locked: colorsUnlocked[5], circle: this.purple }  // Purple
        ];
 
        const swatchSize = 100;
@@ -158,6 +158,31 @@ export class ShopScreenView {
         }); 
 
         this.shopGroup.add(item.circle);
+
+        if(!item.locked){
+            const lockIcon = new Konva.Text({
+                x: item.circle.x(),
+                y: item.circle.y(),
+                text: '🔒',
+                fontSize: 40,
+                fontFamily: FONTS.label,
+                fill: '#ffffff',
+                align: 'center',
+                verticalAlign: 'middle'
+            });
+            lockIcon.offsetX(lockIcon.width() / 2);
+            lockIcon.offsetY(lockIcon.height() / 2);
+            this.shopGroup.add(lockIcon);
+
+            const overlay = new Konva.Circle({
+                x: item.circle.x(),
+                y: item.circle.y(),
+                radius: swatchSize / 2,
+                fill: 'rgba(0, 0, 0, 0.5)',
+                listening: false
+            });
+            this.shopGroup.add(overlay);
+        }
        });
         
     }

@@ -20,4 +20,19 @@ export class ShopScreenModel{
         }
     }
 
+    public getCurrentColor(): string{
+        return this.currenColor;
+    }
+
+    public getColorsUnlocked(): boolean[]{
+        return this.colorsUnlocked;
+    }
+
+    public getCurrency(): number{
+        return this.currency;
+    }
+
+    public getColors(): string[]{
+        return this.colors;
+    }
 }

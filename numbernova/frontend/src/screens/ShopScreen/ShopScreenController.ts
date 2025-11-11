@@ -11,7 +11,7 @@ export class ShopScreenController extends BaseScreen {
     
     protected initialize(): void {
 
-        this.view = new ShopScreenView(this.container);
         this.model = new ShopScreenModel();
+        this.view = new ShopScreenView(this.container, this.model.getColors(), this.model.getColorsUnlocked());
     }
 }
