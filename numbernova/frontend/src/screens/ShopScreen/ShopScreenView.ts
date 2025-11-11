@@ -63,9 +63,9 @@ export class ShopScreenView {
         //title of the shop
         this.title = new Konva.Text({
             x: DIMENSIONS.width / 2,
-            y: 90,
+            y: 40,
             text: 'Welcome to the Shop Planet!!',
-            fontSize: 32,
+            fontSize: 36,
             fontFamily: FONTS.title,
             fill: COLORS.text,
             align: 'center'
@@ -129,7 +129,7 @@ export class ShopScreenView {
         this.layer.draw();
     }
 
-    protected createShop(colorsAvailable: string[], colorsUnlocked: boolean[]): void {
+    private createShop(colorsAvailable: string[], colorsUnlocked: boolean[]): void {
        //add the color swatches to the shop group so that they take up the right half of the screen and are evenly spaced in a 3x2 grid
        const colors = [
         { color: colorsAvailable[0], locked: colorsUnlocked[0], circle: this.red},    // Red
@@ -140,8 +140,8 @@ export class ShopScreenView {
         { color: colorsAvailable[5], locked: colorsUnlocked[5], circle: this.purple }  // Purple
        ];
 
-       const swatchSize = 100;
-       const padding = 40;
+       const swatchSize = 160;
+       const padding = 60;
        const startX = DIMENSIONS.width / 2 + (DIMENSIONS.width / 2 - (3 * swatchSize + 2 * padding)) / 2;
        const startY = 150;
 
@@ -189,10 +189,11 @@ export class ShopScreenView {
             this.shopGroup.add(overlay);
         }
        });
+       this.shopGroup.offsetY(60);
         this.layer.add(this.shopGroup);
     }
 
-    protected drawPerson(color: string){
+    private drawPerson(color: string){
         //draw the person on the left side of the screen
         const head = new Konva.Circle({
             x: 150,
@@ -213,6 +214,7 @@ export class ShopScreenView {
         this.personGroup = new Konva.Group();
         this.personGroup.add(head);
         this.personGroup.add(body);
+        this.personGroup.offsetX(this.personGroup.width() / 2);
         this.layer.add(this.personGroup);
     }
 
