@@ -1,7 +1,10 @@
+import {COLORS} from '../../constants';
 export class ShopScreenModel{
 
+    private colors=[COLORS.red, COLORS.orange, COLORS.yellow, COLORS.green, COLORS.blue, COLORS.purple];
+    
     //TODO: connect to backend later based on the player's data
-    private colors=["red", "orange", "yellow", "green", "blue", "purple"];
+    private currenColor = COLORS.red;
     private colorsUnlocked = [true, false, false, false, false, false];
     private currency = 100;
 
@@ -12,6 +15,8 @@ export class ShopScreenModel{
         if(this.currency >= 50 && !this.colorsUnlocked[this.colors.indexOf(color)]){
             this.currency -= 50; //deduct cost
             this.colorsUnlocked[this.colors.indexOf(color)] = true; //unlock color
+
+            //TODO: update backend with new currency and unlocked colors
         }
     }
 
