@@ -26,32 +26,43 @@ export class SignUpScreenView {
     
     private createBackground(): void {
         this.background = new Konva.Rect({
-            x: 0,
-            y: 0,
-            width: DIMENSIONS.width,
-            height: DIMENSIONS.height,
-            fill: COLORS.background
-        });
-        this.layer.add(this.background);
+                    x: -170,
+                    y: 0,
+                    width: window.innerWidth,
+                    height: window.innerHeight,
+                    fillLinearGradientStartPoint: { x: 0, y: 0 },
+                    fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
+                    fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
+                    
+                });
+                this.layer.add(this.background);
     }
     
     private createStars(): void {
-        this.stars = new Konva.Group();
-        
-        // Create random stars
-        for (let i = 0; i < 100; i++) {
-            const star = new Konva.Circle({
-                x: Math.random() * DIMENSIONS.width,
-                y: Math.random() * DIMENSIONS.height,
-                radius: Math.random() * 2,
-                fill: '#ffffff',
-                opacity: Math.random() * 0.8
-            });
-            this.stars.add(star);
+        this.stars = new Konva.Group({ listening: false });
+
+    const makeLayer = (count: number, radiusMax: number, opacity: number, speed: number) => {
+        const g = new Konva.Group({ name: 'starLayer', listening: false });
+        g.setAttr('speed', speed);
+        for (let i = 0; i < count; i++) {
+        g.add(new Konva.Circle({
+            x: Math.random() * window.innerWidth - 170,
+            y: Math.random() * window.innerHeight,
+            radius: Math.random() * radiusMax + 0.4,
+            fill: '#ffffff',
+            opacity: opacity * (0.5 + Math.random() * 0.5)
+        }));
         }
-        
-        this.layer.add(this.stars);
-    }
+        return g;
+    };
+
+  // far, mid, near
+  this.stars.add(makeLayer(120, 1.2, 0.5, 0.05));
+  this.stars.add(makeLayer(80, 1.8, 0.7, 0.12));
+  this.stars.add(makeLayer(40, 2.2, 0.9, 0.22));
+
+  this.layer.add(this.stars);
+}
     
     private createSignupForm(): void {
         this.signupForm = new Konva.Group({
@@ -85,9 +96,9 @@ export class SignUpScreenView {
         // Signup box background - taller to accommodate extra field
         const signupBox = new Konva.Rect({
             x: -DIMENSIONS.loginBoxWidth / 2,
-            y: -100,
+            y: -180,
             width: DIMENSIONS.loginBoxWidth,
-            height: DIMENSIONS.loginBoxHeight + 140, // Extra space for display name + confirm password
+            height: DIMENSIONS.loginBoxHeight + 200, // Extra space for display name + confirm password
             fill: 'rgba(123, 95, 178, 0.1)',
             cornerRadius: 20,
             stroke: COLORS.inputBorder,
@@ -97,7 +108,7 @@ export class SignUpScreenView {
         // Create input fields
         this.emailInput = new KonvaInput({
             x: -150,
-            y: -30,
+            y: -100,
             width: DIMENSIONS.inputWidth,
             height: DIMENSIONS.inputHeight,
             placeholder: 'Email',
@@ -106,7 +117,7 @@ export class SignUpScreenView {
 
         this.displayNameInput = new KonvaInput({
             x: -150,
-            y: 40,
+            y: -20,
             width: DIMENSIONS.inputWidth,
             height: DIMENSIONS.inputHeight,
             placeholder: 'Display Name (optional)',
@@ -115,7 +126,7 @@ export class SignUpScreenView {
 
         this.passwordInput = new KonvaInput({
             x: -150,
-            y: 110,
+            y: 60,
             width: DIMENSIONS.inputWidth,
             height: DIMENSIONS.inputHeight,
             placeholder: 'Password',
@@ -124,7 +135,7 @@ export class SignUpScreenView {
 
         this.confirmPasswordInput = new KonvaInput({
             x: -150,
-            y: 180,
+            y: 140,
             width: DIMENSIONS.inputWidth,
             height: DIMENSIONS.inputHeight,
             placeholder: 'Confirm Password',
