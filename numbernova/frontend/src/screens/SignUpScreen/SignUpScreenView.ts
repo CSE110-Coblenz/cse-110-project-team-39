@@ -62,7 +62,7 @@ export class SignUpScreenView {
         // Title
         const title = new Konva.Text({
             x: -200,
-            y: -250,
+            y: -350,
             width: 400,
             text: 'Number Nova',
             fontSize: 48,
@@ -73,7 +73,7 @@ export class SignUpScreenView {
         
         const subtitle = new Konva.Text({
             x: -260,
-            y: -180,
+            y: -270,
             width: 520, // wider to keep the longer string on a single line
             text: 'Sign up to help us save the galaxy with the power of math',
             fontSize: 16,

@@ -43,15 +43,6 @@ export class LoginScreenView {
         height: DIMENSIONS.height,
         listening: false,
         globalCompositeOperation: 'lighter',
-        fillRadialGradientStartPoint: { x: DIMENSIONS.width * 0.85, y: DIMENSIONS.height * 0.20 },
-        fillRadialGradientEndPoint: { x: DIMENSIONS.width * 0.85, y: DIMENSIONS.height * 0.20 },
-        fillRadialGradientStartRadius: 0,
-        fillRadialGradientEndRadius: Math.max(DIMENSIONS.width, DIMENSIONS.height) * 0.45,
-        fillRadialGradientColorStops: [
-            0, 'rgba(255,255,255,0.18)',
-            0.6, 'rgba(255,255,255,0.07)',
-            1, 'rgba(255,255,255,0)'
-        ]
         });
 
         this.layer.add(nebula);
@@ -94,10 +85,10 @@ export class LoginScreenView {
         // Title
         const title = new Konva.Text({
             x: -200,
-            y: -250,
+            y: -330,
             width: 400,
-            text: 'Number Nova',
-            fontSize: 48,
+            text: 'NumberNova!',
+            fontSize: 68,
             fontFamily: 'Jersey 10',
             fill: COLORS.text,
             align: 'center'
@@ -105,10 +96,10 @@ export class LoginScreenView {
         
         const subtitle = new Konva.Text({
             x: -200,
-            y: -180,
-            width: 400,
+            y: -230,
+            width: 430,
             text: 'Log in to help us save the galaxy with the power of math 🚀',
-            fontSize: 16,
+            fontSize: 20,
             fontFamily: 'Jersey 10',
             fill: COLORS.textSecondary,
             align: 'center'
@@ -155,7 +146,7 @@ export class LoginScreenView {
             width: 200,
             text: 'Create Account',
             fontSize: 16,
-            fontFamily: 'Jersey 10',
+            fontFamily: 'Arial',
             fill: COLORS.primaryLight,
             align: 'center'
         });
@@ -289,7 +280,7 @@ export class LoginScreenView {
             height: DIMENSIONS.buttonHeight,
             text: text,
             fontSize: 20,
-            fontFamily: 'Jersey 10',
+            fontFamily: 'Arial',
             fill: COLORS.text,
             align: 'center',
             verticalAlign: 'middle'
