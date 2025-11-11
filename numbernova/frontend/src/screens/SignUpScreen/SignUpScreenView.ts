@@ -64,9 +64,9 @@ export class SignUpScreenView {
             x: -200,
             y: -350,
             width: 400,
-            text: 'Number Nova',
-            fontSize: 48,
-            fontFamily: 'Arial',
+            text: 'NumberNova!',
+            fontSize: 68,
+            fontFamily: 'Jersey 10',
             fill: COLORS.text,
             align: 'center'
         });
@@ -75,9 +75,9 @@ export class SignUpScreenView {
             x: -260,
             y: -270,
             width: 520, // wider to keep the longer string on a single line
-            text: 'Sign up to help us save the galaxy with the power of math',
-            fontSize: 16,
-            fontFamily: 'Arial',
+            text: 'Sign up to help us save the galaxy with the power of math 🚀',
+            fontSize: 20,
+            fontFamily: 'Jersey 10',
             fill: COLORS.textSecondary,
             align: 'center'
         });
