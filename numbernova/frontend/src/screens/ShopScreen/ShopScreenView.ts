@@ -6,6 +6,12 @@ export class ShopScreenView {
     private bg: Konva.Rect;
     private stars: Konva.Group;
     private title: Konva.Text;
+
+
+    //the next few comments define groups that have private methods to create them
+    //  they will need public methods to change them for the controller
+
+    //group for the shop items
     private shopGroup: Konva.Group;
     private red!: Konva.Circle;
     private orange!: Konva.Circle;
@@ -17,9 +23,11 @@ export class ShopScreenView {
     //menu button
     private menuButton: {group: Konva.Group, rect: Konva.Rect, text: Konva.Text};
 
-
     //person drawing
     private personGroup: Konva.Group;
+
+    //the currency tag
+    private currencyText: Konva.Text;
 
     //handlers for menu screen and color swatches
 
@@ -41,7 +49,9 @@ export class ShopScreenView {
     onBlueClick(fn: VoidFn) {this.blueHandler.push(fn);}
     onPurpleClick(fn: VoidFn) {this.purpleHandler.push(fn);}
 
-    constructor(layer: Konva.Layer, colors: string[], colorsUnlocked: boolean[], currentColor: string) {
+    constructor(layer: Konva.Layer, colors: string[], colorsUnlocked: boolean[], currentColor: string,
+        currency: number
+    ) {
         
         //create the background of the view
         this.layer = layer;
@@ -123,12 +133,17 @@ export class ShopScreenView {
         //create the shop elements
         this.createShop(colors, colorsUnlocked);
 
+        //create the person wearing the current color
         this.personGroup = new Konva.Group();
         this.drawPerson(currentColor);
+
+        //create the currency display with the current amount
+        this.drawCurrencyDisplay(currency);
 
         this.layer.draw();
     }
 
+    //private method to draw the shop
     private createShop(colorsAvailable: string[], colorsUnlocked: boolean[]): void {
        //add the color swatches to the shop group so that they take up the right half of the screen and are evenly spaced in a 3x2 grid
        const colors = [
@@ -193,6 +208,8 @@ export class ShopScreenView {
         this.layer.add(this.shopGroup);
     }
 
+
+    //prviate method to redraw the person
     private drawPerson(color: string){
         //draw the person on the left side of the screen
         const head = new Konva.Circle({
@@ -218,6 +235,21 @@ export class ShopScreenView {
         this.layer.add(this.personGroup);
     }
 
+    private drawCurrencyDisplay(currency: number){
+        this.currencyText = new Konva.Text({
+            x: DIMENSIONS.width - 150,
+            y: 30,
+            text: `Currency: ${currency}`,
+            fontFamily: FONTS.subtitle,
+            fontSize: 32,
+            fill: COLORS.text,
+            align: 'right'
+        });
+        this.currencyText.offsetX(this.currencyText.width() / 2);
+        this.layer.add(this.currencyText);
+    }
+
+    //private method to spawn stars (only called once during construction)
     private spawnStars(group: Konva.Group, count: number, opacityBase: number, maxRadius: number) {
         for (let i = 0; i < count; i++) {
           const s = new Konva.Circle({

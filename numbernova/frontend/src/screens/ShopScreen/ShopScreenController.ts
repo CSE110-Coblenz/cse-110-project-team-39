@@ -14,6 +14,7 @@ export class ShopScreenController extends BaseScreen {
         this.model = new ShopScreenModel();
         //construct the view with the model data
         this.view = new ShopScreenView(this.container, 
-            this.model.getColors(), this.model.getColorsUnlocked(), this.model.getCurrentColor());
+            this.model.getColors(), this.model.getColorsUnlocked(), this.model.getCurrentColor(),
+            this.model.getCurrency());
     }
 }
