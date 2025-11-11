@@ -3,85 +3,90 @@ import { COLORS, DIMENSIONS, FONTS } from '../../constants';
 
 export class ShopScreenView {
     private layer: Konva.Layer;
-    private background: Konva.Rect;
+    private bg: Konva.Rect;
     private stars: Konva.Group;
+    private title: Konva.Text;
     private shopGroup: Konva.Group;
 
+    //menu button
+    private menuButton: {group: Konva.Group, rect: Konva.Rect, text: Konva.Text};
+
     //interactive elements
-    private returnButton: Konva.Group;
 
     constructor(layer: Konva.Layer) {
+
+        //create the background of the view
         this.layer = layer;
-        this.createBackground();
-        this.createStars();
-        this.createShop();
-    }
-
-    private createShop(): void {
-        this.shopGroup = new Konva.Group();
-
-        // Top-left return button
-        const returnGroup = new Konva.Group({ x: 20, y: 18 });
-        const returnBg = new Konva.Rect({
+        this.bg = new Konva.Rect({
+            x: 0,
+            y: 0,
             width: DIMENSIONS.width,
             height: DIMENSIONS.height,
             fill: COLORS.background,
+            fillLinearGradientStartPoint: { x: 0, y: 0 },
+            fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
+            fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
         });
-        const returnText = new Konva.Text({
-            x: 12,
-            y: 8,
-            text: 'Return to\nMain Menu',
-            fontSize: 12,
-            fontFamily: FONTS.label || 'Arial',
-            fill: '#fff'
-        });
-        returnGroup.add(returnBg);
-        returnGroup.add(returnText);
-        this.shopGroup.add(returnGroup);
+        
+        //create stars in the background
+        this.stars = new Konva.Group();
+        this.spawnStars(this.stars, 150, 0.2, 1.5);
 
-        // Left column title and subtitle
-        const title = new Konva.Text({
-            x: 40,
-            y: 80,
-            text: 'Welcome to the shop\nplanet!!',
-            fontSize: 22,
+        //title of the shop
+        this.title = new Konva.Text({
+            x: DIMENSIONS.width / 2,
+            y: 90,
+            text: 'Welcome to the Shop Planet!!',
+            fontSize: 32,
             fontFamily: FONTS.title,
             fill: COLORS.text,
+            align: 'center'
         });
-        const subtitle = new Konva.Text({
-            x: 40,
-            y: 130,
-            text: 'Buy colors and customize\nyour appearance',
-            fontSize: 14,
-            fontFamily: FONTS.subtitle || 'Arial',
-            fill: COLORS.text,
-        });
-        this.shopGroup.add(title);
-        this.shopGroup.add(subtitle);
+        this.title.offsetX(this.title.width() / 2);
 
-        // Character preview (left side)
-        const previewX = 120;
-        const head = new Konva.Circle({
-            x: previewX,
-            y: 220,
-            radius: 28,
-            fill: '#f0f0f0',
-            stroke: '#bbbbbb',
-            strokeWidth: 2,
-        });
-        const body = new Konva.Rect({
-            x: previewX - 30,
-            y: 260,
-            width: 60,
-            height: 140,
-            cornerRadius: 6,
-            fill: '#6aa84f', // green body
-            stroke: '#5a8a3a',
-            strokeWidth: 2,
-        });
-        this.shopGroup.add(head);
-        this.shopGroup.add(body);
 
+        //create the menu button
+        this.menuButton = {
+            group: new Konva.Group(),
+            rect: new Konva.Rect({
+                x: DIMENSIONS.width - 200,
+                y: 30,
+                width: 160,
+                height: 40,
+                fill: COLORS?.primary || '#7b61ff',
+                cornerRadius: 10,
+                listening: true
+            }),
+            text: new Konva.Text({
+                x: DIMENSIONS.width - 200 + 80,
+                y: 30 + 20 - 8,
+                text: 'Return to Main Menu',
+                fontSize: 16,
+                fontFamily: FONTS.label || 'Arial',
+                fill: '#ffffff',
+                align: 'center'
+            })
+        };
+        this.menuButton.text.offsetX(this.menuButton.text.width() / 2);
+        this.menuButton.group.add(this.menuButton.rect);
+        this.menuButton.group.add(this.menuButton.text);
+        
+        //add all elements to the layer
+        this.layer.add(this.bg);
+        this.layer.add(this.stars);
+        this.layer.add(this.title);
+        this.layer.add(this.menuButton.group);
+
+        this.shopGroup = new Konva.Group();
+        //create the shop elements
+        this.createShop();
+
+        this.layer.add(this.shopGroup);
+
+        this.layer.draw();
+    }
+
+    private createShop(): void {
         // Color swatches grid (right side)
         const swatchStartX = DIMENSIONS.width - 260;
         const swatchStartY = 120;
@@ -122,4 +127,19 @@ export class ShopScreenView {
         this.layer.add(this.shopGroup);
         this.layer.draw();
     }
+
+
+    private spawnStars(group: Konva.Group, count: number, opacityBase: number, maxRadius: number) {
+        for (let i = 0; i < count; i++) {
+          const s = new Konva.Circle({
+            x: Math.random() * DIMENSIONS.width,
+            y: Math.random() * DIMENSIONS.height,
+            radius: Math.random() * maxRadius + 0.4,
+            fill: '#ffffff',
+            opacity: opacityBase + Math.random() * 0.4,
+            listening: false
+          });
+          group.add(s);
+        }
+      }
 }
