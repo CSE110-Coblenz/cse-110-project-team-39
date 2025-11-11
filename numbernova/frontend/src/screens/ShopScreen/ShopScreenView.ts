@@ -17,6 +17,10 @@ export class ShopScreenView {
     //menu button
     private menuButton: {group: Konva.Group, rect: Konva.Rect, text: Konva.Text};
 
+
+    //person drawing
+    private personGroup: Konva.Group;
+
     //handlers for menu screen and color swatches
 
     private menuHandler: VoidFn[] = [];
@@ -37,7 +41,7 @@ export class ShopScreenView {
     onBlueClick(fn: VoidFn) {this.blueHandler.push(fn);}
     onPurpleClick(fn: VoidFn) {this.purpleHandler.push(fn);}
 
-    constructor(layer: Konva.Layer, colors: string[], colorsUnlocked: boolean[]) {
+    constructor(layer: Konva.Layer, colors: string[], colorsUnlocked: boolean[], currentColor: string) {
         
         //create the background of the view
         this.layer = layer;
@@ -119,7 +123,8 @@ export class ShopScreenView {
         //create the shop elements
         this.createShop(colors, colorsUnlocked);
 
-        this.layer.add(this.shopGroup);
+        this.personGroup = new Konva.Group();
+        this.drawPerson(currentColor);
 
         this.layer.draw();
     }
@@ -184,11 +189,31 @@ export class ShopScreenView {
             this.shopGroup.add(overlay);
         }
        });
-        
+        this.layer.add(this.shopGroup);
     }
 
-    private drawPerson(){
+    private drawPerson(color: string){
+        //draw the person on the left side of the screen
+        const head = new Konva.Circle({
+            x: 150,
+            y: 250,
+            radius: 80,
+            fill: COLORS.person,   
+        });
+        
+        const body = new Konva.Rect({
+            x: 70,
+            y: 330,
+            width: 160,
+            height: 320,
+            fill: color,
+            cornerRadius: 5
+        });
 
+        this.personGroup = new Konva.Group();
+        this.personGroup.add(head);
+        this.personGroup.add(body);
+        this.layer.add(this.personGroup);
     }
 
     private spawnStars(group: Konva.Group, count: number, opacityBase: number, maxRadius: number) {

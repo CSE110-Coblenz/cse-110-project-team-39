@@ -18,6 +18,7 @@ export const COLORS = {
     green: '#5fc797ff',
     blue: '#45b7d1',
     purple: '#7f55c7ff',
+    person: '#acacacff',
     overlay: 'rgba(0, 0, 0, 0.5)',
 
 };
