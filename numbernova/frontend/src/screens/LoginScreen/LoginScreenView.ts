@@ -45,7 +45,7 @@ export class LoginScreenView {
         g.setAttr('speed', speed);
         for (let i = 0; i < count; i++) {
         g.add(new Konva.Circle({
-            x: Math.random() * window.innerWidth - 200,
+            x: Math.random() * window.innerWidth - 170,
             y: Math.random() * window.innerHeight,
             radius: Math.random() * radiusMax + 0.4,
             fill: '#ffffff',
