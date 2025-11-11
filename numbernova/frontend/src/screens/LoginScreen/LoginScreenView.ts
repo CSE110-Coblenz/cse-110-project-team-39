@@ -162,33 +162,6 @@ export class LoginScreenView {
         });
 
         // Add this right after the `const loginBox = new Konva.Rect({...});` line inside createLoginForm()
-
-        const lbx = -DIMENSIONS.loginBoxWidth / 2;
-        const lby = -100;
-        const lbw = DIMENSIONS.loginBoxWidth;
-        const lbh = DIMENSIONS.loginBoxHeight;
-
-        [
-        { x: lbx,         y: lby         },
-        { x: lbx + lbw,   y: lby         },
-        { x: lbx,         y: lby + lbh   },
-        { x: lbx + lbw,   y: lby + lbh   }
-        ].forEach(({ x, y }) => {
-        const ring = new Konva.Ring({
-            x: x + (x === lbx ? -4 : 4),
-            y: y + (y === lby ? -4 : 4),
-            innerRadius: 42,
-            outerRadius: 58,
-            fill: 'rgba(150,120,255,0.10)',
-            stroke: 'rgba(190,160,255,0.55)',
-            strokeWidth: 2,
-            listening: false,
-        });
-        this.loginForm.add(ring);
-        ring.moveToBottom();
-        });
-
-
         
         
         // Add all elements to login form
