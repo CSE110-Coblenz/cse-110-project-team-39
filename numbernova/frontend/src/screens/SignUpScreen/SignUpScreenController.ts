@@ -6,6 +6,7 @@ import { signUpWithEmail, updateUserProfile } from '../../lib/supabase';
 import { createNotification } from '../../lib/toast';
 
 export class SignUpScreenController extends BaseScreen {
+
     private view: SignUpScreenView;
     private model: SignUpScreenModel;
     
