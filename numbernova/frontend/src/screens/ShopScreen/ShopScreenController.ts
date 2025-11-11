@@ -1,5 +1,7 @@
 import Konva from 'konva';
 import { BaseScreen } from '../../core/BaseScreen';
+import { ShopScreenView } from './ShopScreenView';
+import { ShopScreenModel } from './ShopScreenView';
 import { COLORS, DIMENSIONS } from '../../constants';
 
 export class ShopScreenController extends BaseScreen {
