@@ -20,6 +20,7 @@ export class LoginScreenView {
         this.createStars();
         this.createLoginForm();
         this.setupTabNavigation();
+        
     }
     
     private createBackground(): void {
@@ -28,29 +29,62 @@ export class LoginScreenView {
             y: 0,
             width: DIMENSIONS.width,
             height: DIMENSIONS.height,
-            fill: COLORS.background
+            fillLinearGradientStartPoint: { x: 0, y: 0 },
+            fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
+            fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
+            
         });
         this.layer.add(this.background);
+        // subtle radial nebula
+        const nebula = new Konva.Rect({
+        x: 0,
+        y: 0,
+        width: DIMENSIONS.width,
+        height: DIMENSIONS.height,
+        listening: false,
+        globalCompositeOperation: 'lighter',
+        fillRadialGradientStartPoint: { x: DIMENSIONS.width * 0.85, y: DIMENSIONS.height * 0.20 },
+        fillRadialGradientEndPoint: { x: DIMENSIONS.width * 0.85, y: DIMENSIONS.height * 0.20 },
+        fillRadialGradientStartRadius: 0,
+        fillRadialGradientEndRadius: Math.max(DIMENSIONS.width, DIMENSIONS.height) * 0.45,
+        fillRadialGradientColorStops: [
+            0, 'rgba(255,255,255,0.18)',
+            0.6, 'rgba(255,255,255,0.07)',
+            1, 'rgba(255,255,255,0)'
+        ]
+        });
+
+        this.layer.add(nebula);
     }
     
     private createStars(): void {
-        this.stars = new Konva.Group();
-        
-        // Create random stars
-        for (let i = 0; i < 100; i++) {
-            const star = new Konva.Circle({
-                x: Math.random() * DIMENSIONS.width,
-                y: Math.random() * DIMENSIONS.height,
-                radius: Math.random() * 2,
-                fill: '#ffffff',
-                opacity: Math.random() * 0.8
-            });
-            this.stars.add(star);
+        this.stars = new Konva.Group({ listening: false });
+
+    const makeLayer = (count: number, radiusMax: number, opacity: number, speed: number) => {
+        const g = new Konva.Group({ name: 'starLayer', listening: false });
+        g.setAttr('speed', speed);
+        for (let i = 0; i < count; i++) {
+        g.add(new Konva.Circle({
+            x: Math.random() * DIMENSIONS.width,
+            y: Math.random() * DIMENSIONS.height,
+            radius: Math.random() * radiusMax + 0.3,
+            fill: '#ffffff',
+            opacity: opacity * (0.5 + Math.random() * 0.5)
+        }));
         }
-        
-        this.layer.add(this.stars);
-    }
-    
+        return g;
+    };
+
+  // far, mid, near
+  this.stars.add(makeLayer(120, 1.2, 0.5, 0.05));
+  this.stars.add(makeLayer(80, 1.8, 0.7, 0.12));
+  this.stars.add(makeLayer(40, 2.2, 0.9, 0.22));
+
+  this.layer.add(this.stars);
+}
+
+
+
     private createLoginForm(): void {
         this.loginForm = new Konva.Group({
             x: DIMENSIONS.width / 2,
@@ -73,7 +107,7 @@ export class LoginScreenView {
             x: -200,
             y: -180,
             width: 400,
-            text: 'Log in to help us save the galaxy with the power of math',
+            text: 'Log in to help us save the galaxy with the power of math 🚀',
             fontSize: 16,
             fontFamily: 'Jersey 10',
             fill: COLORS.textSecondary,
@@ -135,6 +169,36 @@ export class LoginScreenView {
             this.createAccountButton.fill(COLORS.primaryLight);
             this.layer.draw();
         });
+
+        // Add this right after the `const loginBox = new Konva.Rect({...});` line inside createLoginForm()
+
+        const lbx = -DIMENSIONS.loginBoxWidth / 2;
+        const lby = -100;
+        const lbw = DIMENSIONS.loginBoxWidth;
+        const lbh = DIMENSIONS.loginBoxHeight;
+
+        [
+        { x: lbx,         y: lby         },
+        { x: lbx + lbw,   y: lby         },
+        { x: lbx,         y: lby + lbh   },
+        { x: lbx + lbw,   y: lby + lbh   }
+        ].forEach(({ x, y }) => {
+        const ring = new Konva.Ring({
+            x: x + (x === lbx ? -4 : 4),
+            y: y + (y === lby ? -4 : 4),
+            innerRadius: 42,
+            outerRadius: 58,
+            fill: 'rgba(150,120,255,0.10)',
+            stroke: 'rgba(190,160,255,0.55)',
+            strokeWidth: 2,
+            listening: false,
+        });
+        this.loginForm.add(ring);
+        ring.moveToBottom();
+        });
+
+
+        
         
         // Add all elements to login form
         this.loginForm.add(title);
@@ -285,4 +349,6 @@ export class LoginScreenView {
     public focusEmailInput(): void {
         this.emailInput.focus();
     }
+
+
 }
