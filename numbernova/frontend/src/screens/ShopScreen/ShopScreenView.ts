@@ -1,20 +1,45 @@
 import Konva from "konva";
 import { COLORS, DIMENSIONS, FONTS } from '../../constants';
-
+type VoidFn = () => void;
 export class ShopScreenView {
     private layer: Konva.Layer;
     private bg: Konva.Rect;
     private stars: Konva.Group;
     private title: Konva.Text;
     private shopGroup: Konva.Group;
+    private swatches: Konva.Circle[] = [];
+    private red: Konva.Circle;
+    private orange: Konva.Circle;
+    private yellow: Konva.Circle;
+    private green: Konva.Circle;
+    private blue: Konva.Circle;
+    private purple: Konva.Circle;
 
     //menu button
     private menuButton: {group: Konva.Group, rect: Konva.Rect, text: Konva.Text};
 
-    //interactive elements
+    //handlers for menu screen and color swatches
+
+    private menuHandler: VoidFn[] = [];
+    private redHandler: VoidFn[] = [];
+    private orangeHandler: VoidFn[] = [];
+    private yellowHandler: VoidFn[] = [];
+    private greenHandler: VoidFn[] = [];
+    private blueHandler: VoidFn[] = [];
+    private purpleHandler: VoidFn[] = [];
+
+    //event functions to register handlers
+
+    onMenuClick(fn: VoidFn) {this.menuHandler.push(fn);}
+    onRedClick(fn: VoidFn) {this.redHandler.push(fn);}
+    onOrangeClick(fn: VoidFn) {this.orangeHandler.push(fn);}
+    onYellowClick(fn: VoidFn) {this.yellowHandler.push(fn);}
+    onGreenClick(fn: VoidFn) {this.greenHandler.push(fn);}
+    onBlueClick(fn: VoidFn) {this.blueHandler.push(fn);}
+    onPurpleClick(fn: VoidFn) {this.purpleHandler.push(fn);}
 
     constructor(layer: Konva.Layer) {
-
+        
         //create the background of the view
         this.layer = layer;
         this.bg = new Konva.Rect({
@@ -87,41 +112,8 @@ export class ShopScreenView {
     }
 
     private createShop(): void {
-        // Color swatches grid (right side)
-        const swatchStartX = DIMENSIONS.width - 260;
-        const swatchStartY = 120;
-        const swatchGapX = 90;
-        const swatchGapY = 80;
-        const swatchRadius = 28;
-        const colors = ["red", "orange", "yellow", "green", "blue", "purple"];
-
-        for (let row = 0; row < 3; row++) {
-            for (let col = 0; col < 2; col++) {
-                const idx = row * 2 + col;
-                const cx = swatchStartX + col * swatchGapX;
-                const cy = swatchStartY + row * swatchGapY;
-                const swatchBg = new Konva.Circle({
-                    x: cx,
-                    y: cy,
-                    radius: swatchRadius + 6,
-                    fill: '#222', // background ring
-                    opacity: 0.2,
-                });
-                const swatch = new Konva.Circle({
-                    x: cx,
-                    y: cy,
-                    radius: swatchRadius,
-                    fill: colors[idx],
-                    stroke: '#111',
-                    strokeWidth: 2,
-                    shadowColor: '#000',
-                    shadowBlur: 6,
-                    shadowOffset: { x: 0, y: 2 }
-                });
-                this.shopGroup.add(swatchBg);
-                this.shopGroup.add(swatch);
-            }
-        }
+       
+        
 
         // Add group to layer and draw
         this.layer.add(this.shopGroup);
