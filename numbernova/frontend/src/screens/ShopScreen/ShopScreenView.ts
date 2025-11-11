@@ -7,13 +7,12 @@ export class ShopScreenView {
     private stars: Konva.Group;
     private title: Konva.Text;
     private shopGroup: Konva.Group;
-    private swatches: Konva.Circle[] = [];
-    private red: Konva.Circle;
-    private orange: Konva.Circle;
-    private yellow: Konva.Circle;
-    private green: Konva.Circle;
-    private blue: Konva.Circle;
-    private purple: Konva.Circle;
+    private red!: Konva.Circle;
+    private orange!: Konva.Circle;
+    private yellow!: Konva.Circle;
+    private green!: Konva.Circle;
+    private blue!: Konva.Circle;
+    private purple!: Konva.Circle;
 
     //menu button
     private menuButton: {group: Konva.Group, rect: Konva.Rect, text: Konva.Text};
@@ -103,6 +102,13 @@ export class ShopScreenView {
         this.layer.add(this.menuButton.group);
 
         this.shopGroup = new Konva.Group();
+
+        this.red = new Konva.Circle();
+        this.orange = new Konva.Circle();
+        this.yellow = new Konva.Circle();
+        this.green = new Konva.Circle();
+        this.blue = new Konva.Circle();
+        this.purple = new Konva.Circle();
         //create the shop elements
         this.createShop();
 
@@ -112,14 +118,46 @@ export class ShopScreenView {
     }
 
     private createShop(): void {
-       
-        
+       //add the color swatches to the shop group so that they take up the right half of the screen and are evenly spaced in a 3x2 grid
+       const colors = [
+        { color: COLORS.red, circle: this.red},    // Red
+        { color: COLORS.orange, circle: this.orange }, // Orange
+        { color: COLORS.yellow, circle: this.yellow }, // Yellow
+        { color: COLORS.green, circle: this.green },  // Green
+        { color: COLORS.blue, circle: this.blue },   // Blue
+        { color: COLORS.purple, circle: this.purple }  // Purple
+       ];
 
-        // Add group to layer and draw
-        this.layer.add(this.shopGroup);
-        this.layer.draw();
+       const swatchSize = 100;
+       const padding = 40;
+       const startX = DIMENSIONS.width / 2 + (DIMENSIONS.width / 2 - (3 * swatchSize + 2 * padding)) / 2;
+       const startY = 150;
+
+       colors.forEach((item, index) => {
+        const row = Math.floor(index / 2);
+        const col = index % 2;
+
+        item.circle = new Konva.Circle({
+            x: startX + col * (swatchSize + padding) + swatchSize / 2,
+            y: startY + row * (swatchSize + padding) + swatchSize / 2,
+            radius: swatchSize / 2,
+            fill: item.color,
+            strokeWidth: 4,
+            shadowColor: item.color,
+            shadowBlur: 10,
+            shadowOffset: { x: 0, y: 4 },
+            shadowOpacity: 0.5,
+            listening: true
+        }); 
+
+        this.shopGroup.add(item.circle);
+       });
+        
     }
 
+    private drawPerson(){
+
+    }
 
     private spawnStars(group: Konva.Group, count: number, opacityBase: number, maxRadius: number) {
         for (let i = 0; i < count; i++) {
@@ -133,5 +171,5 @@ export class ShopScreenView {
           });
           group.add(s);
         }
-      }
+    }
 }
