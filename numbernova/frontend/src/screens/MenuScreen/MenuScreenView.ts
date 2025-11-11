@@ -58,7 +58,7 @@ export class MenuScreenView {
     this.layer = layer;
 
     this.bg = new Konva.Rect({
-      x: 0, y: 0, width: DIMENSIONS.width, height: DIMENSIONS.height,
+      x: -170, y: 0, width: window.innerWidth, height: window.innerHeight,
       fillLinearGradientStartPoint: { x: 0, y: 0 },
       fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
       fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
@@ -74,8 +74,8 @@ export class MenuScreenView {
     this.title = new Konva.Text({
       x: DIMENSIONS.width / 2,
       y: 90,
-      text: 'NOVA NUMBER',
-      fontSize: 36,
+      text: 'NOVANUMBER!',
+      fontSize: 58,
       fontFamily: 'Jersey 10',
       fill: '#ffffff',
       align: 'center'
@@ -343,8 +343,8 @@ export class MenuScreenView {
   private spawnStars(group: Konva.Group, count: number, opacityBase: number, maxRadius: number) {
     for (let i = 0; i < count; i++) {
       const s = new Konva.Circle({
-        x: Math.random() * DIMENSIONS.width,
-        y: Math.random() * DIMENSIONS.height,
+        x: Math.random() * window.innerWidth - 170,
+        y: Math.random() * window.innerHeight,
         radius: Math.random() * maxRadius + 0.4,
         fill: '#ffffff',
         opacity: opacityBase + Math.random() * 0.4,
