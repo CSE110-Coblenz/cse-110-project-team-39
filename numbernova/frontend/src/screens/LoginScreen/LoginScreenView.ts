@@ -20,37 +20,51 @@ export class LoginScreenView {
         this.createStars();
         this.createLoginForm();
         this.setupTabNavigation();
+        
     }
     
     private createBackground(): void {
         this.background = new Konva.Rect({
-            x: 0,
+            x: -170,
             y: 0,
-            width: DIMENSIONS.width,
-            height: DIMENSIONS.height,
-            fill: COLORS.background
+            width: window.innerWidth,
+            height: window.innerHeight,
+            fillLinearGradientStartPoint: { x: 0, y: 0 },
+            fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
+            fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
+            
         });
         this.layer.add(this.background);
     }
     
     private createStars(): void {
-        this.stars = new Konva.Group();
-        
-        // Create random stars
-        for (let i = 0; i < 100; i++) {
-            const star = new Konva.Circle({
-                x: Math.random() * DIMENSIONS.width,
-                y: Math.random() * DIMENSIONS.height,
-                radius: Math.random() * 2,
-                fill: '#ffffff',
-                opacity: Math.random() * 0.8
-            });
-            this.stars.add(star);
+        this.stars = new Konva.Group({ listening: false });
+
+    const makeLayer = (count: number, radiusMax: number, opacity: number, speed: number) => {
+        const g = new Konva.Group({ name: 'starLayer', listening: false });
+        g.setAttr('speed', speed);
+        for (let i = 0; i < count; i++) {
+        g.add(new Konva.Circle({
+            x: Math.random() * window.innerWidth - 170,
+            y: Math.random() * window.innerHeight,
+            radius: Math.random() * radiusMax + 0.4,
+            fill: '#ffffff',
+            opacity: opacity * (0.5 + Math.random() * 0.5)
+        }));
         }
-        
-        this.layer.add(this.stars);
-    }
-    
+        return g;
+    };
+
+  // far, mid, near
+  this.stars.add(makeLayer(120, 1.2, 0.5, 0.05));
+  this.stars.add(makeLayer(80, 1.8, 0.7, 0.12));
+  this.stars.add(makeLayer(40, 2.2, 0.9, 0.22));
+
+  this.layer.add(this.stars);
+}
+
+
+
     private createLoginForm(): void {
         this.loginForm = new Konva.Group({
             x: DIMENSIONS.width / 2,
@@ -60,10 +74,10 @@ export class LoginScreenView {
         // Title
         const title = new Konva.Text({
             x: -200,
-            y: -250,
+            y: -330,
             width: 400,
-            text: 'Number Nova',
-            fontSize: 48,
+            text: 'NumberNova!',
+            fontSize: 68,
             fontFamily: 'Jersey 10',
             fill: COLORS.text,
             align: 'center'
@@ -71,10 +85,10 @@ export class LoginScreenView {
         
         const subtitle = new Konva.Text({
             x: -200,
-            y: -180,
-            width: 400,
-            text: 'Log in to help us save the galaxy with the power of math',
-            fontSize: 16,
+            y: -230,
+            width: 430,
+            text: 'Log in to help us save the galaxy with the power of math 🚀',
+            fontSize: 20,
             fontFamily: 'Jersey 10',
             fill: COLORS.textSecondary,
             align: 'center'
@@ -121,7 +135,7 @@ export class LoginScreenView {
             width: 200,
             text: 'Create Account',
             fontSize: 16,
-            fontFamily: 'Jersey 10',
+            fontFamily: 'Arial',
             fill: COLORS.primaryLight,
             align: 'center'
         });
@@ -135,6 +149,9 @@ export class LoginScreenView {
             this.createAccountButton.fill(COLORS.primaryLight);
             this.layer.draw();
         });
+
+        // Add this right after the `const loginBox = new Konva.Rect({...});` line inside createLoginForm()
+        
         
         // Add all elements to login form
         this.loginForm.add(title);
@@ -225,7 +242,7 @@ export class LoginScreenView {
             height: DIMENSIONS.buttonHeight,
             text: text,
             fontSize: 20,
-            fontFamily: 'Jersey 10',
+            fontFamily: 'Arial',
             fill: COLORS.text,
             align: 'center',
             verticalAlign: 'middle'
@@ -285,4 +302,6 @@ export class LoginScreenView {
     public focusEmailInput(): void {
         this.emailInput.focus();
     }
+
+
 }
