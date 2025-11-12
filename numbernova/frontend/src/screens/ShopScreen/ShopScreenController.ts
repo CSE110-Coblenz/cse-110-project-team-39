@@ -57,6 +57,50 @@ export class ShopScreenController extends BaseScreen {
             }     
         });
 
+        
+        this.view.onRedOverlayClick(() => {
+            if(this.model.unlockColor(COLORS.red)){
+                this.view.updateShop(this.model.getColors(), this.model.getColorsUnlocked());
+                this.view.updateCurrencyDisplay(this.model.getCurrency());
+            }
+        });
+
+        this.view.onOrangeOverlayClick(() => {
+            if(this.model.unlockColor(COLORS.orange)){
+                this.view.updateShop(this.model.getColors(), this.model.getColorsUnlocked());
+                this.view.updateCurrencyDisplay(this.model.getCurrency());
+            }
+        });
+
+        this.view.onYellowOverlayClick(() => {
+            if(this.model.unlockColor(COLORS.yellow)){
+                this.view.updateShop(this.model.getColors(), this.model.getColorsUnlocked());
+                this.view.updateCurrencyDisplay(this.model.getCurrency());
+            }
+        });
+
+        this.view.onGreenOverlayClick(() => {
+            if(this.model.unlockColor(COLORS.green)){
+                this.view.updateShop(this.model.getColors(), this.model.getColorsUnlocked());
+                this.view.updateCurrencyDisplay(this.model.getCurrency());
+            }
+        });
+
+        this.view.onBlueOverlayClick(() => {
+            if(this.model.unlockColor(COLORS.blue)){
+                this.view.updateShop(this.model.getColors(), this.model.getColorsUnlocked());
+                this.view.updateCurrencyDisplay(this.model.getCurrency());
+            }
+        });
+
+        this.view.onPurpleOverlayClick(() => {
+            if(this.model.unlockColor(COLORS.purple)){
+                this.view.updateShop(this.model.getColors(), this.model.getColorsUnlocked());
+                this.view.updateCurrencyDisplay(this.model.getCurrency());
+            }
+        }); 
+        
+
         this.container.getStage()?.draw();
     }
 

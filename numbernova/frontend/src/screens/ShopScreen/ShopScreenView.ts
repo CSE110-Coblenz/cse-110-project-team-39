@@ -20,6 +20,13 @@ export class ShopScreenView {
     private blue!: Konva.Circle;
     private purple!: Konva.Circle;
 
+    private redOverlay!: Konva.Group;
+    private orangeOverlay!: Konva.Group;
+    private yellowOverlay!: Konva.Group;
+    private greenOverlay!: Konva.Group;
+    private blueOverlay!: Konva.Group;
+    private purpleOverlay!: Konva.Group;    
+
     //menu button
     private menuButton: {group: Konva.Group, rect: Konva.Rect, text: Konva.Text};
 
@@ -39,6 +46,13 @@ export class ShopScreenView {
     private blueHandler: VoidFn[] = [];
     private purpleHandler: VoidFn[] = [];
 
+    private redOverlayHandler: VoidFn[] = [];
+    private orangeOverlayHandler: VoidFn[] = [];
+    private yellowOverlayHandler: VoidFn[] = [];
+    private greenOverlayHandler: VoidFn[] = [];
+    private blueOverlayHandler: VoidFn[] = [];
+    private purpleOverlayHandler: VoidFn[] = [];
+
     //event functions to register handlers
 
     onMenuClick(cb: VoidFn) {this.menuHandler.push(cb);}
@@ -48,6 +62,14 @@ export class ShopScreenView {
     onGreenClick(cb: VoidFn) {this.greenHandler.push(cb);}
     onBlueClick(cb: VoidFn) {this.blueHandler.push(cb);}
     onPurpleClick(cb: VoidFn) {this.purpleHandler.push(cb);}
+
+
+    onRedOverlayClick(cb: VoidFn) {this.redOverlayHandler.push(cb);}
+    onOrangeOverlayClick(cb: VoidFn) {this.orangeOverlayHandler.push(cb);}
+    onYellowOverlayClick(cb: VoidFn) {this.yellowOverlayHandler.push(cb);}
+    onGreenOverlayClick(cb: VoidFn) {this.greenOverlayHandler.push(cb);}
+    onBlueOverlayClick(cb: VoidFn) {this.blueOverlayHandler.push(cb);}
+    onPurpleOverlayClick(cb: VoidFn) {this.purpleOverlayHandler.push(cb);}
 
     constructor(layer: Konva.Layer, colors: string[], colorsUnlocked: boolean[], currentColor: string,
         currency: number
@@ -148,12 +170,12 @@ export class ShopScreenView {
     private createShop(colorsAvailable: string[], colorsUnlocked: boolean[]): void {
        //add the color swatches to the shop group so that they take up the right half of the screen and are evenly spaced in a 3x2 grid
        const colors = [
-        { color: colorsAvailable[0], locked: colorsUnlocked[0], circle: this.red},    // Red
-        { color: colorsAvailable[1], locked: colorsUnlocked[1], circle: this.orange }, // Orange
-        { color: colorsAvailable[2], locked: colorsUnlocked[2], circle: this.yellow }, // Yellow
-        { color: colorsAvailable[3], locked: colorsUnlocked[3], circle: this.green },  // Green
-        { color: colorsAvailable[4], locked: colorsUnlocked[4], circle: this.blue },   // Blue
-        { color: colorsAvailable[5], locked: colorsUnlocked[5], circle: this.purple }  // Purple
+        { color: colorsAvailable[0], locked: colorsUnlocked[0], circle: this.red, overlay: this.redOverlay},    // Red
+        { color: colorsAvailable[1], locked: colorsUnlocked[1], circle: this.orange, overlay: this.orangeOverlay }, // Orange
+        { color: colorsAvailable[2], locked: colorsUnlocked[2], circle: this.yellow, overlay: this.yellowOverlay }, // Yellow
+        { color: colorsAvailable[3], locked: colorsUnlocked[3], circle: this.green, overlay: this.greenOverlay },  // Green
+        { color: colorsAvailable[4], locked: colorsUnlocked[4], circle: this.blue, overlay: this.blueOverlay},   // Blue
+        { color: colorsAvailable[5], locked: colorsUnlocked[5], circle: this.purple, overlay: this.purpleOverlay }  // Purple
        ];
 
        const swatchSize = 160;
@@ -192,6 +214,7 @@ export class ShopScreenView {
         }
 
         if(!item.locked){
+            item.overlay = new Konva.Group(); // Empty group for unlocked colors
             const lockIcon = new Konva.Text({
                 x: item.circle.x(),
                 y: item.circle.y(),
@@ -204,7 +227,7 @@ export class ShopScreenView {
             });
             lockIcon.offsetX(lockIcon.width() / 2);
             lockIcon.offsetY(lockIcon.height() / 2);
-            this.shopGroup.add(lockIcon);
+            item.overlay.add(lockIcon);
 
             const overlay = new Konva.Circle({
                 x: item.circle.x(),
@@ -213,7 +236,18 @@ export class ShopScreenView {
                 fill: 'rgba(0, 0, 0, 0.5)',
                 listening: false
             });
-            this.shopGroup.add(overlay);
+            item.overlay.add(overlay);
+
+            switch (index) {
+                case 0: this.redOverlay = item.overlay; break;
+                case 1: this.orangeOverlay = item.overlay; break;
+                case 2: this.yellowOverlay = item.overlay; break;
+                case 3: this.greenOverlay = item.overlay; break;
+                case 4: this.blueOverlay = item.overlay; break;
+                case 5: this.purpleOverlay = item.overlay; break;
+            }
+
+            this.shopGroup.add(item.overlay);
         }
        });
        this.shopGroup.offsetY(60);
@@ -301,6 +335,37 @@ export class ShopScreenView {
         this.purple.on('click', () => {
             this.purpleHandler.forEach(fn => fn());
         });
+
+        if(this.redOverlay){
+            this.redOverlay.on('click', () => {
+                this.redOverlayHandler.forEach(fn => fn());
+            });
+        }
+        if(this.orangeOverlay){
+            this.orangeOverlay.on('click', () => {
+                this.orangeOverlayHandler.forEach(fn => fn());
+            });
+        }
+        if(this.yellowOverlay){
+            this.yellowOverlay.on('click', () => {
+                this.yellowOverlayHandler.forEach(fn => fn());
+            });
+        }
+        if(this.greenOverlay){
+            this.greenOverlay.on('click', () => {
+                this.greenOverlayHandler.forEach(fn => fn());
+            });
+        }
+        if(this.blueOverlay){
+            this.blueOverlay.on('click', () => {
+                this.blueOverlayHandler.forEach(fn => fn());
+            });
+        }
+        if(this.purpleOverlay){
+            this.purpleOverlay.on('click', () => {
+                this.purpleOverlayHandler.forEach(fn => fn());
+            });
+        }
     }
 
     //redraw the person with a new color
@@ -324,6 +389,7 @@ export class ShopScreenView {
             colorsAvailable,
             colorsUnlocked
         );
+        this.attachEventHandlers();
         this.layer.draw();
     }
 }

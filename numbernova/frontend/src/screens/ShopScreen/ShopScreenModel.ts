@@ -10,14 +10,15 @@ export class ShopScreenModel{
 
 
     //function to unlock color
-    protected unlockColor(color: string){
+    public unlockColor(color: string){
         //check to see if purchase is possible
         if(this.currency >= 50 && !this.colorsUnlocked[this.colors.indexOf(color)]){
             this.currency -= 50; //deduct cost
             this.colorsUnlocked[this.colors.indexOf(color)] = true; //unlock color
-
+            return true;
             //TODO: update backend with new currency and unlocked colors
         }
+        return false;
     }
 
     public setCurrentColor(color: string): boolean{
