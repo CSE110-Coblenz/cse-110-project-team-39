@@ -368,11 +368,11 @@ export class MenuScreenView {
     this.twinkleAnim = new Konva.Animation((frame) => {
       if (!frame) return;
       const t = frame.time / 1000;
-      this.starGroupBack.getChildren().each((node, i) => {
+      this.starGroupBack.getChildren().forEach((node, i) => {
         const r = 0.15 * Math.sin(t * 1.2 + i) + 0.85;
         node.opacity(r * 0.5);
       });
-      this.starGroupFront.getChildren().each((node, i) => {
+      this.starGroupFront.getChildren().forEach((node, i) => {
         const r = 0.25 * Math.sin(t * 1.8 + i * 0.37) + 0.75;
         node.opacity(r);
       });
