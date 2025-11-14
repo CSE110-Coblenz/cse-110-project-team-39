@@ -10,6 +10,7 @@ export class GamePlayScreenView {
 
   // UI Elements
   private background!: Konva.Rect;
+  private stars!: Konva.Group;
   private exitButton!: Konva.Group;
   private scoreText!: Konva.Text;
   private aliensLeftText!: Konva.Text;
@@ -32,6 +33,8 @@ export class GamePlayScreenView {
 
   // Buttons
   private fightButton!: Konva.Group;
+  private fightButtonBg!: Konva.Rect;
+  private fightButtonText!: Konva.Text;
   private clearButton!: Konva.Group;
 
   // Callbacks
@@ -52,6 +55,7 @@ export class GamePlayScreenView {
 
   private createUI(): void {
     this.createBackground();
+    this.createStars();
     this.createTopBar();
     this.createCardArea(); // Planet surface first (bottom layer)
     this.createPlayerArea(); // Player on top of planet
@@ -63,11 +67,60 @@ export class GamePlayScreenView {
     this.background = new Konva.Rect({
       x: 0,
       y: 0,
-      width: DIMENSIONS.width,
-      height: DIMENSIONS.height,
-      fill: COLORS.background
+      width: window.innerWidth,
+      height: window.innerHeight,
+      fillLinearGradientStartPoint: { x: 0, y: 0 },
+      fillLinearGradientEndPoint: { x: window.innerWidth, y: window.innerHeight },
+      fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
     });
     this.group.add(this.background);
+  }
+
+  private createStars(): void {
+    this.stars = new Konva.Group({ listening: false });
+
+    const makeLayer = (count: number, radiusMax: number, opacity: number) => {
+      const g = new Konva.Group({ name: 'starLayer', listening: false });
+      for (let i = 0; i < count; i++) {
+        g.add(new Konva.Circle({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          radius: Math.random() * radiusMax + 0.4,
+          fill: '#ffffff',
+          opacity: opacity * (0.5 + Math.random() * 0.5)
+        }));
+      }
+      return g;
+    };
+
+    // far, mid, near - reduced count for better performance
+    this.stars.add(makeLayer(60, 1.2, 0.5));
+    this.stars.add(makeLayer(40, 1.8, 0.7));
+    this.stars.add(makeLayer(20, 2.2, 0.9));
+
+    this.group.add(this.stars);
+
+    // Animate stars with twinkling
+    this.animateStars();
+  }
+
+  private animateStars(): void {
+    this.stars.children.forEach((starLayer: Konva.Node) => {
+      if (starLayer instanceof Konva.Group) {
+        starLayer.children.forEach((star: Konva.Node) => {
+          const duration = Math.random() * 3 + 1;
+
+          const anim = new Konva.Animation((frame) => {
+            const period = duration * 1000;
+            const phase = (frame!.time % period) / period;
+            const opacity = 0.2 + Math.sin(phase * Math.PI) * 0.6;
+            star.opacity(opacity);
+          }, this.layer);
+
+          anim.start();
+        });
+      }
+    });
   }
 
   private createTopBar(): void {
@@ -306,6 +359,22 @@ export class GamePlayScreenView {
     }
   }
 
+  private updateFightButton(allSlotsFilled: boolean): void {
+    if (allSlotsFilled) {
+      this.fightButtonBg.fill('#4ade80');
+      this.fightButtonBg.stroke('#2d7a4a');
+      this.fightButtonText.fill('#000');
+      this.fightButton.listening(true);
+      this.fightButton.opacity(1);
+    } else {
+      this.fightButtonBg.fill('#666');
+      this.fightButtonBg.stroke('#444');
+      this.fightButtonText.fill('#999');
+      this.fightButton.listening(false);
+      this.fightButton.opacity(0.5);
+    }
+  }
+
   private createCharacter(x: number, y: number, color: string, role: 'player' | 'alien'): Konva.Group {
     const char = new Konva.Group({ x, y });
 
@@ -328,11 +397,11 @@ export class GamePlayScreenView {
       fill: headColor
     });
 
-    // Body (rectangle) - 30% bigger, taller from bottom, slightly rounded
+    // Body (rectangle) - 30% bigger, taller from bottom, 15% skinnier, slightly rounded
     const body = new Konva.Rect({
-      x: -52,
+      x: -44, // Adjusted for 15% skinnier (88 width instead of 104)
       y: -52,
-      width: 104,
+      width: 88, // 15% skinnier
       height: 150, // Increased from 130
       fill: color,
       cornerRadius: 4 // Tiny border radius for smoothness
@@ -343,7 +412,7 @@ export class GamePlayScreenView {
     const armLength = 91; // 30% bigger
     const armWidth = 26; // 30% bigger
     const armStartY = -39; // From shoulder area (higher up in body)
-    const armStartX = role === 'player' ? 36 : -36; // Offset to side of body
+    const armStartX = role === 'player' ? 30 : -30; // Adjusted for skinnier body
 
     // Use rectangle rotated for square look
     const arm = new Konva.Rect({
@@ -390,9 +459,10 @@ export class GamePlayScreenView {
     // Planet surface - very large circle for gentle curve
     const planetRadius = 3000; // Much larger radius for very gentle curve
     const planetCenterY = DIMENSIONS.height + planetRadius - 300; // Position so top curve is visible
+    const planetCenterX = DIMENSIONS.width / 2; // Keep planet centered in game area
 
     const planetSurface = new Konva.Circle({
-      x: DIMENSIONS.width / 2,
+      x: planetCenterX,
       y: planetCenterY,
       radius: planetRadius,
       fill: this.config.colors.planet,
@@ -413,35 +483,107 @@ export class GamePlayScreenView {
         .toString(16).slice(1);
     };
 
-    // Add craters - only slightly darker, spread randomly across visible surface
-    const craterColor = darkenColor(this.config.colors.planet, 5); // Only 5% darker
-    const craterPositions = [
-      { x: 150, y: DIMENSIONS.height - 240, r: 18 },
-      { x: 400, y: DIMENSIONS.height - 200, r: 14 },
-      { x: 650, y: DIMENSIONS.height - 220, r: 22 },
-      { x: 900, y: DIMENSIONS.height - 190, r: 16 },
-      { x: 1100, y: DIMENSIONS.height - 210, r: 19 },
-      { x: 250, y: DIMENSIONS.height - 150, r: 12 },
-      { x: 550, y: DIMENSIONS.height - 140, r: 20 },
-      { x: 850, y: DIMENSIONS.height - 160, r: 15 },
-      { x: 350, y: DIMENSIONS.height - 90, r: 13 },
-      { x: 700, y: DIMENSIONS.height - 80, r: 17 },
-      { x: 1000, y: DIMENSIONS.height - 100, r: 14 }
-    ];
+    // Generate random craters with variable sizes, no overlapping
+    const numCraters = 6 + Math.floor(Math.random() * 10); // 6-15 craters
+    const craters: { x: number; y: number; r: number }[] = [];
 
-    craterPositions.forEach(crater => {
+    // Generate non-overlapping craters
+    let attempts = 0;
+    while (craters.length < numCraters && attempts < 100) {
+      attempts++;
+      const radius = 16 + Math.random() * 54; // 16-70px
+      const x = Math.random() * window.innerWidth; // Allow craters across full screen width
+
+      // Calculate planet surface height at this x position
+      const dx = x - planetCenterX;
+      const underSqrt = planetRadius * planetRadius - dx * dx;
+
+      if (underSqrt < 0) {
+        // This x position is outside planet radius, skip
+        continue;
+      }
+
+      const planetSurfaceY = planetCenterY - Math.sqrt(underSqrt);
+      // Generate y position relative to the surface at this x
+      const y = planetSurfaceY + Math.random() * 200; // 0-200px below surface
+
+      // Check if crater overlaps with existing craters
+      let overlaps = false;
+      for (const existing of craters) {
+        const dist = Math.sqrt((x - existing.x) ** 2 + (y - existing.y) ** 2);
+        if (dist < radius + existing.r + 10) { // Add 10px buffer
+          overlaps = true;
+          break;
+        }
+      }
+
+      if (!overlaps) {
+        craters.push({ x, y, r: radius });
+      }
+    }
+
+    // Draw craters with radial gradient for depth and varying tones
+    craters.forEach(crater => {
+      // Slightly varying tone for each crater (±3%)
+      const toneVariation = -3 + Math.random() * 6;
+      const craterDarkness = 5 + toneVariation;
+
+      // Create a group with clipping to only show the part on/below planet surface
+      const craterGroup = new Konva.Group({
+        clipFunc: (ctx) => {
+          // Clip to show only parts at or below the planet surface
+          ctx.beginPath();
+
+          // Create clipping region for this specific crater area
+          const clipStartX = Math.max(0, crater.x - crater.r - 5);
+          const clipEndX = Math.min(window.innerWidth, crater.x + crater.r + 5);
+
+          // Sample points along the planet surface curve (optimized with larger step)
+          const clipPoints: { x: number; y: number }[] = [];
+          for (let sx = clipStartX; sx <= clipEndX; sx += 4) {
+            const dx = sx - planetCenterX;
+            const underSqrt = planetRadius * planetRadius - dx * dx;
+            if (underSqrt >= 0) {
+              const sy = planetCenterY - Math.sqrt(underSqrt);
+              clipPoints.push({ x: sx, y: sy });
+            }
+          }
+
+          // Draw the clipping path: start from surface, go down, then back
+          if (clipPoints.length > 0) {
+            ctx.moveTo(clipPoints[0].x, clipPoints[0].y);
+            for (let j = 1; j < clipPoints.length; j++) {
+              ctx.lineTo(clipPoints[j].x, clipPoints[j].y);
+            }
+            // Complete the clip region by going down and back
+            ctx.lineTo(clipPoints[clipPoints.length - 1].x, DIMENSIONS.height + 100);
+            ctx.lineTo(clipPoints[0].x, DIMENSIONS.height + 100);
+            ctx.closePath();
+          }
+        }
+      });
+
+      // Create radial gradient for depth - darker center with soft edges
       const craterCircle = new Konva.Circle({
         x: crater.x,
         y: crater.y,
         radius: crater.r,
-        fill: craterColor,
-        shadowColor: '#000',
-        shadowBlur: 8,
-        shadowOpacity: 0.25,
-        shadowOffsetX: 2,
-        shadowOffsetY: 2
+        fillRadialGradientStartPoint: { x: crater.r * 0.15, y: crater.r * 0.2 }, // Slightly below center for depth
+        fillRadialGradientStartRadius: 0,
+        fillRadialGradientEndPoint: { x: 0, y: 0 },
+        fillRadialGradientEndRadius: crater.r * 1.4, // Extend gradient beyond edge for softer transition
+        fillRadialGradientColorStops: [
+          0, darkenColor(this.config.colors.planet, 25 + toneVariation), // Very dark at center
+          0.3, darkenColor(this.config.colors.planet, 15 + toneVariation), // Dark
+          0.6, darkenColor(this.config.colors.planet, 8 + toneVariation), // Medium
+          0.85, darkenColor(this.config.colors.planet, 3 + toneVariation), // Light
+          0.95, darkenColor(this.config.colors.planet, 0.5 + toneVariation), // Very soft edge
+          1, this.config.colors.planet // Blend into planet surface at edge
+        ]
       });
-      this.group.add(craterCircle);
+
+      craterGroup.add(craterCircle);
+      this.group.add(craterGroup);
     });
 
     // Calculate label positions to match the card boxes - farther apart
@@ -487,7 +629,7 @@ export class GamePlayScreenView {
 
     // Fight button (bigger) - positioned lower with shadow and outline
     this.fightButton = new Konva.Group({ x: centerX - 90, y: DIMENSIONS.height - 230 });
-    const fightBg = new Konva.Rect({
+    this.fightButtonBg = new Konva.Rect({
       width: 180,
       height: 60,
       fill: '#4ade80',
@@ -500,7 +642,7 @@ export class GamePlayScreenView {
       shadowOffsetX: 0,
       shadowOffsetY: 4
     });
-    const fightText = new Konva.Text({
+    this.fightButtonText = new Konva.Text({
       width: 180,
       y: 12,
       text: 'FIGHT!',
@@ -509,18 +651,18 @@ export class GamePlayScreenView {
       fill: '#000',
       align: 'center'
     });
-    this.fightButton.add(fightBg, fightText);
+    this.fightButton.add(this.fightButtonBg, this.fightButtonText);
     this.fightButton.on('click tap', () => this.onFightCallback?.());
     this.group.add(this.fightButton);
 
-    // Clear button (same size) - positioned lower with shadow and outline
+    // Clear button (same size) - positioned lower with shadow and outline - more red
     this.clearButton = new Konva.Group({ x: centerX - 70, y: DIMENSIONS.height - 160 });
     const clearBg = new Konva.Rect({
       width: 140,
       height: 40,
-      fill: '#ff6b6b',
+      fill: '#e63946',
       cornerRadius: 20,
-      stroke: '#cc4444',
+      stroke: '#a4161a',
       strokeWidth: 3,
       shadowColor: '#000',
       shadowBlur: 10,
@@ -580,21 +722,75 @@ export class GamePlayScreenView {
 
   public animateCardToSlot(cardId: string, targetSlotIndex: number, onComplete?: () => void): void {
     const cardVisual = this.cardVisuals.get(cardId);
-    if (!cardVisual) return;
+    if (!cardVisual) {
+      onComplete?.();
+      return;
+    }
 
     const targetSlot = this.playerExpressionSlots[targetSlotIndex];
     const targetPos = targetSlot.position();
 
-    // Animate card moving to slot with smooth easing
-    cardVisual.to({
+    // Use Tween for smoother animation - Konva handles redraws automatically
+    const tween = new Konva.Tween({
+      node: cardVisual,
       x: targetPos.x + 5,
       y: targetPos.y + 5,
-      duration: 0.35,
-      easing: Konva.Easings.EaseInOut,
+      duration: 0.12,
+      easing: Konva.Easings.EaseOut,
       onFinish: () => {
+        this.layer.batchDraw();
         onComplete?.();
       }
     });
+    tween.play();
+    this.layer.batchDraw();
+  }
+
+  public animateCardFromSlotToHand(slotIndex: number, onComplete?: () => void): void {
+    const slotGroup = this.playerExpressionSlots[slotIndex];
+    const cardInSlot = slotGroup.getChildren().slice(1)[0]; // Get the card group (skip bg)
+
+    if (!cardInSlot) {
+      onComplete?.();
+      return;
+    }
+
+    // Get the card visual in hand (it's hidden)
+    const cardData = cardInSlot.getAttr('cardData');
+
+    if (!cardData) {
+      onComplete?.();
+      return;
+    }
+
+    const cardVisual = this.cardVisuals.get(cardData.id);
+    if (!cardVisual) {
+      onComplete?.();
+      return;
+    }
+
+    // Make card visual visible at slot position
+    const slotPos = slotGroup.position();
+    cardVisual.position({ x: slotPos.x + 5, y: slotPos.y + 5 });
+    cardVisual.visible(true);
+    this.layer.batchDraw();
+
+    // Animate back to original hand position
+    const originalX = cardVisual.getAttr('originalX');
+    const originalY = cardVisual.getAttr('originalY');
+
+    const tween = new Konva.Tween({
+      node: cardVisual,
+      x: originalX,
+      y: originalY,
+      duration: 0.12,
+      easing: Konva.Easings.EaseOut,
+      onFinish: () => {
+        this.layer.batchDraw();
+        onComplete?.();
+      }
+    });
+    tween.play();
   }
 
   public shakeCard(cardId: string): void {
@@ -602,26 +798,34 @@ export class GamePlayScreenView {
     if (!cardVisual) return;
 
     const originalX = cardVisual.getAttr('originalX');
-    const originalY = cardVisual.getAttr('originalY');
 
-    // Shake animation
+    // Shake animation with Tween for smoothness
     const shakeAmount = 10;
-    cardVisual.to({
+    const shake1 = new Konva.Tween({
+      node: cardVisual,
       x: originalX - shakeAmount,
       duration: 0.05,
       onFinish: () => {
-        cardVisual.to({
+        const shake2 = new Konva.Tween({
+          node: cardVisual,
           x: originalX + shakeAmount,
           duration: 0.05,
           onFinish: () => {
-            cardVisual.to({
+            const shake3 = new Konva.Tween({
+              node: cardVisual,
               x: originalX,
-              duration: 0.05
+              duration: 0.05,
+              onFinish: () => {
+                this.layer.batchDraw();
+              }
             });
+            shake3.play();
           }
         });
+        shake2.play();
       }
     });
+    shake1.play();
   }
 
   public renderHand(cards: Card[]): void {
@@ -663,13 +867,18 @@ export class GamePlayScreenView {
 
       let visual = this.cardVisuals.get(card.id);
       if (visual) {
-        // Card already exists - animate to new position
-        visual.to({
+        // Card already exists - animate to new position with Tween
+        const tween = new Konva.Tween({
+          node: visual,
           x: targetX,
           y: targetY,
-          duration: 0.25,
-          easing: Konva.Easings.EaseInOut
+          duration: 0.15,
+          easing: Konva.Easings.EaseInOut,
+          onFinish: () => {
+            this.layer.batchDraw();
+          }
         });
+        tween.play();
         visual.setAttr('originalX', targetX);
         visual.setAttr('originalY', targetY);
       } else {
@@ -690,13 +899,18 @@ export class GamePlayScreenView {
 
       let visual = this.cardVisuals.get(card.id);
       if (visual) {
-        // Card already exists - animate to new position
-        visual.to({
+        // Card already exists - animate to new position with Tween
+        const tween = new Konva.Tween({
+          node: visual,
           x: targetX,
           y: targetY,
-          duration: 0.25,
-          easing: Konva.Easings.EaseInOut
+          duration: 0.15,
+          easing: Konva.Easings.EaseInOut,
+          onFinish: () => {
+            this.layer.batchDraw();
+          }
         });
+        tween.play();
         visual.setAttr('originalX', targetX);
         visual.setAttr('originalY', targetY);
       } else {
@@ -717,54 +931,92 @@ export class GamePlayScreenView {
     const leftPos = leftSlot.position();
     const rightPos = rightSlot.position();
 
-    // Get the card visuals in the slots
-    const leftChildren = leftSlot.getChildren().slice(1);
-    const rightChildren = rightSlot.getChildren().slice(1);
+    // Get the card data from slots
+    const leftCardInSlot = leftSlot.getChildren().slice(1)[0];
+    const rightCardInSlot = rightSlot.getChildren().slice(1)[0];
 
-    if (leftChildren.length > 0 && rightChildren.length > 0) {
-      const leftCard = leftChildren[0];
-      const rightCard = rightChildren[0];
+    const leftCardData = leftCardInSlot?.getAttr('cardData');
+    const rightCardData = rightCardInSlot?.getAttr('cardData');
 
-      // Animate both cards swapping positions
-      leftCard.to({
-        x: rightPos.x - leftPos.x,
-        duration: 0.25,
-        easing: Konva.Easings.EaseInOut
-      });
+    // Get the hidden card visuals
+    const leftCardVisual = leftCardData ? this.cardVisuals.get(leftCardData.id) : null;
+    const rightCardVisual = rightCardData ? this.cardVisuals.get(rightCardData.id) : null;
 
-      rightCard.to({
-        x: leftPos.x - rightPos.x,
-        duration: 0.25,
-        easing: Konva.Easings.EaseInOut,
-        onFinish: () => {
-          onComplete?.();
-        }
-      });
-    } else if (leftChildren.length > 0) {
-      // Only left card - move it to right
-      const leftCard = leftChildren[0];
-      leftCard.to({
-        x: rightPos.x - leftPos.x,
-        duration: 0.25,
-        easing: Konva.Easings.EaseInOut,
-        onFinish: () => {
-          onComplete?.();
-        }
-      });
-    } else if (rightChildren.length > 0) {
-      // Only right card - move it to left
-      const rightCard = rightChildren[0];
-      rightCard.to({
-        x: leftPos.x - rightPos.x,
-        duration: 0.25,
-        easing: Konva.Easings.EaseInOut,
-        onFinish: () => {
-          onComplete?.();
-        }
-      });
-    } else {
-      // No cards to swap
+    let animationsFinished = 0;
+    const totalAnimations = (leftCardVisual ? 1 : 0) + (rightCardVisual ? 1 : 0);
+
+    if (totalAnimations === 0) {
       onComplete?.();
+      return;
+    }
+
+    const finishAnimation = () => {
+      animationsFinished++;
+      if (animationsFinished >= totalAnimations) {
+        onComplete?.();
+      }
+    };
+
+    // Animate card visuals swapping positions with Tween for smoothness
+    if (leftCardVisual && rightCardVisual) {
+      // Both cards present - swap them
+      const leftTween = new Konva.Tween({
+        node: leftCardVisual,
+        x: rightPos.x + 5,
+        y: rightPos.y + 5,
+        duration: 0.12,
+        easing: Konva.Easings.EaseInOut,
+        onFinish: () => {
+          this.layer.batchDraw();
+          finishAnimation();
+        }
+      });
+
+      const rightTween = new Konva.Tween({
+        node: rightCardVisual,
+        x: leftPos.x + 5,
+        y: leftPos.y + 5,
+        duration: 0.12,
+        easing: Konva.Easings.EaseInOut,
+        onFinish: () => {
+          this.layer.batchDraw();
+          finishAnimation();
+        }
+      });
+
+      leftTween.play();
+      rightTween.play();
+      this.layer.batchDraw();
+    } else if (leftCardVisual) {
+      // Only left card - move to right
+      const tween = new Konva.Tween({
+        node: leftCardVisual,
+        x: rightPos.x + 5,
+        y: rightPos.y + 5,
+        duration: 0.12,
+        easing: Konva.Easings.EaseInOut,
+        onFinish: () => {
+          this.layer.batchDraw();
+          finishAnimation();
+        }
+      });
+      tween.play();
+      this.layer.batchDraw();
+    } else if (rightCardVisual) {
+      // Only right card - move to left
+      const tween = new Konva.Tween({
+        node: rightCardVisual,
+        x: leftPos.x + 5,
+        y: leftPos.y + 5,
+        duration: 0.12,
+        easing: Konva.Easings.EaseInOut,
+        onFinish: () => {
+          this.layer.batchDraw();
+          finishAnimation();
+        }
+      });
+      tween.play();
+      this.layer.batchDraw();
     }
   }
 
@@ -795,6 +1047,7 @@ export class GamePlayScreenView {
         });
 
         cardInSlot.add(text);
+        cardInSlot.setAttr('cardData', slot.card); // Store card data for animation
 
         // Click card in slot to return it to hand
         cardInSlot.on('click tap', () => {
@@ -817,6 +1070,10 @@ export class GamePlayScreenView {
     // Update swap button state (only enable if at least one number is placed)
     const hasAtLeastOneNumber = slots[0].card !== null || slots[2].card !== null;
     this.updateSwapButton(hasAtLeastOneNumber);
+
+    // Update fight button state (only enable if all slots are filled)
+    const allSlotsFilled = slots[0].card !== null && slots[1].card !== null && slots[2].card !== null;
+    this.updateFightButton(allSlotsFilled);
 
     this.layer.batchDraw();
   }

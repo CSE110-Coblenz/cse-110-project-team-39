@@ -41,9 +41,12 @@ export class GameplayScreenController extends BaseScreen {
     // Swap button
     this.view.onSwap(() => {
       this.view.animatePlayerArm();
-      this.model.swapNumbers();
-      this.render();
-      this.updatePlayerResult();
+      // Animate swap first, then update model
+      this.view.animateSwap(() => {
+        this.model.swapNumbers();
+        this.render();
+        this.updatePlayerResult();
+      });
     });
 
     // Card click - try to place in slot with animation
@@ -67,12 +70,13 @@ export class GameplayScreenController extends BaseScreen {
 
     // Slot click - return card to hand
     this.view.onSlotClick((slotIndex: number) => {
-      // Animate player arm
+      // Animate player arm and card back to hand
       this.view.animatePlayerArm();
-
-      this.model.removeCardFromSlot(slotIndex);
-      this.render();
-      this.updatePlayerResult();
+      this.view.animateCardFromSlotToHand(slotIndex, () => {
+        this.model.removeCardFromSlot(slotIndex);
+        this.render();
+        this.updatePlayerResult();
+      });
     });
   }
 
