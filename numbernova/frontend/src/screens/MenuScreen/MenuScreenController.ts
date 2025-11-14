@@ -33,9 +33,16 @@ export class MenuScreenController extends BaseScreen {
 
     // ADDED: Handle planet clicks
     this.view.onPlanetClick?.((planetIndex: number) => {
-      console.log(`Planet ${planetIndex + 1} clicked! Will redirect to level ${planetIndex + 1}`);
-      // TODO: Add level navigation later
-      // this.screenManager.switchTo(`level${planetIndex + 1}`);
+      console.log(`Planet ${planetIndex + 1} clicked! Launching mission...`);
+
+      // Get the launch transition screen and set the planet number
+      const launchScreen = this.screenManager.getScreen('launchTransition') as any;
+      if (launchScreen && launchScreen.setPlanetNumber) {
+        launchScreen.setPlanetNumber(planetIndex + 1);
+      }
+
+      // Switch to launch transition screen
+      this.screenManager.switchTo('launchTransition');
     })
 
     // Handle play button

@@ -94,6 +94,10 @@ export class ScreenManager {
         return this.currentScreenName;
     }
 
+    public getScreen(name: string): IScreen | undefined {
+        return this.screens.get(name);
+    }
+
     public update(deltaTime: number): void {
         if (this.currentScreen && this.currentScreen.update) {
             this.currentScreen.update(deltaTime);
