@@ -1,0 +1,3 @@
+fixed package dependency issue 
+Reorganized tasks to not have blocking
+Coordinated frontend and backend interactions & data schema discussion

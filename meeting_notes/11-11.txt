@@ -1,0 +1,5 @@
+reviewed sprint goals and assigned initial tasks for the week
+checked in on the initial setup of the login, signup, and menu screens
+discussed the technical approach for the main game screen animation
+planned the initial data structure for the shop and currency system
+confirmed the plan to make the git repository public for the ci/cd pipeline
