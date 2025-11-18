@@ -1,0 +1,2 @@
+setup consistent environments for all members
+Created login & signup interactions with databases
