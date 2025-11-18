@@ -1,1 +1,15 @@
 DOCS/
+PROGRESS/
+
+# Frontend
+numbernova/frontend/node_modules/
+numbernova/frontend/package-lock.json
+
+# Backend
+numbernova/frontend/.env
+numbernova/frontend/.env.local
+
+# Environment variables (general)
+.env
+.env.local
+*.env
