@@ -1,0 +1,5 @@
+sprint planning
+delegated tasks (ricardo leaderboard, saee shop, suldana main menu routing to all other screens in the game)
+discussed on what tests we'd like to implement
+discussed the addition of a "user profile" feature that would have their name, rank, games lost, games lost, and games won
+discussed concept of having the users score follow the formula (user score)-(alien score) = points gained from a level

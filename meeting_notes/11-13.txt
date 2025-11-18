@@ -1,0 +1,5 @@
+frontend polish on login/signup is complete, main menu routing is in progress
+discussed integration points between the finished menu and the  main game and shop screens
+addressed any roadblocks in the animation logic for transitioning to the main game
+defined the purchase functionality for the shop to ensure it correctly deducts money
+reprioritized tasks for the end of the sprint, seeing who would be free to take on new work
