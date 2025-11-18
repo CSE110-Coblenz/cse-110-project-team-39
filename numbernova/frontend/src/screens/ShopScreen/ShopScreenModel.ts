@@ -5,7 +5,7 @@ export class ShopScreenModel{
     
     //TODO: connect to backend later based on the player's data
     private currenColor = COLORS.red;
-    private colorsUnlocked = [true, true, true, false, false, false];
+    private colorsUnlocked = [true, false, false, false, false, false];
     private currency = 100;
 
 
