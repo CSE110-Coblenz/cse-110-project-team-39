@@ -35,10 +35,17 @@ export class MenuScreenController extends BaseScreen {
     this.view.onPlanetClick?.((planetIndex: number) => {
       console.log(`Planet ${planetIndex + 1} clicked! Launching mission...`);
 
-      // Get the launch transition screen and set the planet number
+      const worldNumber = planetIndex + 1;
+
+      // Set the planet number on BOTH launch transition and gameplay screens
       const launchScreen = this.screenManager.getScreen('launchTransition') as any;
       if (launchScreen && launchScreen.setPlanetNumber) {
-        launchScreen.setPlanetNumber(planetIndex + 1);
+        launchScreen.setPlanetNumber(worldNumber);
+      }
+
+      const gameplayScreen = this.screenManager.getScreen('gameplay') as any;
+      if (gameplayScreen && gameplayScreen.setWorldNumber) {
+        gameplayScreen.setWorldNumber(worldNumber);
       }
 
       // Switch to launch transition screen

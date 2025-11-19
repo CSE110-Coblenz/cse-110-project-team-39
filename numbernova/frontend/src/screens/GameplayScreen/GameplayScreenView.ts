@@ -1071,9 +1071,22 @@ export class GamePlayScreenView {
     const hasAtLeastOneNumber = slots[0].card !== null || slots[2].card !== null;
     this.updateSwapButton(hasAtLeastOneNumber);
 
-    // Update fight button state (only enable if all slots are filled)
-    const allSlotsFilled = slots[0].card !== null && slots[1].card !== null && slots[2].card !== null;
-    this.updateFightButton(allSlotsFilled);
+    // Update fight button state
+    // For factorial: need left number + operation
+    // For other operations: need all 3 slots filled
+    const operation = slots[1].card;
+    const isFactorial = operation && operation.value === '!';
+    let canFight = false;
+
+    if (isFactorial) {
+      // Factorial only needs left number and operation
+      canFight = slots[0].card !== null && operation !== null;
+    } else {
+      // All other operations need all 3 slots
+      canFight = slots[0].card !== null && operation !== null && slots[2].card !== null;
+    }
+
+    this.updateFightButton(canFight);
 
     this.layer.batchDraw();
   }

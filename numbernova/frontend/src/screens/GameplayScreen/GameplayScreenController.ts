@@ -1,16 +1,26 @@
 import { BaseScreen } from '../../core/BaseScreen';
 import { GamePlayScreenModel } from './GameplayScreenModel';
 import { GamePlayScreenView } from './GameplayScreenView';
-import { WORLD_1_CONFIG } from '../../config/worldConfig';
+import { WORLD_CONFIGS } from '../../config/worldConfig';
 import { Card } from '../../types';
 
 export class GameplayScreenController extends BaseScreen {
-  private model: GamePlayScreenModel;
-  private view: GamePlayScreenView;
+  private model!: GamePlayScreenModel;
+  private view!: GamePlayScreenView;
   private worldNumber: number = 1;
 
   protected initialize(): void {
-    const config = WORLD_1_CONFIG;
+    // Don't initialize here - wait for setWorldNumber to be called
+    // This is because initialize() runs in constructor before setWorldNumber()
+  }
+
+  private initializeWorld(): void {
+    const config = WORLD_CONFIGS[this.worldNumber];
+
+    // Clean up old view if it exists
+    if (this.view) {
+      this.view.destroy();
+    }
 
     this.model = new GamePlayScreenModel(config);
     this.view = new GamePlayScreenView(this.container, config);
@@ -129,6 +139,10 @@ export class GameplayScreenController extends BaseScreen {
 
   public show(): void {
     super.show();
+    // Ensure world is initialized before showing
+    if (!this.model || !this.view) {
+      this.initializeWorld();
+    }
     this.model.reset();
     this.render();
   }
@@ -140,5 +154,7 @@ export class GameplayScreenController extends BaseScreen {
 
   public setWorldNumber(num: number): void {
     this.worldNumber = num;
+    // Re-initialize with new world config
+    this.initializeWorld();
   }
 }

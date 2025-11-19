@@ -55,15 +55,31 @@ export class GamePlayScreenModel {
     // Generate expression that hits target difficulty
     const attempts = 10;
     for (let i = 0; i < attempts; i++) {
-      num1 = Math.floor(Math.random() * 8) + 2; // 2-9 for more interesting math
-      num2 = Math.floor(Math.random() * 8) + 2;
       op = this.config.operations[Math.floor(Math.random() * this.config.operations.length)];
 
-      if (op === '+') result = num1 + num2;
-      else if (op === '-') result = Math.max(0, num1 - num2); // No negatives
-      else if (op === '×') result = num1 * num2;
-      else if (op === '÷' && num2 !== 0) result = Math.floor(num1 / num2);
-      else result = num1;
+      // For factorial, use smaller numbers (1-8)
+      if (op === '!') {
+        num1 = Math.floor(Math.random() * 8) + 1; // 1-8
+        num2 = 0; // Factorial ignores second number
+        result = this.factorial(num1);
+      }
+      // For exponent, use smaller numbers to avoid huge results
+      else if (op === '^') {
+        num1 = Math.floor(Math.random() * 5) + 2; // 2-6
+        num2 = Math.floor(Math.random() * 3) + 2; // 2-4
+        result = Math.pow(num1, num2);
+      }
+      // For other operations, use larger numbers
+      else {
+        num1 = Math.floor(Math.random() * 8) + 2; // 2-9 for more interesting math
+        num2 = Math.floor(Math.random() * 8) + 2;
+
+        if (op === '+') result = num1 + num2;
+        else if (op === '-') result = Math.max(0, num1 - num2); // No negatives
+        else if (op === '×') result = num1 * num2;
+        else if (op === '÷' && num2 !== 0) result = Math.floor(num1 / num2);
+        else result = num1;
+      }
 
       // Check if result is in desired range
       const targetMin = baseStrength;
@@ -106,60 +122,155 @@ export class GamePlayScreenModel {
     const alienIndex = this.currentAlienIndex;
     const progressFactor = alienIndex / (this.config.alienCount - 1); // 0.0 to 1.0
 
-    // Ensure player can win but also can lose
-    // Strategy: Give them numbers that CAN beat the alien, but require smart play
-    // Later aliens get tighter margins (harder to win)
+    // Decide which operations to deal (ensure they're different)
+    const firstOp = this.config.operations[Math.floor(Math.random() * this.config.operations.length)];
+    let secondOp: string;
 
-    // Deal 3 number cards with intelligent distribution
+    if (this.config.operations.length > 1) {
+      // Pick a different operation
+      do {
+        secondOp = this.config.operations[Math.floor(Math.random() * this.config.operations.length)];
+      } while (secondOp === firstOp);
+    } else {
+      // Only one operation available, use it
+      secondOp = firstOp;
+    }
+
+    // For factorial/exponent world, decide how many number cards to deal
+    const hasFactorial = firstOp === '!' || secondOp === '!';
+    const hasExponent = firstOp === '^' || secondOp === '^';
+
+    let numNumberCards = 3; // Default
+    if (this.config.operations.includes('!')) {
+      // World 5 logic: smart card dealing
+      if (hasFactorial && !hasExponent) {
+        numNumberCards = 2; // Factorial only needs 1 number, give 2 for flexibility
+      } else if (!hasFactorial && hasExponent) {
+        numNumberCards = 3; // Exponent needs 2 numbers
+      } else {
+        numNumberCards = 3; // Mixed or both
+      }
+    }
+
+    // Deal number cards with intelligent distribution (ensure all different)
     const numbers: number[] = [];
+    const range = this.config.numberRange.max - this.config.numberRange.min + 1;
 
-    // Difficulty multipliers get tighter as game progresses
-    const highMultiplier = 0.45 - (progressFactor * 0.1); // 0.45 to 0.35
-    const medMultiplier = 0.35 - (progressFactor * 0.1); // 0.35 to 0.25
+    for (let i = 0; i < numNumberCards; i++) {
+      let num: number;
+      let attempts = 0;
 
-    // First number: high enough to potentially contribute to winning
-    const highNum = Math.floor(Math.random() * 3) + Math.max(4, Math.floor(alienTarget * highMultiplier));
-    numbers.push(Math.min(highNum, this.config.numberRange.max));
+      // Keep trying until we get a unique number (max 50 attempts to avoid infinite loop)
+      do {
+        if (this.config.operations.includes('!') || this.config.operations.includes('^')) {
+          // For factorial/exponent worlds, use full range randomly
+          num = Math.floor(Math.random() * range) + this.config.numberRange.min;
+        } else {
+          // For other worlds, distribute across the range intelligently
+          // First card: upper 60% of range
+          // Second card: middle 60% of range
+          // Third card: lower 60% of range
+          let subRangeSize = Math.ceil(range * 0.6);
+          let subRangeStart: number;
 
-    // Second number: medium value
-    const medNum = Math.floor(Math.random() * 4) + Math.max(2, Math.floor(alienTarget * medMultiplier));
-    numbers.push(Math.min(medNum, this.config.numberRange.max));
+          if (i === 0) {
+            // Upper range: max down to 40% of the way
+            subRangeStart = this.config.numberRange.max - subRangeSize + 1;
+          } else if (i === 1) {
+            // Middle range: centered
+            subRangeStart = this.config.numberRange.min + Math.floor(range * 0.2);
+          } else {
+            // Lower range: min up to 60% of the way
+            subRangeStart = this.config.numberRange.min;
+          }
 
-    // Third number: could be low or medium (gets slightly higher in later rounds)
-    const lowBase = Math.floor(1 + progressFactor * 2); // 1 to 3
-    const lowNum = Math.floor(Math.random() * 5) + lowBase;
-    numbers.push(Math.min(lowNum, this.config.numberRange.max));
+          num = Math.floor(Math.random() * subRangeSize) + subRangeStart;
+          num = Math.max(this.config.numberRange.min, Math.min(num, this.config.numberRange.max));
+        }
 
-    // Verify player CAN win with these numbers
+        attempts++;
+      } while (numbers.includes(num) && attempts < 50);
+
+      numbers.push(num);
+    }
+
+    // Verify player CAN win with these numbers and operations
     let canWin = false;
-    for (let i = 0; i < numbers.length; i++) {
-      for (let j = 0; j < numbers.length; j++) {
-        if (i === j) continue;
-        // Check if any combination with + can beat alien
-        if (numbers[i] + numbers[j] > alienTarget) {
-          canWin = true;
-          break;
+
+    // Check with the operations we're actually dealing
+    const opsToCheck = [firstOp, secondOp];
+
+    for (const op of opsToCheck) {
+      if (op === '!') {
+        // Factorial only needs one number
+        for (const num of numbers) {
+          if (this.factorial(num) > alienTarget) {
+            canWin = true;
+            break;
+          }
+        }
+      } else {
+        // Binary operations need two numbers
+        for (let i = 0; i < numbers.length; i++) {
+          for (let j = 0; j < numbers.length; j++) {
+            if (i === j) continue;
+
+            let testResult = 0;
+            if (op === '+') testResult = numbers[i] + numbers[j];
+            else if (op === '-') testResult = numbers[i] - numbers[j];
+            else if (op === '×') testResult = numbers[i] * numbers[j];
+            else if (op === '÷' && numbers[j] !== 0) testResult = Math.floor(numbers[i] / numbers[j]);
+            else if (op === '^') testResult = Math.pow(numbers[i], numbers[j]);
+
+            if (testResult > alienTarget) {
+              canWin = true;
+              break;
+            }
+          }
+          if (canWin) break;
         }
       }
       if (canWin) break;
     }
 
-    // If can't win, boost one number (but less generous in later rounds)
+    // If can't win, boost numbers appropriately for this world
     if (!canWin) {
-      const boostFactor = 0.65 - (progressFactor * 0.15); // 0.65 to 0.5
-      numbers[0] = Math.ceil(alienTarget * boostFactor);
-      if (numbers[0] > this.config.numberRange.max) {
-        numbers[0] = this.config.numberRange.max;
+      // For factorial/exponent worlds, adjust to good factorial/exponent numbers
+      if (this.config.operations.includes('!')) {
+        // For factorial, we need numbers whose factorial beats the target
+        // Find smallest n where n! > alienTarget
+        for (let n = this.config.numberRange.min; n <= this.config.numberRange.max; n++) {
+          if (this.factorial(n) > alienTarget) {
+            numbers[0] = n;
+            canWin = true;
+            break;
+          }
+        }
+        // Add another strategic number for exponents if we have room
+        if (numbers.length > 1 && hasExponent) {
+          // For exponents, smaller bases with good powers
+          numbers[1] = Math.min(Math.max(2, Math.ceil(Math.pow(alienTarget, 0.4))), this.config.numberRange.max);
+        }
       }
-      // Ensure second number can combine to win
-      numbers[1] = Math.max(numbers[1], Math.ceil(alienTarget * (boostFactor - 0.1)));
-      if (numbers[1] > this.config.numberRange.max) {
-        numbers[1] = this.config.numberRange.max;
+      // For multiplication worlds, moderate numbers needed
+      else if (this.config.operations.includes('×')) {
+        numbers[0] = Math.min(Math.max(this.config.numberRange.min, Math.ceil(alienTarget * 0.4)), this.config.numberRange.max);
+        if (numbers.length > 1) {
+          numbers[1] = Math.min(Math.max(this.config.numberRange.min, Math.ceil(alienTarget * 0.3)), this.config.numberRange.max);
+        }
+      }
+      // For addition/subtraction worlds, large numbers needed
+      else {
+        const boostFactor = 0.65 - (progressFactor * 0.15);
+        numbers[0] = Math.min(Math.max(this.config.numberRange.min, Math.ceil(alienTarget * boostFactor)), this.config.numberRange.max);
+        if (numbers.length > 1) {
+          numbers[1] = Math.min(Math.max(this.config.numberRange.min, Math.ceil(alienTarget * (boostFactor - 0.1))), this.config.numberRange.max);
+        }
       }
     }
 
-    // Add the number cards
-    for (let i = 0; i < 3; i++) {
+    // Add the number cards (variable amount based on operations)
+    for (let i = 0; i < numbers.length; i++) {
       this.playerHand.push({
         id: `card-num-${i}-${Date.now()}-${Math.random()}`,
         type: 'number',
@@ -167,15 +278,13 @@ export class GamePlayScreenModel {
       });
     }
 
-    // Deal 2 operation cards (always include +)
+    // Deal 2 operation cards (already decided at the top)
     this.playerHand.push({
       id: `card-op-0-${Date.now()}-${Math.random()}`,
       type: 'operation',
-      value: '+'
+      value: firstOp
     });
 
-    // Second operation can be random
-    const secondOp = this.config.operations[Math.floor(Math.random() * this.config.operations.length)];
     this.playerHand.push({
       id: `card-op-1-${Date.now()}-${Math.random()}`,
       type: 'operation',
@@ -215,10 +324,15 @@ export class GamePlayScreenModel {
   public tryPlaceCard(card: Card): { success: boolean; targetSlot?: number } {
     // Find appropriate empty slot based on card type
     if (card.type === 'number') {
-      // Try left number slot first (index 0), then right (index 2)
+      // Check if we have a factorial operation - if so, only allow left slot
+      const operation = this.playerExpression[1].card;
+      const isFactorial = operation && operation.value === '!';
+
+      // Try left number slot first (index 0)
       if (this.playerExpression[0].card === null) {
         return this.placeCardInSlot(card, 0);
-      } else if (this.playerExpression[2].card === null) {
+      } else if (this.playerExpression[2].card === null && !isFactorial) {
+        // Only allow right slot if NOT factorial
         return this.placeCardInSlot(card, 2);
       }
     } else if (card.type === 'operation') {
@@ -240,6 +354,13 @@ export class GamePlayScreenModel {
     // Place card
     this.playerExpression[slotIndex].card = card;
     this.playerHand.splice(handIndex, 1);
+
+    // Special handling: If we just placed a factorial operation and there's a second number, return it to hand
+    if (slotIndex === 1 && card.value === '!' && this.playerExpression[2].card !== null) {
+      const secondNumber = this.playerExpression[2].card;
+      this.playerHand.push(secondNumber);
+      this.playerExpression[2].card = null;
+    }
 
     return { success: true, targetSlot: slotIndex };
   }
@@ -277,21 +398,42 @@ export class GamePlayScreenModel {
     const operation = slots[1].card;
     const rightNum = slots[2].card;
 
-    if (!leftNum || !rightNum) return 0;
+    if (!leftNum) return 0;
 
     const num1 = typeof leftNum.value === 'number' ? leftNum.value : parseInt(leftNum.value);
-    const num2 = typeof rightNum.value === 'number' ? rightNum.value : parseInt(rightNum.value);
 
     if (!operation) return num1; // Just the first number
 
     const op = operation.value as string;
 
+    // Factorial is unary - ignores second number
+    if (op === '!') {
+      return this.factorial(num1);
+    }
+
+    // All other operations need a second number
+    if (!rightNum) return num1;
+    const num2 = typeof rightNum.value === 'number' ? rightNum.value : parseInt(rightNum.value);
+
     if (op === '+') return num1 + num2;
     if (op === '-') return num1 - num2;
     if (op === '×') return num1 * num2;
     if (op === '÷' && num2 !== 0) return Math.floor(num1 / num2);
+    if (op === '^') return Math.pow(num1, num2);
 
     return num1;
+  }
+
+  private factorial(n: number): number {
+    if (n < 0) return 0;
+    if (n === 0 || n === 1) return 1;
+    if (n > 10) return 3628800; // Cap at 10! to prevent overflow
+
+    let result = 1;
+    for (let i = 2; i <= n; i++) {
+      result *= i;
+    }
+    return result;
   }
 
   public submitExpression(): { won: boolean; playerResult: number; alienResult: number } {
