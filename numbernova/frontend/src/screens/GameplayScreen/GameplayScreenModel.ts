@@ -29,80 +29,151 @@ export class GamePlayScreenModel {
   }
 
   private generateAllAliens(): void {
-    for (let i = 0; i < this.config.alienCount; i++) {
-      this.aliens.push(this.generateAlien(i));
-    }
+    // Aliens will be generated on-demand when needed, not upfront
+    // This allows us to generate them AFTER player cards are dealt
+    this.aliens = [];
   }
 
-  private generateAlien(id: number): Alien {
+  private generateAlienWithTarget(id: number, targetResult: number): Alien {
     const expression: Card[] = [];
 
-    // Progressive difficulty - aliens get stronger with tighter margins near the end
-    // Aliens 0-2: 6-10 range (easy)
-    // Aliens 3-5: 9-13 range (medium)
-    // Aliens 6-8: 12-16 range (harder)
-    // Alien 9: 15-18 range (hardest)
-    const progressFactor = id / (this.config.alienCount - 1); // 0.0 to 1.0
-    const baseStrength = Math.floor(6 + (progressFactor * 9)); // 6 to 15
-    const rangeSize = Math.floor(5 - (progressFactor * 2)); // 5 to 3 (tighter at end)
+    // Pick a random operation from available ops
+    const op = this.config.operations[Math.floor(Math.random() * this.config.operations.length)];
 
-    // Generate: num1 op num2 with controlled difficulty
     let num1: number;
     let num2: number;
-    let op: string;
     let result: number;
 
-    // Generate expression that hits target difficulty
-    const attempts = 10;
-    for (let i = 0; i < attempts; i++) {
-      op = this.config.operations[Math.floor(Math.random() * this.config.operations.length)];
+    // Try to generate an expression that equals or is close to targetResult
+    if (op === '!') {
+      // Factorial - find number whose factorial is closest to target
+      let bestNum = this.config.numberRange.min;
+      let bestDiff = Infinity;
 
-      // For factorial, use smaller numbers (1-8)
-      if (op === '!') {
-        num1 = Math.floor(Math.random() * 8) + 1; // 1-8
-        num2 = 0; // Factorial ignores second number
-        result = this.factorial(num1);
-      }
-      // For exponent, use smaller numbers to avoid huge results
-      else if (op === '^') {
-        num1 = Math.floor(Math.random() * 5) + 2; // 2-6
-        num2 = Math.floor(Math.random() * 3) + 2; // 2-4
-        result = Math.pow(num1, num2);
-      }
-      // For other operations, use larger numbers
-      else {
-        num1 = Math.floor(Math.random() * 8) + 2; // 2-9 for more interesting math
-        num2 = Math.floor(Math.random() * 8) + 2;
-
-        if (op === '+') result = num1 + num2;
-        else if (op === '-') result = Math.max(0, num1 - num2); // No negatives
-        else if (op === '×') result = num1 * num2;
-        else if (op === '÷' && num2 !== 0) result = Math.floor(num1 / num2);
-        else result = num1;
+      for (let n = this.config.numberRange.min; n <= this.config.numberRange.max; n++) {
+        const factResult = this.factorial(n);
+        const diff = Math.abs(factResult - targetResult);
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          bestNum = n;
+        }
       }
 
-      // Check if result is in desired range
-      const targetMin = baseStrength;
-      const targetMax = baseStrength + rangeSize;
-
-      if (result >= targetMin && result <= targetMax) {
-        break; // Found good expression
-      }
-    }
-
-    // Fallback if no good expression found
-    if (!result!) {
-      num1 = baseStrength;
+      num1 = bestNum;
       num2 = 0;
-      op = '+';
-      result = baseStrength;
+      result = this.factorial(num1);
+    } else if (op === '^') {
+      // Exponent - try combinations
+      let bestNum1 = 2;
+      let bestNum2 = 2;
+      let bestDiff = Infinity;
+
+      for (let base = this.config.numberRange.min; base <= this.config.numberRange.max; base++) {
+        for (let exp = this.config.numberRange.min; exp <= this.config.numberRange.max; exp++) {
+          const expResult = Math.pow(base, exp);
+          const diff = Math.abs(expResult - targetResult);
+          if (diff < bestDiff) {
+            bestDiff = diff;
+            bestNum1 = base;
+            bestNum2 = exp;
+          }
+        }
+      }
+
+      num1 = bestNum1;
+      num2 = bestNum2;
+      result = Math.pow(num1, num2);
+    } else {
+      // Binary operations - work backwards from target with randomness
+      if (op === '+') {
+        // a + b = target, pick a randomly, solve for b
+        // Add some variation so we don't always get the same split
+        const maxNum1 = Math.min(targetResult, this.config.numberRange.max);
+        num1 = Math.floor(Math.random() * (maxNum1 - this.config.numberRange.min + 1)) + this.config.numberRange.min;
+        num2 = Math.max(this.config.numberRange.min, Math.min(this.config.numberRange.max, targetResult - num1));
+        result = num1 + num2;
+      } else if (op === '-') {
+        // a - b = target, pick b randomly, solve for a
+        // Vary b to get different expressions for same target
+        const maxNum2 = Math.min(targetResult + this.config.numberRange.max, this.config.numberRange.max);
+        num2 = Math.floor(Math.random() * (maxNum2 - this.config.numberRange.min + 1)) + this.config.numberRange.min;
+        num1 = Math.max(this.config.numberRange.min, Math.min(this.config.numberRange.max, targetResult + num2));
+        result = Math.max(0, num1 - num2);
+      } else if (op === '×') {
+        // a × b = target, find factors close to target and pick randomly from good options
+        const goodPairs: Array<{a: number, b: number, result: number}> = [];
+
+        for (let a = this.config.numberRange.min; a <= this.config.numberRange.max; a++) {
+          for (let b = this.config.numberRange.min; b <= this.config.numberRange.max; b++) {
+            const prod = a * b;
+            const diff = Math.abs(prod - targetResult);
+            // Accept pairs within 30% of target
+            if (diff <= targetResult * 0.3) {
+              goodPairs.push({a, b, result: prod});
+            }
+          }
+        }
+
+        if (goodPairs.length > 0) {
+          // Pick a random good pair
+          const chosen = goodPairs[Math.floor(Math.random() * goodPairs.length)];
+          num1 = chosen.a;
+          num2 = chosen.b;
+          result = chosen.result;
+        } else {
+          // Fallback: just pick best
+          let bestNum1 = this.config.numberRange.min;
+          let bestNum2 = this.config.numberRange.min;
+          let bestDiff = Infinity;
+
+          for (let a = this.config.numberRange.min; a <= this.config.numberRange.max; a++) {
+            for (let b = this.config.numberRange.min; b <= this.config.numberRange.max; b++) {
+              const prod = a * b;
+              const diff = Math.abs(prod - targetResult);
+              if (diff < bestDiff) {
+                bestDiff = diff;
+                bestNum1 = a;
+                bestNum2 = b;
+              }
+            }
+          }
+          num1 = bestNum1;
+          num2 = bestNum2;
+          result = num1 * num2;
+        }
+      } else if (op === '÷') {
+        // a ÷ b = target, vary the divisor for different expressions
+        // Pick b randomly from valid divisors
+        const validDivisors = [];
+        for (let b = Math.max(1, this.config.numberRange.min); b <= this.config.numberRange.max; b++) {
+          const a = targetResult * b;
+          if (a >= this.config.numberRange.min && a <= this.config.numberRange.max) {
+            validDivisors.push(b);
+          }
+        }
+
+        if (validDivisors.length > 0) {
+          num2 = validDivisors[Math.floor(Math.random() * validDivisors.length)];
+          num1 = targetResult * num2;
+        } else {
+          // Fallback
+          num2 = Math.max(1, Math.floor(Math.random() * (this.config.numberRange.max - this.config.numberRange.min + 1)) + this.config.numberRange.min);
+          num1 = Math.max(this.config.numberRange.min, Math.min(this.config.numberRange.max, targetResult * num2));
+        }
+        result = Math.floor(num1 / num2);
+      } else {
+        // Fallback
+        num1 = this.config.numberRange.min;
+        num2 = this.config.numberRange.min;
+        result = num1;
+      }
     }
 
-    expression.push({ id: `alien-${id}-0`, type: 'number', value: num1! });
-    expression.push({ id: `alien-${id}-1`, type: 'operation', value: op! });
-    expression.push({ id: `alien-${id}-2`, type: 'number', value: num2! });
+    expression.push({ id: `alien-${id}-0`, type: 'number', value: num1 });
+    expression.push({ id: `alien-${id}-1`, type: 'operation', value: op });
+    expression.push({ id: `alien-${id}-2`, type: 'number', value: num2 });
 
-    return { id, expression, result: result! };
+    return { id, expression, result };
   }
 
   private randomNumber(): number {
@@ -112,11 +183,45 @@ export class GamePlayScreenModel {
     );
   }
 
+  private calculateMinMaxResults(numbers: number[], operations: string[]): { min: number; max: number } {
+    let min = Infinity;
+    let max = -Infinity;
+
+    for (const op of operations) {
+      if (op === '!') {
+        // Factorial - unary
+        for (const num of numbers) {
+          const result = this.factorial(num);
+          min = Math.min(min, result);
+          max = Math.max(max, result);
+        }
+      } else {
+        // Binary operations
+        for (let i = 0; i < numbers.length; i++) {
+          for (let j = 0; j < numbers.length; j++) {
+            if (i === j) continue;
+
+            let result = 0;
+            if (op === '+') result = numbers[i] + numbers[j];
+            else if (op === '-') result = numbers[i] - numbers[j];
+            else if (op === '×') result = numbers[i] * numbers[j];
+            else if (op === '÷' && numbers[j] !== 0) result = Math.floor(numbers[i] / numbers[j]);
+            else if (op === '^') result = Math.pow(numbers[i], numbers[j]);
+
+            min = Math.min(min, result);
+            max = Math.max(max, result);
+          }
+        }
+      }
+    }
+
+    return { min, max };
+  }
+
   private dealNewHand(): void {
     this.playerHand = [];
 
-    const alien = this.getCurrentAlien();
-    const alienTarget = alien ? alien.result : 10;
+    // We'll generate the alien AFTER dealing player cards
 
     // Progressive difficulty based on alien index
     const alienIndex = this.currentAlienIndex;
@@ -194,79 +299,28 @@ export class GamePlayScreenModel {
       numbers.push(num);
     }
 
-    // Verify player CAN win with these numbers and operations
-    let canWin = false;
+    // Calculate min and max possible results with these cards
+    const { min, max } = this.calculateMinMaxResults(numbers, [firstOp, secondOp]);
 
-    // Check with the operations we're actually dealing
-    const opsToCheck = [firstOp, secondOp];
+    // Generate alien with result between min and max
+    // Add randomness while still scaling difficulty
+    // Early rounds: alien at 30-60% of range (easier to beat)
+    // Later rounds: alien at 50-80% of range (harder to beat)
+    const baseRangeFactor = 0.3 + (progressFactor * 0.5); // 0.3 to 0.8
+    const randomVariation = (Math.random() - 0.5) * 0.3; // ±15%
+    const rangeFactor = Math.max(0.2, Math.min(0.9, baseRangeFactor + randomVariation));
 
-    for (const op of opsToCheck) {
-      if (op === '!') {
-        // Factorial only needs one number
-        for (const num of numbers) {
-          if (this.factorial(num) > alienTarget) {
-            canWin = true;
-            break;
-          }
-        }
-      } else {
-        // Binary operations need two numbers
-        for (let i = 0; i < numbers.length; i++) {
-          for (let j = 0; j < numbers.length; j++) {
-            if (i === j) continue;
+    const alienResult = Math.floor(min + (max - min) * rangeFactor);
 
-            let testResult = 0;
-            if (op === '+') testResult = numbers[i] + numbers[j];
-            else if (op === '-') testResult = numbers[i] - numbers[j];
-            else if (op === '×') testResult = numbers[i] * numbers[j];
-            else if (op === '÷' && numbers[j] !== 0) testResult = Math.floor(numbers[i] / numbers[j]);
-            else if (op === '^') testResult = Math.pow(numbers[i], numbers[j]);
+    // Ensure alien result is at least min+1 (so player can lose if they choose poorly)
+    // Also ensure it's less than max (so player can win)
+    const finalAlienResult = Math.max(min + 1, Math.min(max - 1, alienResult));
 
-            if (testResult > alienTarget) {
-              canWin = true;
-              break;
-            }
-          }
-          if (canWin) break;
-        }
-      }
-      if (canWin) break;
-    }
-
-    // If can't win, boost numbers appropriately for this world
-    if (!canWin) {
-      // For factorial/exponent worlds, adjust to good factorial/exponent numbers
-      if (this.config.operations.includes('!')) {
-        // For factorial, we need numbers whose factorial beats the target
-        // Find smallest n where n! > alienTarget
-        for (let n = this.config.numberRange.min; n <= this.config.numberRange.max; n++) {
-          if (this.factorial(n) > alienTarget) {
-            numbers[0] = n;
-            canWin = true;
-            break;
-          }
-        }
-        // Add another strategic number for exponents if we have room
-        if (numbers.length > 1 && hasExponent) {
-          // For exponents, smaller bases with good powers
-          numbers[1] = Math.min(Math.max(2, Math.ceil(Math.pow(alienTarget, 0.4))), this.config.numberRange.max);
-        }
-      }
-      // For multiplication worlds, moderate numbers needed
-      else if (this.config.operations.includes('×')) {
-        numbers[0] = Math.min(Math.max(this.config.numberRange.min, Math.ceil(alienTarget * 0.4)), this.config.numberRange.max);
-        if (numbers.length > 1) {
-          numbers[1] = Math.min(Math.max(this.config.numberRange.min, Math.ceil(alienTarget * 0.3)), this.config.numberRange.max);
-        }
-      }
-      // For addition/subtraction worlds, large numbers needed
-      else {
-        const boostFactor = 0.65 - (progressFactor * 0.15);
-        numbers[0] = Math.min(Math.max(this.config.numberRange.min, Math.ceil(alienTarget * boostFactor)), this.config.numberRange.max);
-        if (numbers.length > 1) {
-          numbers[1] = Math.min(Math.max(this.config.numberRange.min, Math.ceil(alienTarget * (boostFactor - 0.1))), this.config.numberRange.max);
-        }
-      }
+    // Generate the alien for this round based on the cards we dealt
+    if (this.currentAlienIndex >= this.aliens.length) {
+      // Need to generate this alien
+      const alien = this.generateAlienWithTarget(this.currentAlienIndex, finalAlienResult);
+      this.aliens.push(alien);
     }
 
     // Add the number cards (variable amount based on operations)
@@ -473,7 +527,7 @@ export class GamePlayScreenModel {
     this.playerLives = this.config.playerLives;
     this.playerScore = 0;
     this.gameState = 'playing';
-    this.generateAllAliens();
+    this.aliens = []; // Clear aliens - they'll regenerate as needed
     this.clearExpression();
     this.dealNewHand();
   }

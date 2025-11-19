@@ -1103,8 +1103,12 @@ export class GamePlayScreenView {
     });
 
     // Place cards in order: number, operation, number
+    // For factorial, skip the second number (it's always 0)
+    const isFactorial = cards[1]?.value === '!';
+    const cardsToRender = isFactorial ? cards.slice(0, 2) : cards;
+
     let slotIndex = 0;
-    cards.forEach((card) => {
+    cardsToRender.forEach((card) => {
       if (slotIndex >= this.alienExpressionSlots.length) return;
 
       const slotGroup = this.alienExpressionSlots[slotIndex];
