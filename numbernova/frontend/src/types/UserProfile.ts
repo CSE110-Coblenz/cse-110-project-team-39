@@ -13,4 +13,5 @@ export interface UserProfile {
     games_played: Database['public']['Tables']['user_profiles']['Row']['games_played'];
     games_won: Database['public']['Tables']['user_profiles']['Row']['games_won'];
     tokens: Database['public']['Tables']['user_profiles']['Row']['tokens'];
+    unlocked_colors: Database['public']['Tables']['user_profiles']['Row']['unlocked_colors'];
 }
