@@ -1,6 +1,8 @@
 import { MenuScreenView } from './MenuScreenView'
 import { MenuScreenModel } from './MenuScreenModel'
 import { BaseScreen } from '../../core/BaseScreen'
+import { signOut } from '../../lib/supabase'
+import { createNotification } from '../../lib/toast'
 
 export class MenuScreenController extends BaseScreen {
   private view: MenuScreenView
@@ -11,8 +13,17 @@ export class MenuScreenController extends BaseScreen {
     this.view = new MenuScreenView(this.container)
 
     // Handle logout button
-    this.view.onLogout?.(() => {
-      this.screenManager.switchTo('login')
+    this.view.onLogout?.(async () => {
+      const { error } = await signOut();
+
+      if (error) {
+        console.error('Error during logout:', error);
+        createNotification('Failed to logout. Please try again.', 'error');
+        return;
+      }
+
+      createNotification('Logged out successfully', 'success');
+      this.screenManager.switchTo('login');
     })
 
     // Handle top right buttons

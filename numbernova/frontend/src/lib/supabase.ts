@@ -32,6 +32,13 @@ export async function signInWithEmail(email: string, password: string) {
   })
   return { data, error };
 }
+
+// Helper function to sign out
+export async function signOut() {
+  const { error } = await supabase.auth.signOut();
+  return { error };
+}
+
 // Helper function to get the current user
 export const getCurrentUser = async () => {
   const { data: { user }, error } = await supabase.auth.getUser();
