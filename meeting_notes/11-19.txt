@@ -1,0 +1,5 @@
+core prototype is ready: users can register, log in, access worlds, and play the game
+concern raised: current mechanics allow players to simply choose the two highest numbers and the best operator, making levels too easy and not requiring strategy.
+a solution is to require using all three cards with fixed operators or add a ceiling
+ultimately decided not to do these because the target audience may not understand the pattern of using the two biggest cards
+assigned profile screen to saee, win/lose screens to suldana, worlds 2-5 to halvor, ci/cd and tests to ashish and backend support for profile screen to ricardo
