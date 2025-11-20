@@ -11,7 +11,16 @@ export const COLORS = {
     error: '#ff6b6b',
     success: '#4ade80',
     warning: '#fbbf24',
-    info: '#60a5fa'
+    info: '#60a5fa',
+    red: '#ff6b6b', 
+    orange: '#de8d31ff',
+    yellow: '#e7c67eff', 
+    green: '#5fc797ff',
+    blue: '#45b7d1',
+    purple: '#7f55c7ff',
+    person: '#acacacff',
+    overlay: 'rgba(0, 0, 0, 0.5)',
+
 };
 
 export const DIMENSIONS = {

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
     rank INTEGER NULL DEFAULT NULL,
     tokens INTEGER NOT NULL DEFAULT 0,
     level INTEGER NOT NULL DEFAULT 1,
-    ship_color TEXT NOT NULL DEFAULT 'blue',
+    ship_color TEXT NOT NULL DEFAULT '#ff6b6b',
     games_played INTEGER NOT NULL DEFAULT 0,
     games_won INTEGER NOT NULL DEFAULT 0,
     profile_picture_url TEXT NULL DEFAULT NULL,
