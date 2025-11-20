@@ -105,7 +105,19 @@ export class LoginScreenView {
             stroke: COLORS.inputBorder,
             strokeWidth: 2
         });
-        
+
+        const formTitle = new Konva.Text({
+            x: -DIMENSIONS.loginBoxWidth / 2,
+            y: -80,
+            width: DIMENSIONS.loginBoxWidth,
+            text: 'Log In',
+            fontSize: 35,
+            fontFamily: 'Jersey 10',
+            fill: COLORS.text,
+            align: 'center'
+        });
+
+
         // Create input fields
         this.emailInput = new KonvaInput({
             x: -150,
@@ -158,6 +170,7 @@ export class LoginScreenView {
         this.loginForm.add(subtitle);
         this.loginForm.add(loginBox);
         this.loginForm.add(this.emailInput);
+        this.loginForm.add(formTitle);
         this.loginForm.add(this.passwordInput);
         this.loginForm.add(this.loginButton);
         this.loginForm.add(this.createAccountButton);

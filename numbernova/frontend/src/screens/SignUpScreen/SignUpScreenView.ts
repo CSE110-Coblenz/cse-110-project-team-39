@@ -133,6 +133,17 @@ export class SignUpScreenView {
             type: 'password'
         });
 
+        const formTitle = new Konva.Text({
+            x: -DIMENSIONS.loginBoxWidth / 2,
+            y: -160,
+            width: DIMENSIONS.loginBoxWidth,
+            text: 'Sign Up',
+            fontSize: 35,
+            fontFamily: 'Jersey 10',
+            fill: COLORS.text,
+            align: 'center'          
+            });
+
         this.confirmPasswordInput = new KonvaInput({
             x: -150,
             y: 140,
@@ -175,6 +186,7 @@ export class SignUpScreenView {
         this.signupForm.add(this.displayNameInput);
         this.signupForm.add(this.passwordInput);
         this.signupForm.add(this.confirmPasswordInput);
+        this.signupForm.add(formTitle);
         this.signupForm.add(this.signupButton);
         this.signupForm.add(this.loginButton);
         
