@@ -1,16 +1,16 @@
 import Konva from 'konva';
-import { COLORS, DIMENSIONS } from '../../constants';
+import { COLORS, DIMENSIONS, FONTS } from '../../constants';
+import { KonvaInput } from '../../components/KonvaInput';
 
 type VoidFn = () => void;
 
 export class MenuScreenView {
   private layer: Konva.Layer;
   private bg: Konva.Rect;
-  private starGroupBack: Konva.Group;
-  private starGroupFront: Konva.Group;
   private shooting: Konva.Line | null = null;
   private menuGroup: Konva.Group;
   private title: Konva.Text;
+  private stars!: Konva.Group;
 
   private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private logoutBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
@@ -22,9 +22,6 @@ export class MenuScreenView {
   private planetButtons: { group: Konva.Group; circle: Konva.Circle; text: Konva.Text }[] = [];
 
   private twinkleAnim?: Konva.Animation;
-  private driftAnim?: Konva.Animation;
-  private shootingAnim?: Konva.Animation;
-  private floatTitle?: Konva.Tween;
   private pulse?: Konva.Tween;
 
   private inventoryHandlers: VoidFn[] = [];
@@ -64,23 +61,21 @@ export class MenuScreenView {
       fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
     });
 
-    this.starGroupBack = new Konva.Group();
-    this.starGroupFront = new Konva.Group();
-    this.spawnStars(this.starGroupBack, 140, 0.25, 1.2);
-    this.spawnStars(this.starGroupFront, 90, 0.5, 2);
 
     this.menuGroup = new Konva.Group();
 
     this.title = new Konva.Text({
       x: DIMENSIONS.width / 2,
       y: 90,
-      text: 'NOVANUMBER!',
-      fontSize: 58,
+      text: 'NumberNova!',
+      fontSize: 68,
       fontFamily: 'Jersey 10',
       fill: '#ffffff',
       align: 'center'
     });
     this.title.offsetX(this.title.width() / 2);
+
+
 
     // Top left: Logout button
     this.logoutBtn = this.makeButton(80, 40, 'LOG OUT', 120, 40);
@@ -102,17 +97,13 @@ export class MenuScreenView {
     // Create 5 planets between title and buttons
     this.createPlanets();
     
-    // DEBUG: Check if planets were created
-    console.log('Planets created:', this.planetButtons.length);
-    this.planetButtons.forEach((planet, index) => {
-        console.log(`Planet ${index}:`, planet.circle.getAbsolutePosition());
-    });
 
     this.invBtn = this.makeButton(DIMENSIONS.width / 2, 500, 'INVENTORY'); // Moved up from 425
 
     this.layer.add(this.bg);
-    this.layer.add(this.starGroupBack);
-    this.layer.add(this.starGroupFront);
+
+    this.createStars();
+    this.animateStars();
 
     this.menuGroup.add(this.title);
     this.menuGroup.add(this.logoutBtn.group);
@@ -137,9 +128,49 @@ export class MenuScreenView {
     
     // Bind planet events
     this.bindPlanetEvents();
-
-    this.startAnimations();
     this.layer.draw();
+  }
+
+
+   private createStars(): void {
+          this.stars = new Konva.Group({ listening: false });
+  
+      const makeLayer = (count: number, radiusMax: number) => {
+          const g = new Konva.Group({ name: 'starLayer', listening: false });
+          for (let i = 0; i < count; i++) {
+          g.add(new Konva.Circle({
+              x: Math.random() * window.innerWidth - 170,
+              y: Math.random() * window.innerHeight,
+              radius: Math.random() * radiusMax + 0.4,
+              fill: '#ffffff',
+          }));
+          }
+          return g;
+      };
+  
+    // far, mid, near
+    this.stars.add(makeLayer(120, 1.2));
+    this.stars.add(makeLayer(80, 1.8));
+    this.stars.add(makeLayer(40, 2.2));
+  
+    this.layer.add(this.stars);
+  }
+  
+  public animateStars(): void {
+      this.stars.getChildren().forEach((layer: Konva.Group) => {
+          layer.getChildren().forEach((star: Konva.Circle) => {
+              const duration = Math.random() * 3 + 1;
+  
+              const anim = new Konva.Animation((frame) => {
+                  const period = duration * 1000;
+                  const phase = (frame.time % period) / period;
+                  const opacity = 0.4 + Math.sin(phase * Math.PI) * 0.6;
+                  star.opacity(opacity);
+              });
+  
+              anim.start();
+          });
+      });
   }
 
   // Create 5 planets
@@ -173,24 +204,22 @@ export class MenuScreenView {
     });
     
    
-    const text = new Konva.Text({
+    const emojiInPlanet = new Konva.Text({
         x: x,
         y: y - 10, 
         text: icon,
-        fontSize: 24, 
-        fontFamily: 'Jersey 10',
-        fill: '#ffffff',
+        fontSize: 30, 
         align: 'center',
         listening: true
     });
-    text.offsetX(text.width() / 2);
+    emojiInPlanet.offsetX(emojiInPlanet.width() / 2);
     
     
     const label = new Konva.Text({
         x: x,
         y: y + 45, 
         text: `Level ${index + 1}`,
-        fontSize: 14, 
+        fontSize: 20, 
         fontFamily: 'Jersey 10',
         fill: '#ffffff',
         align: 'center',
@@ -199,10 +228,10 @@ export class MenuScreenView {
     label.offsetX(label.width() / 2);
     
     group.add(circle);
-    group.add(text);
+    group.add(emojiInPlanet);
     group.add(label);
     
-    return { group, circle, text };
+    return { group, circle, text: emojiInPlanet };
 }
 
   // Bind planet click events
@@ -264,7 +293,7 @@ export class MenuScreenView {
       x: cx, 
       y: y + height / 2 - 10,
       text: label, 
-      fontSize: width === 120 ? 14 : 20,
+      fontSize: width === 120 ? 18 : 20,
       fontFamily: 'Jersey 10', 
       fill: '#fff', 
       listening: true
@@ -291,22 +320,24 @@ export class MenuScreenView {
       shadowOpacity: 0.3, 
       listening: true
     });
-    const text = new Konva.Text({
+    const emojisInTopIconButtons = new Konva.Text({
       x: cx, 
       y: y + height / 2 - 12,
       text: icon, 
-      fontSize: 20,
+      fontSize: 25,
       fontFamily: 'Jersey 10', 
       fill: '#fff', 
       listening: true,
       align: 'center'
     });
-    text.offsetX(text.width() / 2);
+    emojisInTopIconButtons.offsetX(emojisInTopIconButtons.width() / 2);
     
     group.add(rect);
-    group.add(text);
+    group.add(emojisInTopIconButtons);
+
     
-    return { group, rect, text };
+    
+    return { group, rect, text: emojisInTopIconButtons };
   }
 
   private bindButton(btn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text }, click: VoidFn) {
@@ -340,95 +371,11 @@ export class MenuScreenView {
     this.pulse.play();
   }
 
-  private spawnStars(group: Konva.Group, count: number, opacityBase: number, maxRadius: number) {
-    for (let i = 0; i < count; i++) {
-      const s = new Konva.Circle({
-        x: Math.random() * window.innerWidth - 170,
-        y: Math.random() * window.innerHeight,
-        radius: Math.random() * maxRadius + 0.4,
-        fill: '#ffffff',
-        opacity: opacityBase + Math.random() * 0.4,
-        listening: false
-      });
-      group.add(s);
-    }
-  }
 
-  private startAnimations() {
-    this.floatTitle = new Konva.Tween({
-      node: this.title,
-      duration: 2.4,
-      y: this.title.y() + 7,
-      yoyo: true,
-      repeat: Infinity,
-      easing: Konva.Easings.SineEaseInOut
-    });
-    this.floatTitle.play();
-
-    this.twinkleAnim = new Konva.Animation((frame) => {
-      if (!frame) return;
-      const t = frame.time / 1000;
-      this.starGroupBack.getChildren().each((node, i) => {
-        const r = 0.15 * Math.sin(t * 1.2 + i) + 0.85;
-        node.opacity(r * 0.5);
-      });
-      this.starGroupFront.getChildren().each((node, i) => {
-        const r = 0.25 * Math.sin(t * 1.8 + i * 0.37) + 0.75;
-        node.opacity(r);
-      });
-    }, this.layer);
-    this.twinkleAnim.start();
-
-    this.driftAnim = new Konva.Animation((frame) => {
-      if (!frame) return;
-      this.starGroupBack.x((this.starGroupBack.x() - 0.03) % 100);
-      this.starGroupFront.x((this.starGroupFront.x() - 0.06) % 100);
-    }, this.layer);
-    this.driftAnim.start();
-
-    this.startShootingStar();
-  }
-
-  private startShootingStar() {
-    let cooldown = 0;
-    this.shootingAnim = new Konva.Animation((frame) => {
-      if (!frame) return;
-      if (!this.shooting && cooldown <= 0) {
-        const y = 40 + Math.random() * (DIMENSIONS.height * 0.6);
-        const x = -120;
-        const len = 140 + Math.random() * 120;
-        this.shooting = new Konva.Line({
-          points: [x, y, x + len, y + len * 0.25],
-          stroke: 'rgba(255,255,255,0.8)',
-          strokeWidth: 2,
-          shadowBlur: 18,
-          shadowColor: '#fff',
-          listening: false
-        });
-        this.layer.add(this.shooting);
-        cooldown = 3000 + Math.random() * 4000;
-      }
-      if (this.shooting) {
-        this.shooting.points(this.shooting.points().map((v, idx) => v + (idx % 2 === 0 ? 3.2 : 0.8)));
-        if (this.shooting.points()[0] > DIMENSIONS.width + 80) {
-          this.shooting.destroy();
-          this.shooting = null;
-        }
-      } else {
-        cooldown -= frame.timeDiff;
-      }
-    }, this.layer);
-    this.shootingAnim.start();
-  }
 
   destroy() {
-    this.floatTitle?.destroy();
     this.twinkleAnim?.stop();
-    this.driftAnim?.stop();
-    this.shootingAnim?.stop();
     this.menuGroup.destroy();
-    this.starGroupFront.destroy();
-    this.starGroupBack.destroy();
     this.bg.destroy();
     this.layer.batchDraw();
   }

@@ -40,28 +40,44 @@ export class LoginScreenView {
     private createStars(): void {
         this.stars = new Konva.Group({ listening: false });
 
-    const makeLayer = (count: number, radiusMax: number, opacity: number, speed: number) => {
+    const makeLayer = (count: number, radiusMax: number) => {
         const g = new Konva.Group({ name: 'starLayer', listening: false });
-        g.setAttr('speed', speed);
         for (let i = 0; i < count; i++) {
         g.add(new Konva.Circle({
             x: Math.random() * window.innerWidth - 170,
             y: Math.random() * window.innerHeight,
             radius: Math.random() * radiusMax + 0.4,
             fill: '#ffffff',
-            opacity: opacity * (0.5 + Math.random() * 0.5)
         }));
         }
         return g;
     };
 
   // far, mid, near
-  this.stars.add(makeLayer(120, 1.2, 0.5, 0.05));
-  this.stars.add(makeLayer(80, 1.8, 0.7, 0.12));
-  this.stars.add(makeLayer(40, 2.2, 0.9, 0.22));
+  this.stars.add(makeLayer(120, 1.2));
+  this.stars.add(makeLayer(80, 1.8));
+  this.stars.add(makeLayer(40, 2.2));
 
   this.layer.add(this.stars);
 }
+
+public animateStars(): void {
+    this.stars.getChildren().forEach((layer: Konva.Group) => {
+        layer.getChildren().forEach((star: Konva.Circle) => {
+            const duration = Math.random() * 3 + 1;
+
+            const anim = new Konva.Animation((frame) => {
+                const period = duration * 1000;
+                const phase = (frame.time % period) / period;
+                const opacity = 0.4 + Math.sin(phase * Math.PI) * 0.6;
+                star.opacity(opacity);
+            });
+
+            anim.start();
+        });
+    });
+}
+
 
 
 
@@ -264,7 +280,7 @@ export class LoginScreenView {
         group.add(background);
         group.add(buttonText);
         
-        // Add hover effects
+     // Add hover effects
         group.on('mouseenter', () => {
             background.fill(COLORS.primaryLight);
             document.body.style.cursor = 'pointer';
@@ -296,25 +312,8 @@ export class LoginScreenView {
         return this.passwordInput.getValue();
     }
     
-    public animateStars(): void {
-        this.stars.children.forEach((star: Konva.Node) => {
-            const duration = Math.random() * 3 + 1;
-            
-            // Create a looping animation for each star individually
-            const anim = new Konva.Animation((frame) => {
-                const period = duration * 1000; // Convert to milliseconds
-                const phase = (frame.time % period) / period;
-                const opacity = 0.2 + Math.sin(phase * Math.PI) * 0.6;
-                star.opacity(opacity);
-            });
-            
-            anim.start();
-        });
-    }
     
     public focusEmailInput(): void {
         this.emailInput.focus();
     }
-
-
 }
