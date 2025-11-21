@@ -7,6 +7,7 @@ export class GamePlayScreenView {
   private layer: Konva.Layer;
   private group: Konva.Group;
   private config: WorldConfig;
+  private playerShipColor: string;
 
   // UI Elements
   private background!: Konva.Rect;
@@ -45,9 +46,10 @@ export class GamePlayScreenView {
   private onCardClickCallback?: (card: Card) => void;
   private onSlotClickCallback?: (slotIndex: number) => void;
 
-  constructor(layer: Konva.Layer, config: WorldConfig) {
+  constructor(layer: Konva.Layer, config: WorldConfig, playerShipColor?: string) {
     this.layer = layer;
     this.config = config;
+    this.playerShipColor = playerShipColor || config.colors.player; // Use provided color or default
     this.group = new Konva.Group();
     this.layer.add(this.group);
     this.createUI();
@@ -213,8 +215,8 @@ export class GamePlayScreenView {
     this.swapButton = this.createSwapButton(slotStartX + 95, slotY - 40);
     this.group.add(this.swapButton);
 
-    // Player character (stick figure - blue) with arm - bigger
-    this.playerCharacter = this.createCharacter(centerX, centerY, this.config.colors.player, 'player');
+    // Player character (stick figure) with arm - uses user's ship color from database
+    this.playerCharacter = this.createCharacter(centerX, centerY, this.playerShipColor, 'player');
     this.group.add(this.playerCharacter);
 
     // Lives (hearts) to the left side of player - moved up and left

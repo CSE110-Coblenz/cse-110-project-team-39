@@ -53,7 +53,9 @@ export class LeaderboardScreenController extends BaseScreen {
         });
     }
 
-    public show(): void {
+    public async show(): Promise<void> {
         super.show();
+        // Reload leaderboard data every time screen is shown to reflect updated stats
+        await this.loadLeaderboardData();
     }
 }

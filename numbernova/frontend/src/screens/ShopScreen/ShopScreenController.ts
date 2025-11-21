@@ -57,8 +57,37 @@ export class ShopScreenController extends BaseScreen {
         }
     }
 
-    public show(): void {
+    public async show(): Promise<void> {
         super.show();
+
+        // Reload shop data every time screen is shown to reflect updated tokens/colors
+        if (this.model && this.view) {
+            await this.refreshShopData();
+        }
+    }
+
+    private async refreshShopData(): Promise<void> {
+        try {
+            const currentUser = await getCurrentUser();
+            if (!currentUser) return;
+
+            const userProfile = await getUserProfile(currentUser.id);
+            if (!userProfile) return;
+
+            // Update model with fresh data
+            this.model = new ShopScreenModel(currentUser.id, {
+                tokens: userProfile.tokens,
+                ship_color: userProfile.ship_color,
+                unlocked_colors: userProfile.unlocked_colors as Record<string, boolean>
+            });
+
+            // Update view with new data
+            this.view.updateShop(this.model.getColors(), this.model.getColorsUnlocked());
+            this.view.updatePerson(this.model.getCurrentColor());
+            this.view.updateCurrencyDisplay(this.model.getCurrency());
+        } catch (error) {
+            console.error('Error refreshing shop data:', error);
+        }
     }
 
     private setupEventListeners(): void {
