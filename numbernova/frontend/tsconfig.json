@@ -5,7 +5,7 @@
 		"moduleDetection": "force",
 
 		// Ignore module structure
-		"module": "Preserve",
+		"module": "ESNext",
 
 		// Allow JSON modules to be imported
 		"resolveJsonModule": true,
@@ -19,11 +19,10 @@
 		// Disallow features that require cross-file awareness
 		"isolatedModules": true,
 
-		"target": "es2020",
-		"module": "commonjs",
+		"target": "ES2020",
 		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true
+		"skipLibCheck": true,
+		"lib": ["ES2020", "DOM", "DOM.Iterable"]
 	},
 	"include": ["src"]
 }

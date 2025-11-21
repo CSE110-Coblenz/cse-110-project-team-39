@@ -27,6 +27,7 @@ export type Database = {
           score: number
           ship_color: string
           tokens: number
+          unlocked_colors: Json
           updated_at: string
         }
         Insert: {
@@ -41,6 +42,7 @@ export type Database = {
           score?: number
           ship_color?: string
           tokens?: number
+          unlocked_colors?: Json
           updated_at?: string
         }
         Update: {
@@ -55,6 +57,7 @@ export type Database = {
           score?: number
           ship_color?: string
           tokens?: number
+          unlocked_colors?: Json
           updated_at?: string
         }
         Relationships: []

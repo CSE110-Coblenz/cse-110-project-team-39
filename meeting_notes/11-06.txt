@@ -1,0 +1,5 @@
+assigned ashish (CI/CD pipeline), halvor (work on main game screen. level 1 first, but standardize)
+discussed logistics of project (what we need to have done)
+discussed SCRUM roles and who will get what role (still undecided)
+went over tasks and worked on making them more clear, assigning times and clearing up unclear tasks
+today was a "stand up" meeting
