@@ -6,6 +6,10 @@ An interactive educational math game designed for 2nd and 3rd graders. Players t
 
 NumberNova is a single-player card-based game where players create mathematical expressions to defeat aliens and progress through five unique worlds. Each world introduces new operations and difficulty levels, helping students practice fundamental arithmetic skills in an engaging, game-based environment.
 
+## 🔐 User Authentication 
+
+Upon launching the game app on your screen, users will be prompted to log into their account by filling in their email address and password. If users do not have an account created yet, please click the "Create Account" button to fill in the required credentials and sign up to NumberNova.
+
 ## 🎮 Game Mechanics
 
 Players are dealt number and operation cards each round. They must:
