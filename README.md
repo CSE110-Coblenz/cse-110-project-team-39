@@ -10,13 +10,13 @@ NumberNova is a single-player card-based game where players create mathematical 
 
 Upon launching the game app, users will first be prompted to log into their account by filling in their email address and password. 
 
-<img width="1628" height="928" alt="Screen Shot 2025-11-22 at 3 39 34 PM" src="https://github.com/user-attachments/assets/4c654d3c-7111-416d-ad2c-2610396d7acb" />
+<img width="728" height="928" alt="Screen Shot 2025-11-22 at 3 39 34 PM" src="https://github.com/user-attachments/assets/4c654d3c-7111-416d-ad2c-2610396d7acb" />
 
 
 
 If users do not have an account created yet, please click the "Create Account" button to fill in the required credentials and sign up to NumberNova.
 
-<img width="128" height="920" alt="Screen Shot 2025-11-22 at 3 39 57 PM" src="https://github.com/user-attachments/assets/58eb5b1c-d431-4550-bd5d-861abbc675cd" />
+<img width="728" height="920" alt="Screen Shot 2025-11-22 at 3 39 57 PM" src="https://github.com/user-attachments/assets/58eb5b1c-d431-4550-bd5d-861abbc675cd" />
 
 
 
