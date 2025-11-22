@@ -16,7 +16,7 @@ Upon launching the game app, users will first be prompted to log into their acco
 
 If users do not have an account created yet, please click the "Create Account" button to fill in the required credentials and sign up to NumberNova.
 
-  - <img width="370" height="365" alt="Screen Shot 2025-11-22 at 3 44 56 PM" src="https://github.com/user-attachments/assets/35b497c6-ba76-4ebc-8fe7-594238ee4156" />
+  - <img width="370" height="405" alt="Screen Shot 2025-11-22 at 3 44 56 PM" src="https://github.com/user-attachments/assets/35b497c6-ba76-4ebc-8fe7-594238ee4156" />
 
 
 
