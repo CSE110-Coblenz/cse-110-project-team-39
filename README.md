@@ -40,7 +40,7 @@ npm run dev
 
 The game will be available at `http://localhost:5173`
 
-## Team
+## 👥 Team
 
 This project was developed for CSE 110 with Professor Michael J Coblenz in Fall 2025 at UC San Diego.
 
