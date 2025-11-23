@@ -25,12 +25,25 @@ export class GameplayScreenController extends BaseScreen {
     this.model = new GamePlayScreenModel(config);
     this.view = new GamePlayScreenView(this.container, config);
 
+    this.setupScreenTransitionEvents();
     this.setupEventHandlers();
     this.render();
   }
 
+  private setupScreenTransitionEvents(): void {
+    this.model.onGameComplete(() => {
+      console.log('Game completed! Switching to win screen...');
+      this.screenManager.switchTo('win');
+    });
+
+    this.model.onGameLost(() => {
+      console.log('Game lost! Switching to lose screen...');
+      this.screenManager.switchTo('lose');
+    });
+  }
+
   private setupEventHandlers(): void {
-    // Exit button
+    // Exit button - MIRRORING menu logout pattern
     this.view.onExit(() => {
       console.log('Exiting game...');
       this.screenManager.switchTo('menu');
@@ -98,21 +111,20 @@ export class GameplayScreenController extends BaseScreen {
     setTimeout(() => {
       const gameState = this.model.getGameState();
 
-      if (gameState === 'complete') {
-        console.log('Player wins the planet!');
-        // TODO: Navigate to victory screen
-        this.screenManager.switchTo('menu');
-      } else if (gameState === 'lost') {
-        console.log('Player lost all lives!');
-        // TODO: Navigate to lose screen
-        this.screenManager.switchTo('menu');
-      } else if (result.won) {
-        this.model.nextRound();
-        this.render();
-      } else {
-        this.model.nextRound();
-        this.render();
+      // REMOVED the manual screen switching from here
+      // The events set up in setupScreenTransitionEvents() will handle it automatically
+      
+      if (gameState === 'playing') {
+        if (result.won) {
+          this.model.nextRound();
+          this.render();
+        } else {
+          this.model.nextRound();
+          this.render();
+        }
       }
+      // When gameState is 'complete' or 'lost', the events will automatically trigger
+      // and switch to the appropriate screen
     }, 2200);
   }
 

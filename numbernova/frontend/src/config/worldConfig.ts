@@ -24,7 +24,7 @@ export interface WorldConfig {
 export const WORLD_1_CONFIG: WorldConfig = {
   worldNumber: 1,
   planetName: 'Planet Nexus',
-  alienCount: 10,
+  alienCount: 2,
   operations: ['+', '-'],
   numberRange: { min: 1, max: 8 },
   expressionSlots: 3,
