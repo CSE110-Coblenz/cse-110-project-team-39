@@ -46,6 +46,14 @@ The game features:
 
 The frontend is built with **TypeScript** and **Konva.js**, using an MVC architecture for a clean separation of game logic, rendering, and user interaction.
 
+| Layer        | Technology         |
+|--------------|--------------------|
+| Frontend     | TypeScript + KonvaJS       |
+| Backend      | PostgreSQL |
+| Database     | Supabase              |
+| Dev Tools	   | Git, GitHub Actions, CI/CD pipelines, YAML |
+---
+
 ## 🚀 Getting Started
 
 ```bash
