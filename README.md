@@ -35,7 +35,7 @@ The game features:
   - World 3: Low number multiplication & division (1–8)  
   - World 4: Higher number multiplication & division (6–12)  
   - World 5: Factorials & exponents (2–6)
-  - <img width="1356" height="655" alt="Screen Shot 2025-11-22 at 4 07 04 PM" src="https://github.com/user-attachments/assets/70285954-1414-4d17-8658-930bded1c920" />
+  - <img width="956" height="615" alt="Screen Shot 2025-11-22 at 4 07 04 PM" src="https://github.com/user-attachments/assets/70285954-1414-4d17-8658-930bded1c920" />
 
 - **Dynamic Difficulty** – Expressions are generated to ensure every round is both winnable and losable  
 - **Lives System** – 3 lives per world  
