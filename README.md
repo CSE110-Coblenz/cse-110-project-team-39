@@ -37,6 +37,8 @@ The game features:
   - World 5: Factorials & exponents (2–6)
   - <img width="956" height="615" alt="Screen Shot 2025-11-22 at 4 07 04 PM" src="https://github.com/user-attachments/assets/70285954-1414-4d17-8658-930bded1c920" />
 
+  
+
 - **Dynamic Difficulty** – Expressions are generated to ensure every round is both winnable and losable  
 - **Lives System** – 3 lives per world  
 - **Score Tracking** – Points awarded for each alien defeated  
