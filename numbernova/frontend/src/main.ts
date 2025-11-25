@@ -5,6 +5,7 @@ import { MenuScreenController } from './screens/MenuScreen/MenuScreenController'
 import { ShopScreenController } from './screens/ShopScreen/ShopScreenController';
 import { LeaderboardScreenController } from './screens/LeaderboardScreen/LeaderboardScreenController';
 import { ProfileScreenController } from './screens/ProfileScreen/ProfileScreenController';
+import { InventoryScreenController } from './screens/InventoryScreen/InventoryScreenController';
 import { LaunchTransitionScreenController } from './screens/LaunchTransitionScreen/LaunchTransitionScreenController';
 import { GameplayScreenController } from './screens/GameplayScreen/GameplayScreenController';
 import { DIMENSIONS } from './constants';
@@ -36,6 +37,7 @@ class NumberNovaApp {
         this.screenManager.registerScreen('shop', new ShopScreenController(this.screenManager));
         this.screenManager.registerScreen('leaderboard', new LeaderboardScreenController(this.screenManager));
         this.screenManager.registerScreen('profile', new ProfileScreenController(this.screenManager));
+        this.screenManager.registerScreen('inventory', new InventoryScreenController(this.screenManager));
 
         // Create and register launch transition (stored for setting planet number)
         this.launchTransitionScreen = new LaunchTransitionScreenController(this.screenManager);
