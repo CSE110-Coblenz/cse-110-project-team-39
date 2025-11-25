@@ -53,7 +53,8 @@ export class InventoryScreenController extends BaseScreen {
             fontSize: 16,
             fontFamily: 'Jersey 10',
             fill: '#ffffff',
-            align: 'center'
+            align: 'center',
+            listening: false
         });
         text.offsetX(text.width() / 2);
 
