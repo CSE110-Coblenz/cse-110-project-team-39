@@ -23,6 +23,7 @@ export class MenuScreenView {
 
   private twinkleAnim?: Konva.Animation;
   private pulse?: Konva.Tween;
+  private planetTweens: Map<number, Konva.Tween> = new Map();
 
   private inventoryHandlers: VoidFn[] = [];
   private logoutHandlers: VoidFn[] = [];
@@ -239,19 +240,19 @@ export class MenuScreenView {
     this.planetButtons.forEach((planet, index) => {
       const enter = () => {
         document.body.style.cursor = 'pointer';
-        this.bumpPlanet(planet, true);
+        this.bumpPlanet(planet, index, true);
       };
-      
+
       const leave = () => {
         document.body.style.cursor = 'default';
-        this.bumpPlanet(planet, false);
+        this.bumpPlanet(planet, index, false);
       };
-      
+
       const click = () => {
         console.log(`Planet ${index + 1} clicked!`);
         this.emitPlanetClick(index);
       };
-      
+
       planet.circle.on('mouseenter', enter);
       planet.text.on('mouseenter', enter);
       planet.circle.on('mouseleave', leave);
@@ -262,81 +263,92 @@ export class MenuScreenView {
   }
 
   // Planet hover animation
-  private bumpPlanet(planet: { circle: Konva.Circle }, hover: boolean) {
-    this.pulse?.destroy();
-    this.pulse = new Konva.Tween({
+  private bumpPlanet(planet: { circle: Konva.Circle }, index: number, hover: boolean) {
+    // Destroy existing tween for this planet if any
+    const existingTween = this.planetTweens.get(index);
+    if (existingTween) {
+      existingTween.destroy();
+    }
+
+    const tween = new Konva.Tween({
       node: planet.circle,
       duration: 0.2,
       scaleX: hover ? 1.15 : 1,
       scaleY: hover ? 1.15 : 1,
       shadowBlur: hover ? 25 : 15
     });
-    this.pulse.play();
+
+    this.planetTweens.set(index, tween);
+    tween.play();
   }
 
   // Existing button creation methods...
   private makeButton(cx: number, y: number, label: string, width: number = 240, height: number = 56) {
     const group = new Konva.Group();
     const rect = new Konva.Rect({
-      x: cx - width / 2, 
-      y, 
-      width: width, 
-      height: height, 
+      x: cx,
+      y: y + height / 2,
+      width: width,
+      height: height,
+      offsetX: width / 2,
+      offsetY: height / 2,
       cornerRadius: 12,
       fill: COLORS?.primary ?? '#7b61ff',
-      shadowColor: '#000', 
-      shadowBlur: 16, 
-      shadowOpacity: 0.3, 
+      shadowColor: '#000',
+      shadowBlur: 16,
+      shadowOpacity: 0.3,
       listening: true
     });
     const text = new Konva.Text({
-      x: cx, 
+      x: cx,
       y: y + height / 2 - 10,
-      text: label, 
+      text: label,
       fontSize: width === 120 ? 18 : 20,
-      fontFamily: 'Jersey 10', 
-      fill: '#fff', 
+      fontFamily: 'Jersey 10',
+      fill: '#fff',
       listening: true
     });
     text.offsetX(text.width() / 2);
-    
+
     group.add(rect);
     group.add(text);
-    
+
     return { group, rect, text };
   }
 
   private makeIconButton(cx: number, y: number, icon: string, width: number = 50, height: number = 50) {
     const group = new Konva.Group();
     const rect = new Konva.Rect({
-      x: cx - width / 2, 
-      y, 
-      width: width, 
-      height: height, 
+      x: cx,
+      y: y + height / 2,
+      width: width,
+      height: height,
+      offsetX: width / 2,
+      offsetY: height / 2,
       cornerRadius: width / 2,
       fill: COLORS?.primary ?? '#7b61ff',
-      shadowColor: '#000', 
-      shadowBlur: 12, 
-      shadowOpacity: 0.3, 
+      shadowColor: '#000',
+      shadowBlur: 12,
+      shadowOpacity: 0.3,
       listening: true
     });
     const emojisInTopIconButtons = new Konva.Text({
-      x: cx, 
+      x: cx,
       y: y + height / 2 - 12,
-      text: icon, 
+      text: icon,
       fontSize: 25,
-      fontFamily: 'Jersey 10', 
-      fill: '#fff', 
+      fontFamily: 'Jersey 10',
+      fill: '#fff',
       listening: true,
       align: 'center'
     });
     emojisInTopIconButtons.offsetX(emojisInTopIconButtons.width() / 2);
-    
+
     group.add(rect);
     group.add(emojisInTopIconButtons);
 
-    
-    
+
+
     return { group, rect, text: emojisInTopIconButtons };
   }
 
