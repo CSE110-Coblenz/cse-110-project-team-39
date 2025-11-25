@@ -78,7 +78,7 @@ export class LeaderboardScreenView {
         this.title = new Konva.Text({
             x: DIMENSIONS.width / 2,
             y: 50,
-            text: 'Leader Board',
+            text: 'Leaderboard',
             fontSize: 42,
             fontFamily: 'Jersey 10',
             fill: COLORS.text,
