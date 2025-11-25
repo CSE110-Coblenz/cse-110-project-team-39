@@ -155,6 +155,7 @@ export class GamePlayScreenView {
     this.exitButton.on('click tap', () => this.onExitCallback?.());
     this.addButtonHover(exitBg, true);
     this.group.add(this.exitButton);
+    this.exitButton.moveToTop();
 
     // Title (with !)
     const title = new Konva.Text({
@@ -168,6 +169,7 @@ export class GamePlayScreenView {
       align: 'center'
     });
     this.group.add(title);
+    title.moveToTop();
 
     // Score and aliens left (moved farther right)
     this.scoreText = new Konva.Text({
@@ -191,6 +193,8 @@ export class GamePlayScreenView {
       align: 'right'
     });
     this.group.add(this.scoreText, this.aliensLeftText);
+    this.scoreText.moveToTop();
+    this.aliensLeftText.moveToTop();
   }
 
   private createPlayerArea(): void {
@@ -206,28 +210,34 @@ export class GamePlayScreenView {
     const leftSlot = this.createExpressionSlot(slotStartX, slotY, 0, 'number');
     this.playerExpressionSlots.push(leftSlot);
     this.group.add(leftSlot);
+    leftSlot.moveToTop();
 
     // Operation slot (index 1)
     const opSlot = this.createExpressionSlot(slotStartX + 95, slotY, 1, 'operation');
     this.playerExpressionSlots.push(opSlot);
     this.group.add(opSlot);
+    opSlot.moveToTop();
 
     // Right number slot (index 2)
     const rightSlot = this.createExpressionSlot(slotStartX + 190, slotY, 2, 'number');
     this.playerExpressionSlots.push(rightSlot);
     this.group.add(rightSlot);
+    rightSlot.moveToTop();
 
     // Swap button between number slots
     this.swapButton = this.createSwapButton(slotStartX + 95, slotY - 40);
     this.group.add(this.swapButton);
+    this.swapButton.moveToTop();
 
     // Player character (stick figure - blue) with arm - bigger
     this.playerCharacter = this.createCharacter(centerX, centerY, this.config.colors.player, 'player');
     this.group.add(this.playerCharacter);
+    this.playerCharacter.moveToTop();
 
     // Lives (hearts) to the left side of player - moved up and left
     this.livesGroup = new Konva.Group({ x: centerX - 140, y: centerY + 10 });
     this.group.add(this.livesGroup);
+    this.livesGroup.moveToTop();
 
     // Player result text (hidden - removed for gameplay)
     this.playerResultText = new Konva.Text({
@@ -257,20 +267,24 @@ export class GamePlayScreenView {
     const leftSlot = this.createExpressionSlot(slotStartX, slotY, -1, 'number', true);
     this.alienExpressionSlots.push(leftSlot);
     this.group.add(leftSlot);
+    leftSlot.moveToTop();
 
     // Operation slot
     const opSlot = this.createExpressionSlot(slotStartX + 95, slotY, -1, 'operation', true);
     this.alienExpressionSlots.push(opSlot);
     this.group.add(opSlot);
+    opSlot.moveToTop();
 
     // Right number slot
     const rightSlot = this.createExpressionSlot(slotStartX + 190, slotY, -1, 'number', true);
     this.alienExpressionSlots.push(rightSlot);
     this.group.add(rightSlot);
+    rightSlot.moveToTop();
 
     // Alien character (stick figure - green) with arm
     this.alienCharacter = this.createCharacter(centerX, centerY, '#2d8659', 'alien'); // Darker green
     this.group.add(this.alienCharacter);
+    this.alienCharacter.moveToTop();
 
     // Alien result text (hidden - removed for gameplay)
     this.alienResultText = new Konva.Text({
@@ -639,6 +653,7 @@ export class GamePlayScreenView {
       align: 'center'
     });
     this.group.add(numLabel);
+    numLabel.moveToTop();
 
     // Operation Cards label
     const opLabel = new Konva.Text({
@@ -652,9 +667,11 @@ export class GamePlayScreenView {
       align: 'center'
     });
     this.group.add(opLabel);
+    opLabel.moveToTop();
 
     this.handCardsGroup = new Konva.Group();
     this.group.add(this.handCardsGroup);
+    this.handCardsGroup.moveToTop();
   }
 
   private createButtons(): void {
@@ -692,6 +709,7 @@ export class GamePlayScreenView {
     this.fightButton.add(this.fightButtonBg, this.fightButtonText);
     this.fightButton.on('click tap', () => this.onFightCallback?.());
     this.group.add(this.fightButton);
+    this.fightButton.moveToTop();
 
     // Clear button (same size) - positioned lower with shadow and outline - more red
     this.clearButton = new Konva.Group({ x: centerX - 70, y: DIMENSIONS.height - 160 });
@@ -726,6 +744,7 @@ export class GamePlayScreenView {
     this.clearButton.setAttr('bg', this.clearButtonBg);
     this.clearButton.on('click tap', () => this.onClearCallback?.());
     this.group.add(this.clearButton);
+    this.clearButton.moveToTop();
   }
 
   private createCardVisual(card: Card, x: number, y: number): Konva.Group {
