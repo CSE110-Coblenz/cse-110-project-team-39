@@ -1,0 +1,6 @@
+PR has been made for the shop screen and has been merged with main
+backend will update when the player changes colors
+game works, there's different functionality for all five levels
+there's been a bug with the stars on the screen because on some screens the stars cover the entire screen, and on others the stars don't
+things to work on: profile screen, minigame, backend to create points and currency, as well as unlocking levels,
+and the win lose screen
