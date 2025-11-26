@@ -582,6 +582,21 @@ export class GamePlayScreenView {
       });
 
       craterGroup.add(craterCircle);
+
+      // Cache the crater to avoid recalculating clipFunc every frame
+      // Calculate bounds to cover the clipped region
+      const clipStartX = Math.max(-200, crater.x - crater.r - 5);
+      const clipEndX = Math.min(DIMENSIONS.width + 200, crater.x + crater.r + 5);
+      const cacheWidth = clipEndX - clipStartX;
+      const cacheHeight = DIMENSIONS.height + 100 - crater.y + crater.r;
+
+      craterGroup.cache({
+        x: clipStartX,
+        y: crater.y - crater.r - 10,
+        width: cacheWidth,
+        height: cacheHeight
+      });
+
       this.group.add(craterGroup);
     });
 
