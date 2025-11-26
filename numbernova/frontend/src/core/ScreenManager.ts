@@ -80,6 +80,9 @@ export class ScreenManager {
             this.currentScreen.container.remove();
         }
 
+        // Reset cursor to default when switching screens
+        document.body.style.cursor = 'default';
+
         // Add new screen's layer to stage and show it
         this.currentScreen = nextScreen;
         this.currentScreenName = screenName;
