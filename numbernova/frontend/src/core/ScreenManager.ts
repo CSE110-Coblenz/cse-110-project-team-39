@@ -62,7 +62,7 @@ export class ScreenManager {
 
     public registerScreen(name: string, screen: IScreen): void {
         this.screens.set(name, screen);
-        this.stage.add(screen.container);
+        // Don't add to stage yet - will add when switching to it
         screen.hide();
     }
 
@@ -74,14 +74,16 @@ export class ScreenManager {
             return;
         }
 
-        // Hide current screen
+        // Remove current screen's layer from stage
         if (this.currentScreen) {
             this.currentScreen.hide();
+            this.currentScreen.container.remove();
         }
 
-        // Show new screen
+        // Add new screen's layer to stage and show it
         this.currentScreen = nextScreen;
         this.currentScreenName = screenName;
+        this.stage.add(this.currentScreen.container);
         this.currentScreen.show();
         this.stage.draw();
     }

@@ -121,12 +121,12 @@ export class LoginScreenView {
         
         this.createAccountButton.on('mouseenter', () => {
             this.createAccountButton.fill(COLORS.text);
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         this.createAccountButton.on('mouseleave', () => {
             this.createAccountButton.fill(COLORS.primaryLight);
-            this.layer.draw();
+            this.layer.batchDraw();
         });
 
         // Add this right after the `const loginBox = new Konva.Rect({...});` line inside createLoginForm()
@@ -235,13 +235,13 @@ export class LoginScreenView {
         group.on('mouseenter', () => {
             background.fill(COLORS.primaryLight);
             document.body.style.cursor = 'pointer';
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         group.on('mouseleave', () => {
             background.fill(COLORS.primary);
             document.body.style.cursor = 'default';
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         return group;

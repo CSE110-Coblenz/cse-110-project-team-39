@@ -124,7 +124,7 @@ export class MenuScreenView {
     
     // Bind planet events
     this.bindPlanetEvents();
-    this.layer.draw();
+    this.layer.batchDraw();
   }
 
 

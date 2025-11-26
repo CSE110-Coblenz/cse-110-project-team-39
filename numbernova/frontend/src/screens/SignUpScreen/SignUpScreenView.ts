@@ -139,12 +139,12 @@ export class SignUpScreenView {
         
         this.loginButton.on('mouseenter', () => {
             this.loginButton.fill(COLORS.text);
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         this.loginButton.on('mouseleave', () => {
             this.loginButton.fill(COLORS.primaryLight);
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         // Add all elements to signup form
@@ -280,13 +280,13 @@ export class SignUpScreenView {
         group.on('mouseenter', () => {
             background.fill(COLORS.primaryLight);
             document.body.style.cursor = 'pointer';
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         group.on('mouseleave', () => {
             background.fill(COLORS.primary);
             document.body.style.cursor = 'default';
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         return group;

@@ -154,7 +154,7 @@ export class ShopScreenView {
         //create the currency display with the current amount
         this.drawCurrencyDisplay(currency);
 
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 
     //private method to draw the shop
@@ -349,14 +349,14 @@ export class ShopScreenView {
     public updatePerson(color: string){
         this.personGroup.destroyChildren();
         this.drawPerson(color);
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 
     //redraw the currency display with a new amount
     public updateCurrencyDisplay(currency: number){
         this.currencyText.text(`Currency: ${currency}`);
         this.currencyText.offsetX(this.currencyText.width() / 2);
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 
     //redraw the shop with ne= unlocked colors
@@ -367,6 +367,6 @@ export class ShopScreenView {
             colorsUnlocked
         );
         this.attachEventHandlers();
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 }

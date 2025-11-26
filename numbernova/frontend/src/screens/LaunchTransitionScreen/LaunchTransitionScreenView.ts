@@ -54,6 +54,20 @@ export class LaunchTransitionScreenView {
     this.spaceship.position({ x: -100, y: DIMENSIONS.height / 2 });
     this.group.add(this.spaceship);
 
+    // Start flame animation after spaceship is added to layer
+    const flame = this.spaceship.findOne('.flame');
+    if (flame) {
+      const flameAnim = new Konva.Tween({
+        node: flame,
+        duration: 0.2,
+        scaleX: 0.7,
+        opacity: 0.5,
+        yoyo: true,
+        repeat: -1
+      });
+      flameAnim.play();
+    }
+
     // Create message text
     this.messageText = new Konva.Text({
       x: 0,
@@ -161,23 +175,13 @@ export class LaunchTransitionScreenView {
       fill: '#60a5fa'
     });
 
-    // Flame (animated)
+    // Flame (animated) - add name for later reference
     const flame = new Konva.Path({
+      name: 'flame',
       data: 'M -10,-8 L -20,-5 L -15,0 L -20,5 L -10,8 Z',
       fill: '#ff6b6b',
       opacity: 0.8
     });
-
-    // Animate flame
-    const flameAnim = new Konva.Tween({
-      node: flame,
-      duration: 0.2,
-      scaleX: 0.7,
-      opacity: 0.5,
-      yoyo: true,
-      repeat: -1
-    });
-    flameAnim.play();
 
     ship.add(flame);
     ship.add(body);

@@ -761,12 +761,10 @@ export class GamePlayScreenView {
       duration: 0.12,
       easing: Konva.Easings.EaseOut,
       onFinish: () => {
-        this.layer.batchDraw();
         onComplete?.();
       }
     });
     tween.play();
-    this.layer.batchDraw();
   }
 
   public animateCardFromSlotToHand(slotIndex: number, onComplete?: () => void): void {
@@ -809,7 +807,6 @@ export class GamePlayScreenView {
       duration: 0.12,
       easing: Konva.Easings.EaseOut,
       onFinish: () => {
-        this.layer.batchDraw();
         onComplete?.();
       }
     });
@@ -837,10 +834,7 @@ export class GamePlayScreenView {
             const shake3 = new Konva.Tween({
               node: cardVisual,
               x: originalX,
-              duration: 0.05,
-              onFinish: () => {
-                this.layer.batchDraw();
-              }
+              duration: 0.05
             });
             shake3.play();
           }
@@ -896,10 +890,7 @@ export class GamePlayScreenView {
           x: targetX,
           y: targetY,
           duration: 0.15,
-          easing: Konva.Easings.EaseInOut,
-          onFinish: () => {
-            this.layer.batchDraw();
-          }
+          easing: Konva.Easings.EaseInOut
         });
         tween.play();
         visual.setAttr('originalX', targetX);
@@ -928,10 +919,7 @@ export class GamePlayScreenView {
           x: targetX,
           y: targetY,
           duration: 0.15,
-          easing: Konva.Easings.EaseInOut,
-          onFinish: () => {
-            this.layer.batchDraw();
-          }
+          easing: Konva.Easings.EaseInOut
         });
         tween.play();
         visual.setAttr('originalX', targetX);
@@ -990,7 +978,6 @@ export class GamePlayScreenView {
         duration: 0.12,
         easing: Konva.Easings.EaseInOut,
         onFinish: () => {
-          this.layer.batchDraw();
           finishAnimation();
         }
       });
@@ -1002,14 +989,12 @@ export class GamePlayScreenView {
         duration: 0.12,
         easing: Konva.Easings.EaseInOut,
         onFinish: () => {
-          this.layer.batchDraw();
           finishAnimation();
         }
       });
 
       leftTween.play();
       rightTween.play();
-      this.layer.batchDraw();
     } else if (leftCardVisual) {
       // Only left card - move to right
       const tween = new Konva.Tween({
@@ -1019,12 +1004,10 @@ export class GamePlayScreenView {
         duration: 0.12,
         easing: Konva.Easings.EaseInOut,
         onFinish: () => {
-          this.layer.batchDraw();
           finishAnimation();
         }
       });
       tween.play();
-      this.layer.batchDraw();
     } else if (rightCardVisual) {
       // Only right card - move to left
       const tween = new Konva.Tween({
@@ -1034,12 +1017,10 @@ export class GamePlayScreenView {
         duration: 0.12,
         easing: Konva.Easings.EaseInOut,
         onFinish: () => {
-          this.layer.batchDraw();
           finishAnimation();
         }
       });
       tween.play();
-      this.layer.batchDraw();
     }
   }
 

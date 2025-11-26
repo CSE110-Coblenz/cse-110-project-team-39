@@ -166,7 +166,7 @@ export class LeaderboardScreenView {
             this.leaderboardEntries.push(userEntry);
         }
 
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 
     private createLeaderboardEntry(
