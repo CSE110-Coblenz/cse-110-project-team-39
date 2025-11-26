@@ -160,7 +160,7 @@ export class GamePlayScreenModel {
           num2 = Math.max(1, Math.floor(Math.random() * (this.config.numberRange.max - this.config.numberRange.min + 1)) + this.config.numberRange.min);
           num1 = Math.max(this.config.numberRange.min, Math.min(this.config.numberRange.max, targetResult * num2));
         }
-        result = Math.floor(num1 / num2);
+        result = parseFloat((num1 / num2).toFixed(1));
       } else {
         // Fallback
         num1 = this.config.numberRange.min;
@@ -205,7 +205,7 @@ export class GamePlayScreenModel {
             if (op === '+') result = numbers[i] + numbers[j];
             else if (op === '-') result = numbers[i] - numbers[j];
             else if (op === '×') result = numbers[i] * numbers[j];
-            else if (op === '÷' && numbers[j] !== 0) result = Math.floor(numbers[i] / numbers[j]);
+            else if (op === '÷' && numbers[j] !== 0) result = parseFloat((numbers[i] / numbers[j]).toFixed(1));
             else if (op === '^') result = Math.pow(numbers[i], numbers[j]);
 
             min = Math.min(min, result);
@@ -472,7 +472,7 @@ export class GamePlayScreenModel {
     if (op === '+') return num1 + num2;
     if (op === '-') return num1 - num2;
     if (op === '×') return num1 * num2;
-    if (op === '÷' && num2 !== 0) return Math.floor(num1 / num2);
+    if (op === '÷' && num2 !== 0) return parseFloat((num1 / num2).toFixed(1));
     if (op === '^') return Math.pow(num1, num2);
 
     return num1;
