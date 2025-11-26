@@ -24,7 +24,7 @@ export class LeaderboardScreenView {
             y: 0,
             width: DIMENSIONS.width,
             height: DIMENSIONS.height,
-            fill: COLORS.background
+            fill: 'transparent'
         });
         this.layer.add(this.background);
     }

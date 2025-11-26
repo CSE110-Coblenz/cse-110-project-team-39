@@ -20,23 +20,16 @@ export class LaunchTransitionScreenView {
     // Clear any previous animation elements
     this.group.destroyChildren();
 
-    // Create background
+    // Create transparent background - stars will show through
     this.background = new Konva.Rect({
       x: 0,
       y: 0,
       width: DIMENSIONS.width,
       height: DIMENSIONS.height,
-      fill: COLORS.background,
-      opacity: 0
-    });
-    this.group.add(this.background);
-
-    // Fade in background
-    const fadeInBg = new Konva.Tween({
-      node: this.background,
-      duration: 0.5,
+      fill: 'transparent',
       opacity: 1
     });
+    this.group.add(this.background);
 
     // Create planet - use world config colors (matching menu screen)
     const planetColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
@@ -82,8 +75,7 @@ export class LaunchTransitionScreenView {
     });
     this.group.add(this.messageText);
 
-    // Animation sequence
-    fadeInBg.play();
+    // Animation sequence - background is transparent, no fade needed
 
     // Show planet with quick pulse
     setTimeout(() => {
