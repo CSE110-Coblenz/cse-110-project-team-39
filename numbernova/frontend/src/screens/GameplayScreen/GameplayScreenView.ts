@@ -332,7 +332,7 @@ export class GamePlayScreenView {
       bg.fill('#666');
       text.fill('#999');
       this.swapButton.listening(false);
-      this.swapButton.opacity(0.5);
+      this.swapButton.opacity(1);
       this.removeButtonHover(bg);
     }
   }
@@ -350,7 +350,7 @@ export class GamePlayScreenView {
       this.fightButtonBg.stroke('#444');
       this.fightButtonText.fill('#999');
       this.fightButton.listening(false);
-      this.fightButton.opacity(0.5);
+      this.fightButton.opacity(1);
       this.removeButtonHover(this.fightButtonBg);
     }
   }
@@ -366,7 +366,7 @@ export class GamePlayScreenView {
       this.clearButtonBg.fill('#666');
       this.clearButtonBg.stroke('#444');
       this.clearButton.listening(false);
-      this.clearButton.opacity(0.5);
+      this.clearButton.opacity(1);
       this.removeButtonHover(this.clearButtonBg);
     }
   }
