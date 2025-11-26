@@ -5,7 +5,6 @@ import { KonvaInput } from '../../components/KonvaInput';
 export class SignUpScreenView {
     private layer: Konva.Layer;
     private background: Konva.Rect;
-    private stars: Konva.Group;
     private signupForm: Konva.Group;
     
     // Form elements
@@ -19,7 +18,6 @@ export class SignUpScreenView {
     constructor(layer: Konva.Layer) {
         this.layer = layer;
         this.createBackground();
-        this.createStars();
         this.createSignupForm();
         this.setupTabNavigation();
     }
@@ -30,56 +28,11 @@ export class SignUpScreenView {
                     y: 0,
                     width: window.innerWidth,
                     height: window.innerHeight,
-                    fillLinearGradientStartPoint: { x: 0, y: 0 },
-                    fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
-                    fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
-                    
+                    fill: 'transparent'
                 });
                 this.layer.add(this.background);
     }
-    
- private createStars(): void {
-        this.stars = new Konva.Group({ listening: false });
 
-    const makeLayer = (count: number, radiusMax: number) => {
-        const g = new Konva.Group({ name: 'starLayer', listening: false });
-        for (let i = 0; i < count; i++) {
-        g.add(new Konva.Circle({
-            x: Math.random() * window.innerWidth - 170,
-            y: Math.random() * window.innerHeight,
-            radius: Math.random() * radiusMax + 0.4,
-            fill: '#ffffff',
-        }));
-        }
-        return g;
-    };
-
-  // far, mid, near
-  this.stars.add(makeLayer(120, 1.2));
-  this.stars.add(makeLayer(80, 1.8));
-  this.stars.add(makeLayer(40, 2.2));
-
-  this.layer.add(this.stars);
-}
-
-public animateStars(): void {
-    this.stars.getChildren().forEach((layer: Konva.Group) => {
-        layer.getChildren().forEach((star: Konva.Circle) => {
-            const duration = Math.random() * 3 + 1;
-
-            const anim = new Konva.Animation((frame) => {
-                const period = duration * 1000;
-                const phase = (frame.time % period) / period;
-                const opacity = 0.4 + Math.sin(phase * Math.PI) * 0.6;
-                star.opacity(opacity);
-            });
-
-            anim.start();
-        });
-    });
-}
-
-    
     private createSignupForm(): void {
         this.signupForm = new Konva.Group({
             x: DIMENSIONS.width / 2,
@@ -186,12 +139,12 @@ public animateStars(): void {
         
         this.loginButton.on('mouseenter', () => {
             this.loginButton.fill(COLORS.text);
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         this.loginButton.on('mouseleave', () => {
             this.loginButton.fill(COLORS.primaryLight);
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         // Add all elements to signup form
@@ -327,13 +280,13 @@ public animateStars(): void {
         group.on('mouseenter', () => {
             background.fill(COLORS.primaryLight);
             document.body.style.cursor = 'pointer';
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         group.on('mouseleave', () => {
             background.fill(COLORS.primary);
             document.body.style.cursor = 'default';
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         return group;

@@ -24,7 +24,7 @@ export class LeaderboardScreenView {
             y: 0,
             width: DIMENSIONS.width,
             height: DIMENSIONS.height,
-            fill: COLORS.background
+            fill: 'transparent'
         });
         this.layer.add(this.background);
     }
@@ -78,7 +78,7 @@ export class LeaderboardScreenView {
         this.title = new Konva.Text({
             x: DIMENSIONS.width / 2,
             y: 50,
-            text: 'Leader Board',
+            text: 'Leaderboard',
             fontSize: 42,
             fontFamily: 'Jersey 10',
             fill: COLORS.text,
@@ -166,7 +166,7 @@ export class LeaderboardScreenView {
             this.leaderboardEntries.push(userEntry);
         }
 
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 
     private createLeaderboardEntry(

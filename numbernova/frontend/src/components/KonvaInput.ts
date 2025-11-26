@@ -163,18 +163,24 @@ export class KonvaInput extends Konva.Group {
     
     public blur(): void {
         if (!this.isFocused) return;
-        
+
         this.isFocused = false;
         this.background.stroke(COLORS.inputBorder);
         this.background.strokeWidth(2);
-        
+
         // Hide cursor
         this.cursor.visible(false);
         this.stopCursorBlink();
-        
+
+        // Reset cursor to default when blurring
+        const stage = this.getStage();
+        if (stage) {
+            stage.container().style.cursor = 'default';
+        }
+
         // Blur the hidden input
         this.hiddenInput.blur();
-        
+
         this.getLayer()?.draw();
     }
     

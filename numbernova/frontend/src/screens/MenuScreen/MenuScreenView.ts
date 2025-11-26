@@ -10,7 +10,6 @@ export class MenuScreenView {
   private shooting: Konva.Line | null = null;
   private menuGroup: Konva.Group;
   private title: Konva.Text;
-  private stars!: Konva.Group;
 
   private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private logoutBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
@@ -23,6 +22,8 @@ export class MenuScreenView {
 
   private twinkleAnim?: Konva.Animation;
   private pulse?: Konva.Tween;
+  private planetTweens: Map<number, Konva.Tween> = new Map();
+  private buttonTweens: Map<Konva.Rect, Konva.Tween> = new Map();
 
   private inventoryHandlers: VoidFn[] = [];
   private logoutHandlers: VoidFn[] = [];
@@ -56,9 +57,7 @@ export class MenuScreenView {
 
     this.bg = new Konva.Rect({
       x: -170, y: 0, width: window.innerWidth, height: window.innerHeight,
-      fillLinearGradientStartPoint: { x: 0, y: 0 },
-      fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
-      fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
+      fill: 'transparent'
     });
 
 
@@ -102,9 +101,6 @@ export class MenuScreenView {
 
     this.layer.add(this.bg);
 
-    this.createStars();
-    this.animateStars();
-
     this.menuGroup.add(this.title);
     this.menuGroup.add(this.logoutBtn.group);
     this.menuGroup.add(this.leaderboardBtn.group);
@@ -121,57 +117,16 @@ export class MenuScreenView {
 
     // Bind button events
     this.bindButton(this.logoutBtn, () => this.emitLogout());
-    this.bindButton(this.leaderboardBtn, () => this.emitLeaderboard());
-    this.bindButton(this.shopBtn, () => this.emitShop());
-    this.bindButton(this.playerIconBtn, () => this.emitPlayerIcon());
+    this.bindIconButton(this.leaderboardBtn, () => this.emitLeaderboard());
+    this.bindIconButton(this.shopBtn, () => this.emitShop());
+    this.bindIconButton(this.playerIconBtn, () => this.emitPlayerIcon());
     this.bindButton(this.invBtn, () => this.emitInventory());
     
     // Bind planet events
     this.bindPlanetEvents();
-    this.layer.draw();
+    this.layer.batchDraw();
   }
 
-
-   private createStars(): void {
-          this.stars = new Konva.Group({ listening: false });
-  
-      const makeLayer = (count: number, radiusMax: number) => {
-          const g = new Konva.Group({ name: 'starLayer', listening: false });
-          for (let i = 0; i < count; i++) {
-          g.add(new Konva.Circle({
-              x: Math.random() * window.innerWidth - 170,
-              y: Math.random() * window.innerHeight,
-              radius: Math.random() * radiusMax + 0.4,
-              fill: '#ffffff',
-          }));
-          }
-          return g;
-      };
-  
-    // far, mid, near
-    this.stars.add(makeLayer(120, 1.2));
-    this.stars.add(makeLayer(80, 1.8));
-    this.stars.add(makeLayer(40, 2.2));
-  
-    this.layer.add(this.stars);
-  }
-  
-  public animateStars(): void {
-      this.stars.getChildren().forEach((layer: Konva.Group) => {
-          layer.getChildren().forEach((star: Konva.Circle) => {
-              const duration = Math.random() * 3 + 1;
-  
-              const anim = new Konva.Animation((frame) => {
-                  const period = duration * 1000;
-                  const phase = (frame.time % period) / period;
-                  const opacity = 0.4 + Math.sin(phase * Math.PI) * 0.6;
-                  star.opacity(opacity);
-              });
-  
-              anim.start();
-          });
-      });
-  }
 
   // Create 5 planets
   private createPlanets(): void {
@@ -239,19 +194,19 @@ export class MenuScreenView {
     this.planetButtons.forEach((planet, index) => {
       const enter = () => {
         document.body.style.cursor = 'pointer';
-        this.bumpPlanet(planet, true);
+        this.bumpPlanet(planet, index, true);
       };
-      
+
       const leave = () => {
         document.body.style.cursor = 'default';
-        this.bumpPlanet(planet, false);
+        this.bumpPlanet(planet, index, false);
       };
-      
+
       const click = () => {
         console.log(`Planet ${index + 1} clicked!`);
         this.emitPlanetClick(index);
       };
-      
+
       planet.circle.on('mouseenter', enter);
       planet.text.on('mouseenter', enter);
       planet.circle.on('mouseleave', leave);
@@ -262,81 +217,92 @@ export class MenuScreenView {
   }
 
   // Planet hover animation
-  private bumpPlanet(planet: { circle: Konva.Circle }, hover: boolean) {
-    this.pulse?.destroy();
-    this.pulse = new Konva.Tween({
+  private bumpPlanet(planet: { circle: Konva.Circle }, index: number, hover: boolean) {
+    // Destroy existing tween for this planet if any
+    const existingTween = this.planetTweens.get(index);
+    if (existingTween) {
+      existingTween.destroy();
+    }
+
+    const tween = new Konva.Tween({
       node: planet.circle,
       duration: 0.2,
       scaleX: hover ? 1.15 : 1,
       scaleY: hover ? 1.15 : 1,
       shadowBlur: hover ? 25 : 15
     });
-    this.pulse.play();
+
+    this.planetTweens.set(index, tween);
+    tween.play();
   }
 
   // Existing button creation methods...
   private makeButton(cx: number, y: number, label: string, width: number = 240, height: number = 56) {
     const group = new Konva.Group();
     const rect = new Konva.Rect({
-      x: cx - width / 2, 
-      y, 
-      width: width, 
-      height: height, 
+      x: cx,
+      y: y + height / 2,
+      width: width,
+      height: height,
+      offsetX: width / 2,
+      offsetY: height / 2,
       cornerRadius: 12,
       fill: COLORS?.primary ?? '#7b61ff',
-      shadowColor: '#000', 
-      shadowBlur: 16, 
-      shadowOpacity: 0.3, 
+      shadowColor: '#000',
+      shadowBlur: 16,
+      shadowOpacity: 0.3,
       listening: true
     });
     const text = new Konva.Text({
-      x: cx, 
+      x: cx,
       y: y + height / 2 - 10,
-      text: label, 
+      text: label,
       fontSize: width === 120 ? 18 : 20,
-      fontFamily: 'Jersey 10', 
-      fill: '#fff', 
+      fontFamily: 'Jersey 10',
+      fill: '#fff',
       listening: true
     });
     text.offsetX(text.width() / 2);
-    
+
     group.add(rect);
     group.add(text);
-    
+
     return { group, rect, text };
   }
 
   private makeIconButton(cx: number, y: number, icon: string, width: number = 50, height: number = 50) {
     const group = new Konva.Group();
     const rect = new Konva.Rect({
-      x: cx - width / 2, 
-      y, 
-      width: width, 
-      height: height, 
+      x: cx,
+      y: y + height / 2,
+      width: width,
+      height: height,
+      offsetX: width / 2,
+      offsetY: height / 2,
       cornerRadius: width / 2,
       fill: COLORS?.primary ?? '#7b61ff',
-      shadowColor: '#000', 
-      shadowBlur: 12, 
-      shadowOpacity: 0.3, 
+      shadowColor: '#000',
+      shadowBlur: 12,
+      shadowOpacity: 0.3,
       listening: true
     });
     const emojisInTopIconButtons = new Konva.Text({
-      x: cx, 
+      x: cx,
       y: y + height / 2 - 12,
-      text: icon, 
+      text: icon,
       fontSize: 25,
-      fontFamily: 'Jersey 10', 
-      fill: '#fff', 
+      fontFamily: 'Jersey 10',
+      fill: '#fff',
       listening: true,
       align: 'center'
     });
     emojisInTopIconButtons.offsetX(emojisInTopIconButtons.width() / 2);
-    
+
     group.add(rect);
     group.add(emojisInTopIconButtons);
 
-    
-    
+
+
     return { group, rect, text: emojisInTopIconButtons };
   }
 
@@ -359,16 +325,61 @@ export class MenuScreenView {
     btn.text.on('click', handler);
   }
 
+  private bindIconButton(btn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text }, click: VoidFn) {
+    const enter = () => { document.body.style.cursor = 'pointer'; this.bumpIcon(btn, true); };
+    const leave = () => { document.body.style.cursor = 'default'; this.bumpIcon(btn, false); };
+    const down = () => { btn.rect.scale({ x: 0.98, y: 0.98 }); this.layer.batchDraw(); };
+    const up = () => { btn.rect.scale({ x: 1, y: 1 }); this.layer.batchDraw(); };
+    const handler = () => click();
+
+    btn.rect.on('mouseenter', enter);
+    btn.text.on('mouseenter', enter);
+    btn.rect.on('mouseleave', leave);
+    btn.text.on('mouseleave', leave);
+    btn.rect.on('mousedown', down);
+    btn.rect.on('mouseup', up);
+    btn.text.on('mousedown', down);
+    btn.text.on('mouseup', up);
+    btn.rect.on('click', handler);
+    btn.text.on('click', handler);
+  }
+
   private bump(btn: { rect: Konva.Rect }, hover: boolean) {
-    this.pulse?.destroy();
-    this.pulse = new Konva.Tween({
+    // Destroy existing tween for this button if any
+    const existingTween = this.buttonTweens.get(btn.rect);
+    if (existingTween) {
+      existingTween.destroy();
+    }
+
+    const tween = new Konva.Tween({
       node: btn.rect,
       duration: 0.16,
       scaleX: hover ? 1.05 : 1,
       scaleY: hover ? 1.05 : 1,
       shadowBlur: hover ? 20 : 16,
     });
-    this.pulse.play();
+
+    this.buttonTweens.set(btn.rect, tween);
+    tween.play();
+  }
+
+  private bumpIcon(btn: { rect: Konva.Rect }, hover: boolean) {
+    // Destroy existing tween for this button if any
+    const existingTween = this.buttonTweens.get(btn.rect);
+    if (existingTween) {
+      existingTween.destroy();
+    }
+
+    const tween = new Konva.Tween({
+      node: btn.rect,
+      duration: 0.16,
+      scaleX: hover ? 1.2 : 1,
+      scaleY: hover ? 1.2 : 1,
+      shadowBlur: hover ? 24 : 12,
+    });
+
+    this.buttonTweens.set(btn.rect, tween);
+    tween.play();
   }
 
 

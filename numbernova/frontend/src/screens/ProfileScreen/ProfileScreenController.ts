@@ -4,13 +4,13 @@ import { COLORS, DIMENSIONS } from '../../constants';
 
 export class ProfileScreenController extends BaseScreen {
     protected initialize(): void {
-        // Use the same background color as Leaderboard
+        // Transparent background to show stars
         const background = new Konva.Rect({
             x: 0,
             y: 0,
             width: DIMENSIONS.width,
             height: DIMENSIONS.height,
-            fill: '#1a1a2e' // Same as Leaderboard
+            fill: 'transparent'
         });
         
         // Title matching Leaderboard style
@@ -53,7 +53,8 @@ export class ProfileScreenController extends BaseScreen {
             fontSize: 16,
             fontFamily: 'Jersey 10',
             fill: '#ffffff',
-            align: 'center'
+            align: 'center',
+            listening: false
         });
         text.offsetX(text.width() / 2);
         

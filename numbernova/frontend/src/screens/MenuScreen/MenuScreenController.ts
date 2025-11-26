@@ -31,6 +31,12 @@ export class MenuScreenController extends BaseScreen {
       this.screenManager.switchTo('profile');
     })
 
+    // Handle inventory button
+    this.view.onInventory?.(() => {
+      console.log('Inventory clicked! Switching to inventory screen...');
+      this.screenManager.switchTo('inventory');
+    })
+
     // ADDED: Handle planet clicks
     this.view.onPlanetClick?.((planetIndex: number) => {
       console.log(`Planet ${planetIndex + 1} clicked! Launching mission...`);
