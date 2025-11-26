@@ -17,6 +17,9 @@ export class LaunchTransitionScreenView {
   }
 
   public playAnimation(planetNumber: number): void {
+    // Clear any previous animation elements
+    this.group.destroyChildren();
+
     // Create background
     this.background = new Konva.Rect({
       x: 0,
