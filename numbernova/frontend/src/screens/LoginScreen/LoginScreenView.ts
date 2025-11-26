@@ -5,7 +5,6 @@ import { KonvaInput } from '../../components/KonvaInput';
 export class LoginScreenView {
     private layer: Konva.Layer;
     private background: Konva.Rect;
-    private stars: Konva.Group;
     private loginForm: Konva.Group;
     
     // Form elements
@@ -17,10 +16,9 @@ export class LoginScreenView {
     constructor(layer: Konva.Layer) {
         this.layer = layer;
         this.createBackground();
-        this.createStars();
         this.createLoginForm();
         this.setupTabNavigation();
-        
+
     }
     
     private createBackground(): void {
@@ -29,57 +27,10 @@ export class LoginScreenView {
             y: 0,
             width: window.innerWidth,
             height: window.innerHeight,
-            fillLinearGradientStartPoint: { x: 0, y: 0 },
-            fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
-            fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
-            
+            fill: 'transparent'
         });
         this.layer.add(this.background);
     }
-    
-    private createStars(): void {
-        this.stars = new Konva.Group({ listening: false });
-
-    const makeLayer = (count: number, radiusMax: number) => {
-        const g = new Konva.Group({ name: 'starLayer', listening: false });
-        for (let i = 0; i < count; i++) {
-        g.add(new Konva.Circle({
-            x: Math.random() * window.innerWidth - 170,
-            y: Math.random() * window.innerHeight,
-            radius: Math.random() * radiusMax + 0.4,
-            fill: '#ffffff',
-        }));
-        }
-        return g;
-    };
-
-  // far, mid, near
-  this.stars.add(makeLayer(120, 1.2));
-  this.stars.add(makeLayer(80, 1.8));
-  this.stars.add(makeLayer(40, 2.2));
-
-  this.layer.add(this.stars);
-}
-
-public animateStars(): void {
-    this.stars.getChildren().forEach((layer: Konva.Group) => {
-        layer.getChildren().forEach((star: Konva.Circle) => {
-            const duration = Math.random() * 3 + 1;
-
-            const anim = new Konva.Animation((frame) => {
-                const period = duration * 1000;
-                const phase = (frame.time % period) / period;
-                const opacity = 0.4 + Math.sin(phase * Math.PI) * 0.6;
-                star.opacity(opacity);
-            });
-
-            anim.start();
-        });
-    });
-}
-
-
-
 
     private createLoginForm(): void {
         this.loginForm = new Konva.Group({

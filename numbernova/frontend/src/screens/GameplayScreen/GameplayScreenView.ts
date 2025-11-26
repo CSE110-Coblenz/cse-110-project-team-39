@@ -10,7 +10,6 @@ export class GamePlayScreenView {
 
   // UI Elements
   private background!: Konva.Rect;
-  private stars!: Konva.Group;
   private exitButton!: Konva.Group;
   private scoreText!: Konva.Text;
   private aliensLeftText!: Konva.Text;
@@ -59,7 +58,6 @@ export class GamePlayScreenView {
 
   private createUI(): void {
     this.createBackground();
-    this.createStars();
     this.createTopBar();
     this.createCardArea(); // Planet surface first (bottom layer)
     this.createPlayerArea(); // Player on top of planet
@@ -73,58 +71,9 @@ export class GamePlayScreenView {
       y: 0,
       width: window.innerWidth,
       height: window.innerHeight,
-      fillLinearGradientStartPoint: { x: 0, y: 0 },
-      fillLinearGradientEndPoint: { x: window.innerWidth, y: window.innerHeight },
-      fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
+      fill: 'transparent'
     });
     this.group.add(this.background);
-  }
-
-  private createStars(): void {
-    this.stars = new Konva.Group({ listening: false });
-
-    const makeLayer = (count: number, radiusMax: number, opacity: number) => {
-      const g = new Konva.Group({ name: 'starLayer', listening: false });
-      for (let i = 0; i < count; i++) {
-        g.add(new Konva.Circle({
-          x: Math.random() * window.innerWidth,
-          y: Math.random() * window.innerHeight,
-          radius: Math.random() * radiusMax + 0.4,
-          fill: '#ffffff',
-          opacity: opacity * (0.5 + Math.random() * 0.5)
-        }));
-      }
-      return g;
-    };
-
-    // far, mid, near - reduced count for better performance
-    this.stars.add(makeLayer(60, 1.2, 0.5));
-    this.stars.add(makeLayer(40, 1.8, 0.7));
-    this.stars.add(makeLayer(20, 2.2, 0.9));
-
-    this.group.add(this.stars);
-
-    // Animate stars with twinkling
-    this.animateStars();
-  }
-
-  private animateStars(): void {
-    this.stars.children.forEach((starLayer: Konva.Node) => {
-      if (starLayer instanceof Konva.Group) {
-        starLayer.children.forEach((star: Konva.Node) => {
-          const duration = Math.random() * 3 + 1;
-
-          const anim = new Konva.Animation((frame) => {
-            const period = duration * 1000;
-            const phase = (frame!.time % period) / period;
-            const opacity = 0.2 + Math.sin(phase * Math.PI) * 0.6;
-            star.opacity(opacity);
-          }, this.layer);
-
-          anim.start();
-        });
-      }
-    });
   }
 
   private createTopBar(): void {

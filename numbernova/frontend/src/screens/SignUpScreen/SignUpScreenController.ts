@@ -115,8 +115,7 @@ export class SignUpScreenController extends BaseScreen {
     
     public show(): void {
         super.show();
-        this.view.animateStars();
-        
+
         // Focus email input after a short delay
         setTimeout(() => {
             this.view.focusEmailInput();

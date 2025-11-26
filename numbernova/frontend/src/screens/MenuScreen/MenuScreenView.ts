@@ -10,7 +10,6 @@ export class MenuScreenView {
   private shooting: Konva.Line | null = null;
   private menuGroup: Konva.Group;
   private title: Konva.Text;
-  private stars!: Konva.Group;
 
   private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private logoutBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
@@ -58,9 +57,7 @@ export class MenuScreenView {
 
     this.bg = new Konva.Rect({
       x: -170, y: 0, width: window.innerWidth, height: window.innerHeight,
-      fillLinearGradientStartPoint: { x: 0, y: 0 },
-      fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
-      fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
+      fill: 'transparent'
     });
 
 
@@ -104,9 +101,6 @@ export class MenuScreenView {
 
     this.layer.add(this.bg);
 
-    this.createStars();
-    this.animateStars();
-
     this.menuGroup.add(this.title);
     this.menuGroup.add(this.logoutBtn.group);
     this.menuGroup.add(this.leaderboardBtn.group);
@@ -133,47 +127,6 @@ export class MenuScreenView {
     this.layer.draw();
   }
 
-
-   private createStars(): void {
-          this.stars = new Konva.Group({ listening: false });
-  
-      const makeLayer = (count: number, radiusMax: number) => {
-          const g = new Konva.Group({ name: 'starLayer', listening: false });
-          for (let i = 0; i < count; i++) {
-          g.add(new Konva.Circle({
-              x: Math.random() * window.innerWidth - 170,
-              y: Math.random() * window.innerHeight,
-              radius: Math.random() * radiusMax + 0.4,
-              fill: '#ffffff',
-          }));
-          }
-          return g;
-      };
-  
-    // far, mid, near
-    this.stars.add(makeLayer(120, 1.2));
-    this.stars.add(makeLayer(80, 1.8));
-    this.stars.add(makeLayer(40, 2.2));
-  
-    this.layer.add(this.stars);
-  }
-  
-  public animateStars(): void {
-      this.stars.getChildren().forEach((layer: Konva.Group) => {
-          layer.getChildren().forEach((star: Konva.Circle) => {
-              const duration = Math.random() * 3 + 1;
-  
-              const anim = new Konva.Animation((frame) => {
-                  const period = duration * 1000;
-                  const phase = (frame.time % period) / period;
-                  const opacity = 0.4 + Math.sin(phase * Math.PI) * 0.6;
-                  star.opacity(opacity);
-              });
-  
-              anim.start();
-          });
-      });
-  }
 
   // Create 5 planets
   private createPlanets(): void {
