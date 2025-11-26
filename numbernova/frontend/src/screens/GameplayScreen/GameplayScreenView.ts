@@ -69,8 +69,8 @@ export class GamePlayScreenView {
     this.background = new Konva.Rect({
       x: 0,
       y: 0,
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: DIMENSIONS.width,
+      height: DIMENSIONS.height,
       fill: 'transparent'
     });
     this.group.add(this.background);
@@ -485,10 +485,13 @@ export class GamePlayScreenView {
 
     // Generate non-overlapping craters
     let attempts = 0;
+    // Extend crater range beyond screen edges to ensure full coverage
+    const craterMinX = -150;
+    const craterMaxX = DIMENSIONS.width + 150;
     while (craters.length < numCraters && attempts < 100) {
       attempts++;
       const radius = 16 + Math.random() * 54; // 16-70px
-      const x = Math.random() * window.innerWidth; // Allow craters across full screen width
+      const x = craterMinX + Math.random() * (craterMaxX - craterMinX); // Allow craters to extend beyond edges
 
       // Calculate planet surface height at this x position
       const dx = x - planetCenterX;
@@ -531,8 +534,8 @@ export class GamePlayScreenView {
           ctx.beginPath();
 
           // Create clipping region for this specific crater area
-          const clipStartX = Math.max(0, crater.x - crater.r - 5);
-          const clipEndX = Math.min(window.innerWidth, crater.x + crater.r + 5);
+          const clipStartX = Math.max(-200, crater.x - crater.r - 5);
+          const clipEndX = Math.min(DIMENSIONS.width + 200, crater.x + crater.r + 5);
 
           // Sample points along the planet surface curve (optimized with larger step)
           const clipPoints: { x: number; y: number }[] = [];
