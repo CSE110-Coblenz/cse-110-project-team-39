@@ -26,8 +26,8 @@ export class ProfileScreenView {
         this.profilePicture = new Konva.Circle({
             x: DIMENSIONS.width * 0.25,
             y: DIMENSIONS.height * 0.3,
-            radius: 60,
-            fillPatternImage: undefined,
+            radius: 80,
+            fillPatternImage: profilePictureUrl ? undefined : undefined,
             stroke: COLORS.text,
             strokeWidth: 4,
         });
@@ -36,8 +36,8 @@ export class ProfileScreenView {
             x: DIMENSIONS.width * 0.25 - 75,
             y: DIMENSIONS.height * 0.4,
             text: profileName,
-            fontSize: 24,
-            fontFamily: FONTS.primary,
+            fontFamily: FONTS.subtitle,
+            fontSize: 36,
             fill: COLORS.text,
             width: 150,
             align: 'center',
@@ -58,7 +58,7 @@ export class ProfileScreenView {
             x: DIMENSIONS.width * 0.6,
             y: DIMENSIONS.height * 0.25,
             text: `Games Won: ${gamesWon}`,
-            fontSize: 20,
+            fontSize: 36,
             fontFamily: FONTS.primary,
             fill: COLORS.text,
         });
@@ -67,7 +67,7 @@ export class ProfileScreenView {
             x: DIMENSIONS.width * 0.6,
             y: DIMENSIONS.height * 0.32,
             text: `Games Played: ${gamesPlayed}`,
-            fontSize: 20,
+            fontSize: 36,
             fontFamily: FONTS.primary,
             fill: COLORS.text,
         });
@@ -76,7 +76,7 @@ export class ProfileScreenView {
             x: DIMENSIONS.width * 0.6,
             y: DIMENSIONS.height * 0.39,
             text: `Score: ${score}`,
-            fontSize: 20,
+            fontSize: 36,
             fontFamily: FONTS.primary,         
             fill: COLORS.text,
         });
@@ -85,7 +85,7 @@ export class ProfileScreenView {
             x: DIMENSIONS.width * 0.6,
             y: DIMENSIONS.height * 0.46,
             text: `Level: ${level}`,
-            fontSize: 20,
+            fontSize: 36,
             fontFamily: FONTS.primary,
             fill: COLORS.text,
         });
@@ -94,7 +94,7 @@ export class ProfileScreenView {
             x: DIMENSIONS.width * 0.6,
             y: DIMENSIONS.height * 0.53,
             text: `Rank: ${rank}`,
-            fontSize: 20,
+            fontSize: 36,
             fontFamily: FONTS.primary,
             fill: COLORS.text,
         });
