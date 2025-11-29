@@ -1,4 +1,5 @@
-# 🚀👾➗NumberNova
+# 🚀👾➗NumberNova ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 
 An interactive educational math game designed for 2nd and 3rd graders. Players travel through space, battling aliens on different planets by solving math expressions.
 
