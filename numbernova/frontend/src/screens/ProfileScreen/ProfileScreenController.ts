@@ -18,7 +18,8 @@ export class ProfileScreenController extends BaseScreen {
            profile_name: 'AcePilot',
            profile_picture_url: 'https://example.com/profile.jpg',
            games_played: 200,
-           games_won: 120
+           games_won: 120,
+           currency: 5000,
        });
 
        this.view = new ProfileScreenView(   
@@ -29,7 +30,9 @@ export class ProfileScreenController extends BaseScreen {
                 this.model.getGamesPlayed(),
                 this.model.getScore(),
                 this.model.getLevel(),
-                this.model.getRank()
+                this.model.getRank(),
+                this.model.getShipColor(),
+                this.model.getCurrency()
        );
    }
 

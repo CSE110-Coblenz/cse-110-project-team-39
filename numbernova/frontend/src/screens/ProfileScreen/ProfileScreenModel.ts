@@ -9,8 +9,9 @@ export class ProfileScreenModel {
     private profilePictureUrl: string;
     private gamesPlayed: number;
     private gamesWon: number;
+    private currency: number;
 
-    constructor(userId: string, initialData?: { score?: number; level?: number; ship_color?: string; rank?: string; profile_name?: string; profile_picture_url?: string; games_played?: number; games_won?: number; }) {
+    constructor(userId: string, initialData?: { score?: number; level?: number; ship_color?: string; rank?: string; profile_name?: string; profile_picture_url?: string; games_played?: number; games_won?: number; currency?: number }) {
         //Todo: fetch user data from supabase
         this.userId = userId;
         this.score = initialData?.score ?? 0;
@@ -21,6 +22,7 @@ export class ProfileScreenModel {
         this.profilePictureUrl = initialData?.profile_picture_url ?? '';
         this.gamesPlayed = initialData?.games_played ?? 0;
         this.gamesWon = initialData?.games_won ?? 0;
+        this.currency = initialData?.currency ?? 0;
 
         // In a real implementation, you would fetch this data from a backend service
     }
@@ -60,6 +62,10 @@ export class ProfileScreenModel {
     public getGamesWon(): number {
         return this.gamesWon;
     }   
+
+    public getCurrency(): number {
+        return this.currency;
+    }
 
     public async updateProfileName(newName: string): Promise<void> {
         this.profileName = newName;
