@@ -5,6 +5,7 @@ import { KonvaInput } from '../../components/KonvaInput';
 type VoidFn = () => void;
 
 export class MenuScreenView {
+
   private layer: Konva.Layer;
   private bg: Konva.Rect;
   private shooting: Konva.Line | null = null;
@@ -30,6 +31,11 @@ export class MenuScreenView {
   private leaderboardHandlers: VoidFn[] = [];
   private shopHandlers: VoidFn[] = [];
   private playerIconHandlers: VoidFn[] = [];
+
+  private tutorialGroup: Konva.Group | null = null;
+  private tutorialTextNode: Konva.Text | null = null;
+  private tutorialOkButton: Konva.Group | null = null;
+
   
   // Planet click handlers
   private planetHandlers: ((planetIndex: number) => void)[] = [];
@@ -60,6 +66,8 @@ export class MenuScreenView {
       fill: 'transparent'
     });
 
+    this.createTutorialOverlay();
+
 
     this.menuGroup = new Konva.Group();
 
@@ -72,9 +80,8 @@ export class MenuScreenView {
       fill: '#ffffff',
       align: 'center'
     });
+
     this.title.offsetX(this.title.width() / 2);
-
-
 
     // Top left: Logout button
     this.logoutBtn = this.makeButton(80, 40, 'LOG OUT', 120, 40);
@@ -381,6 +388,145 @@ export class MenuScreenView {
     this.buttonTweens.set(btn.rect, tween);
     tween.play();
   }
+
+ private createTutorialOverlay(): void {
+  const stage = this.layer.getStage();
+
+  // Make the dim overlay span the whole viewport (same as your bg)
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  const overlayGroup = new Konva.Group({
+    visible: false,
+    listening: true,
+  });
+
+  const backdrop = new Konva.Rect({
+    x: -170,                // match your bg.x so it spans fully
+    y: 0,
+    width,
+    height,
+    fill: 'rgba(0,0,0,0.7)', // full-screen dark hover
+  });
+
+  const boxWidth = Math.min(700, width - 80);
+  const boxHeight = Math.min(400, height - 160);
+  const boxX = (DIMENSIONS.width - boxWidth) / 2;   // center in game area
+  const boxY = (DIMENSIONS.height - boxHeight) / 2;
+
+  const box = new Konva.Rect({
+    x: boxX,
+    y: boxY,
+    width: boxWidth,
+    height: boxHeight,
+    cornerRadius: 20,
+    fill: '#000000',        // black message box
+    stroke: '#ffffff',
+    strokeWidth: 2,
+  });
+
+  const text = new Konva.Text({
+    x: boxX + 24,
+    y: boxY + 24,
+    width: boxWidth - 48,
+    height: boxHeight - 120,
+    text: '',
+    fontSize: 20,
+    fontFamily: 'Jersey 10, Arial',
+    fill: '#ffffff',        // white text on black
+    align: 'left',
+  });
+
+  const okButtonWidth = 120;
+  const okButtonHeight = 48;
+  const okButtonX = boxX + boxWidth - okButtonWidth - 24;
+  const okButtonY = boxY + boxHeight - okButtonHeight - 24;
+
+  const okButtonGroup = new Konva.Group({
+    x: okButtonX,
+    y: okButtonY,
+  });
+
+  const okRect = new Konva.Rect({
+    width: okButtonWidth,
+    height: okButtonHeight,
+    cornerRadius: 12,
+    fill: '#ffffff',        // white button
+    stroke: '#ffffff',
+    strokeWidth: 2,
+  });
+
+  const okText = new Konva.Text({
+    x: 0,
+    y: 10,
+    width: okButtonWidth,
+    align: 'center',
+    text: 'OK',
+    fontSize: 22,
+    fontFamily: 'Jersey 10, Arial',
+    fill: '#000000',        // black text
+  });
+
+  okButtonGroup.add(okRect, okText);
+
+  // --- HOVER BEHAVIOR FOR OK BUTTON ---
+  const hoverScale = 1.08;
+
+  const onEnter = () => {
+    document.body.style.cursor = 'pointer';
+    okButtonGroup.scale({ x: hoverScale, y: hoverScale });
+    this.layer.batchDraw();
+  };
+
+  const onLeave = () => {
+    document.body.style.cursor = 'default';
+    okButtonGroup.scale({ x: 1, y: 1 });
+    this.layer.batchDraw();
+  };
+
+  okRect.on('mouseenter', onEnter);
+  okText.on('mouseenter', onEnter);
+  okRect.on('mouseleave', onLeave);
+  okText.on('mouseleave', onLeave);
+  // ------------------------------------
+
+  overlayGroup.add(backdrop, box, text, okButtonGroup);
+
+  this.layer.add(overlayGroup);
+
+  this.tutorialGroup = overlayGroup;
+  this.tutorialTextNode = text;
+  this.tutorialOkButton = okButtonGroup;
+  overlayGroup.add(backdrop, box, text, okButtonGroup);
+
+  this.layer.add(overlayGroup);
+
+  this.tutorialGroup = overlayGroup;
+  this.tutorialTextNode = text;
+  this.tutorialOkButton = okButtonGroup;
+}
+
+
+  public showTutorial(text: string): void {
+    if (this.tutorialGroup && this.tutorialTextNode) {
+      this.tutorialTextNode.text(text);
+      this.tutorialGroup.visible(true);
+      this.tutorialGroup.moveToTop(); 
+      this.layer.getStage()?.draw();
+    }
+  }
+
+  public hideTutorial(): void {
+    if (this.tutorialGroup) {
+      this.tutorialGroup.visible(false);
+      this.layer.getStage()?.draw();
+    }
+  }
+
+public getTutorialOkButton(): Konva.Group | null {
+  return this.tutorialOkButton;
+}
+
 
 
 
