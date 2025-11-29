@@ -3,6 +3,8 @@ import { COLORS, DIMENSIONS, FONTS } from '../../constants';
 
 export class ProfileScreenView {
     private profile: Konva.layer;
+
+    private stars : Konva.Group;
     private profilePicture : Konva.Circle;
     private usernameText : Konva.Text;
     private gamesWonText : Konva.Text;
@@ -11,104 +13,118 @@ export class ProfileScreenView {
     private levelText : Konva.Text;
     private rankText : Konva.Text;
 
+    private statsBackground : Konva.Rect;
+
+    // button to go back to menu
+
 
     constructor(layer: Konva.Layer, profilePictureUrl: string, profileName: string, gamesWon: number, gamesPlayed: number, score: number, level: number, rank: string) {
         // Profile Picture
+        //create a profile screen with the profile circle and username on the left side of the screen and the 
+        // stats on the right side of the screen
+
         this.profilePicture = new Konva.Circle({
-            x: DIMENSIONS.width / 2,
-            y: 150,
+            x: DIMENSIONS.width * 0.25,
+            y: DIMENSIONS.height * 0.3,
             radius: 60,
             fillPatternImage: undefined,
-            fillPatternOffset: { x: 60, y: 60 },
             stroke: COLORS.text,
             strokeWidth: 4,
         });
-        const imageObj = new Image();
-        imageObj.onload = () => {
-            this.profilePicture.fillPatternImage(imageObj);
-            layer.draw();
-        };
-        imageObj.src = profilePictureUrl;
 
-        // Username Text
         this.usernameText = new Konva.Text({
-            x: DIMENSIONS.width / 2,
-            y: 230,
+            x: DIMENSIONS.width * 0.25 - 75,
+            y: DIMENSIONS.height * 0.4,
             text: profileName,
-            fontSize: FONTS.subtitle,
-            fontFamily: 'Arial',
+            fontSize: 24,
+            fontFamily: FONTS.primary,
             fill: COLORS.text,
+            width: 150,
             align: 'center',
         });
-        this.usernameText.offsetX(this.usernameText.width() / 2);
 
-        // Stats Texts  
-        this.gamesWonText = new Konva.Text({
-            x: DIMENSIONS.width / 2,
-            y: 280,
-            text: `Games Won: ${gamesWon}`,
-            fontSize: FONTS.primary,
-            fontFamily: 'Arial',
-            fill: COLORS.text,
-            align: 'center',
+        this.statsBackground = new Konva.Rect({
+            x: DIMENSIONS.width * 0.55,
+            y: DIMENSIONS.height * 0.2,
+            width: DIMENSIONS.width * 0.35,
+            height: DIMENSIONS.height * 0.5,
+            fill: COLORS.primaryDark,
+            cornerRadius    : 10,
+            stroke: COLORS.text,
+            strokeWidth: 2,
         });
-        this.gamesWonText.offsetX(this.gamesWonText.width() / 2);
+
+        this.gamesWonText = new Konva.Text({
+            x: DIMENSIONS.width * 0.6,
+            y: DIMENSIONS.height * 0.25,
+            text: `Games Won: ${gamesWon}`,
+            fontSize: 20,
+            fontFamily: FONTS.primary,
+            fill: COLORS.text,
+        });
 
         this.gamesPlayedText = new Konva.Text({
-            x: DIMENSIONS.width / 2,
-            y: 310,
+            x: DIMENSIONS.width * 0.6,
+            y: DIMENSIONS.height * 0.32,
             text: `Games Played: ${gamesPlayed}`,
-            fontSize: FONTS.primary,
-            fontFamily: 'Arial',
+            fontSize: 20,
+            fontFamily: FONTS.primary,
             fill: COLORS.text,
-            align: 'center',
         });
-        this.gamesPlayedText.offsetX(this.gamesPlayedText.width() / 2);
 
         this.scoreText = new Konva.Text({
-            x: DIMENSIONS.width / 2,
-            y: 340,
+            x: DIMENSIONS.width * 0.6,
+            y: DIMENSIONS.height * 0.39,
             text: `Score: ${score}`,
-            fontSize: FONTS.primary,
-            fontFamily: 'Arial',
+            fontSize: 20,
+            fontFamily: FONTS.primary,         
             fill: COLORS.text,
-            align: 'center',
         });
-        this.scoreText.offsetX(this.scoreText.width() / 2);
 
         this.levelText = new Konva.Text({
-            x: DIMENSIONS.width / 2,
-            y: 370,
+            x: DIMENSIONS.width * 0.6,
+            y: DIMENSIONS.height * 0.46,
             text: `Level: ${level}`,
-            fontSize: FONTS.primary,
-            fontFamily: 'Arial',
+            fontSize: 20,
+            fontFamily: FONTS.primary,
             fill: COLORS.text,
-            align: 'center',
         });
-        this.levelText.offsetX(this.levelText.width() / 2);
 
         this.rankText = new Konva.Text({
-            x: DIMENSIONS.width / 2,
-            y: 400,
+            x: DIMENSIONS.width * 0.6,
+            y: DIMENSIONS.height * 0.53,
             text: `Rank: ${rank}`,
-            fontSize: FONTS.primary,
-            fontFamily: 'Arial',
+            fontSize: 20,
+            fontFamily: FONTS.primary,
             fill: COLORS.text,
-            align: 'center',
         });
-        this.rankText.offsetX(this.rankText.width() / 2);
 
-        // Add all elements to the layer
+        this.createStars(this.stars = new Konva.Group(), 100, 0.2, 1.5);
+        layer.add(this.stars);
         layer.add(this.profilePicture);
         layer.add(this.usernameText);
+        layer.add(this.statsBackground);
         layer.add(this.gamesWonText);
-        layer.add(this.gamesPlayedText);    
+        layer.add(this.gamesPlayedText);
         layer.add(this.scoreText);
         layer.add(this.levelText);
-        layer.add(this.rankText);
-
+        layer.add(this.rankText);   
         this.profile = layer;
-    
+        this.profile.draw();    
+    }
+
+    private createStars(group: Konva.Group, count: number, opacityBase: number, maxRadius: number) {
+            for (let i = 0; i < count; i++) {
+              const s = new Konva.Circle({
+                x: Math.random() * DIMENSIONS.width,
+                y: Math.random() * DIMENSIONS.height,
+                radius: Math.random() * maxRadius + 0.4,
+                fill: '#ffffff',
+                opacity: opacityBase + Math.random() * 0.4,
+                listening: false
+              });
+              group.add(s);
+            }
     }
 }
 
