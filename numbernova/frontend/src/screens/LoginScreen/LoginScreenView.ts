@@ -188,7 +188,7 @@ export class LoginScreenView {
         // Click outside to unfocus all inputs
         this.layer.on('click', (e) => {
             // If clicking on empty space, blur all inputs
-            if (e.target === this.layer || e.target === this.background) {
+            if (e.target === (this.layer as any) || e.target === this.background) {
                 this.emailInput.blur();
                 this.passwordInput.blur();
             }

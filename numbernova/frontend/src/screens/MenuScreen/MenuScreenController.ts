@@ -56,10 +56,10 @@ export class MenuScreenController extends BaseScreen {
 
       // Switch to launch transition screen
       this.screenManager.switchTo('launchTransition');
-    })
+    });
 
     // Handle play button
-    this.view.onPlay?.(() => {
+    (this.view as any).onPlay?.(() => {
       console.log('Play button clicked!');
       // this.screenManager.switchTo('gameplay'); // When ready
     })
