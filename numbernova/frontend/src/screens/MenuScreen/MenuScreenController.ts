@@ -10,6 +10,20 @@ export class MenuScreenController extends BaseScreen {
     this.model = new MenuScreenModel()
     this.view = new MenuScreenView(this.container)
 
+    const rulesText =
+    'Welcome to NumberNova!\n\n' +
+    '• Solve math expressions to defeat aliens.\n' +
+    '• Drag number and operation cards into the slots to form a valid equation.\n' +
+    '• Correct answers score points and damage the alien.\n' +
+    '• Wrong answers cost you lives.\n' +
+    '• Higher scores move you up the leaderboard.\n\n' +
+    'Tap OK to start playing.';
+
+  this.view.showTutorial(rulesText);
+  this.view.getTutorialOkButton()?.on('click', () => {
+    this.view.hideTutorial();
+  });
+
     // Handle logout button
     this.view.onLogout?.(() => {
       this.screenManager.switchTo('login')
