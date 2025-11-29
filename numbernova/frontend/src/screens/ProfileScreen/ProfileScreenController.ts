@@ -3,33 +3,32 @@ import { ProfileScreenModel } from './ProfileScreenModel';
 import { ProfileScreenView } from './ProfileScreenView';
 
 export class ProfileScreenController extends BaseScreen {
-  private model!: ProfileScreenModel;
-  private view!: ProfileScreenView;
+  private model: ProfileScreenModel;
+  private view: ProfileScreenView;
 
   protected initialize(): void {
     this.model = new ProfileScreenModel();
     this.view = new ProfileScreenView(this.container);
 
     this.setupEventListeners();
-    this.loadProfile();
   }
 
   private async loadProfile(): Promise<void> {
     try {
-      console.log('Loading profile data...');
+      console.log('[ProfileScreen] Loading profile data...');
       const data = await this.model.getProfileWithRank();
 
       if (!data) {
-        console.warn('No current user found for profile screen');
-        // Optionally redirect to login
-        // this.screenManager.switchTo('login');
+        console.warn('[ProfileScreen] No current user found for profile screen');
+        this.screenManager.switchTo('login');
         return;
       }
 
       this.view.renderProfile(data);
-      console.log('ProfileScreen loaded successfully!');
+      this.container.getStage()?.draw();
+      console.log('[ProfileScreen] Profile loaded successfully');
     } catch (err) {
-      console.error('Error loading profile data:', err);
+      console.error('[ProfileScreen] Error loading profile data:', err);
     }
   }
 
@@ -39,7 +38,8 @@ export class ProfileScreenController extends BaseScreen {
     });
   }
 
-  public show(): void {
+  public override show(): void {
     super.show();
+    this.loadProfile();
   }
 }

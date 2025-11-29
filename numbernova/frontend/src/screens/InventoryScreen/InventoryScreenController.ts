@@ -1,83 +1,74 @@
-import Konva from 'konva';
 import { BaseScreen } from '../../core/BaseScreen';
-import { COLORS, DIMENSIONS } from '../../constants';
+import { InventoryScreenView } from './InventoryScreenView';
+import { InventoryScreenModel } from './InventoryScreenModel';
+import { getCurrentUser, getUserProfile } from '../../lib/supabase';
+import { createNotification } from '../../lib/toast';
+import { COLORS } from '../../constants';
 
 export class InventoryScreenController extends BaseScreen {
+    private view!: InventoryScreenView;
+    private model!: InventoryScreenModel;
+
     protected initialize(): void {
-        // Transparent background to show stars
-        const background = new Konva.Rect({
-            x: 0,
-            y: 0,
-            width: DIMENSIONS.width,
-            height: DIMENSIONS.height,
-            fill: 'transparent'
-        });
-
-        // Title matching Leaderboard style
-        const title = new Konva.Text({
-            x: DIMENSIONS.width / 2,
-            y: 80,
-            text: 'INVENTORY - Coming Soon!',
-            fontSize: 36,
-            fontFamily: 'Jersey 10',
-            fill: '#ffffff',
-            align: 'center'
-        });
-        title.offsetX(title.width() / 2);
-
-        // Return button matching Leaderboard style
-        const returnButton = this.createReturnButton();
-
-        this.container.add(background);
-        this.container.add(title);
-        this.container.add(returnButton);
+        this.loadInventoryData();
     }
 
-    private createReturnButton(): Konva.Group {
-        const group = new Konva.Group();
+    private async loadInventoryData(): Promise<void> {
+        try {
+            const currentUser = await getCurrentUser();
+            if (!currentUser) {
+                this.returnToMenu();
+                return;
+            }
 
-        const rect = new Konva.Rect({
-            x: 50,
-            y: 50,
-            width: 180,
-            height: 40,
-            fill: COLORS?.primary ?? '#7b61ff',
-            cornerRadius: 10,
-            listening: true
+            const userProfile = await getUserProfile(currentUser.id);
+            if (!userProfile) {
+                this.returnToMenu();
+                return;
+            }
+
+            this.model = new InventoryScreenModel(currentUser.id, {
+                ship_color: userProfile.ship_color,
+                unlocked_colors: userProfile.unlocked_colors as Record<string, boolean>
+            });
+
+            const ownedColors = this.model.getOwnedColors();
+            const currentColor = this.model.getCurrentColor() || COLORS.red;
+
+            this.view = new InventoryScreenView(
+                this.container,
+                ownedColors,
+                currentColor
+            );
+
+            this.setupEventListeners();
+        } catch (error) {
+            console.error('Error loading inventory data:', error);
+            this.returnToMenu();
+        }
+    }
+
+    public show(): void {
+        super.show();
+    }
+
+    private setupEventListeners(): void {
+        this.view.onMenuClick(() => {
+            this.returnToMenu();
         });
 
-        const text = new Konva.Text({
-            x: 50 + 180 / 2,
-            y: 50 + 20 - 8,
-            text: 'Return to Main Menu',
-            fontSize: 16,
-            fontFamily: 'Jersey 10',
-            fill: '#ffffff',
-            align: 'center',
-            listening: false
+        this.view.onColorClick(async (color: string) => {
+            const success = await this.model.setCurrentColor(color);
+            if (success) {
+                this.view.updateCurrentColor(color);
+                createNotification('Equipped new color!', 'success');
+            } else {
+                createNotification('You do not own this color.', 'error');
+            }
         });
-        text.offsetX(text.width() / 2);
+    }
 
-        rect.on('click', () => {
-            this.screenManager.switchTo('menu');
-        });
-
-        // Add hover effects to match other buttons
-        rect.on('mouseenter', () => {
-            document.body.style.cursor = 'pointer';
-            rect.fill(COLORS?.primaryLight ?? '#8d75ff');
-            this.container.getStage()?.draw();
-        });
-
-        rect.on('mouseleave', () => {
-            document.body.style.cursor = 'default';
-            rect.fill(COLORS?.primary ?? '#7b61ff');
-            this.container.getStage()?.draw();
-        });
-
-        group.add(rect);
-        group.add(text);
-
-        return group;
+    private returnToMenu(): void {
+        this.screenManager.switchTo('menu');
     }
 }
