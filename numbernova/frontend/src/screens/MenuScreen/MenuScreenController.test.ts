@@ -5,10 +5,15 @@ const mockDraw = jest.fn()
 const mockGetStage = jest.fn(() => ({ draw: mockDraw }))
 
 let mockViewInstance: any
+let mockTutorialOkButton: any
 
 jest.mock('./MenuScreenView', () => {
   return {
     MenuScreenView: jest.fn().mockImplementation((_container: any) => {
+      mockTutorialOkButton = {
+        on: jest.fn()
+      }
+
       mockViewInstance = {
         onLogout: jest.fn(),
         onLeaderboard: jest.fn(),
@@ -16,7 +21,12 @@ jest.mock('./MenuScreenView', () => {
         onPlayerIcon: jest.fn(),
         onInventory: jest.fn(),
         onPlanetClick: jest.fn(),
-        onPlay: jest.fn()
+        onPlay: jest.fn(),
+
+        // NEW: tutorial popup API
+        showTutorial: jest.fn(),
+        hideTutorial: jest.fn(),
+        getTutorialOkButton: jest.fn(() => mockTutorialOkButton)
       }
       return mockViewInstance
     })
@@ -73,7 +83,8 @@ describe('MenuScreenController', () => {
     consoleSpy.mockRestore()
   })
 
-  it('registers handlers on the view and draws the stage on initialize', () => {
+  it('registers handlers on the view, shows tutorial, wires OK button, and draws the stage on initialize', () => {
+    // existing handler expectations
     expect(mockViewInstance.onLogout).toHaveBeenCalledTimes(1)
     expect(mockViewInstance.onLeaderboard).toHaveBeenCalledTimes(1)
     expect(mockViewInstance.onShop).toHaveBeenCalledTimes(1)
@@ -82,9 +93,26 @@ describe('MenuScreenController', () => {
     expect(mockViewInstance.onPlanetClick).toHaveBeenCalledTimes(1)
     expect(mockViewInstance.onPlay).toHaveBeenCalledTimes(1)
 
+    // NEW: tutorial popup wiring
+    expect(mockViewInstance.showTutorial).toHaveBeenCalledTimes(1)
+    expect(mockViewInstance.getTutorialOkButton).toHaveBeenCalledTimes(1)
+    expect(mockTutorialOkButton.on).toHaveBeenCalledTimes(1)
+    expect(mockTutorialOkButton.on).toHaveBeenCalledWith(
+      'click',
+      expect.any(Function)
+    )
+
+    // stage draw still happens
     expect(mockGetStage).toHaveBeenCalledTimes(1)
     expect(mockDraw).toHaveBeenCalledTimes(1)
     expect(consoleSpy).toHaveBeenCalledWith('MenuScreen loaded successfully!')
+  })
+
+  it('hides tutorial when OK button is clicked', () => {
+    // handler registered during initialize
+    const okClickHandler = mockTutorialOkButton.on.mock.calls[0][1]
+    okClickHandler()
+    expect(mockViewInstance.hideTutorial).toHaveBeenCalledTimes(1)
   })
 
   it('switches to login screen when logout handler is triggered', () => {

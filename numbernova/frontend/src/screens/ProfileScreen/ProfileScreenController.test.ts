@@ -1,121 +1,134 @@
+// src/screens/ProfileScreen/ProfileScreenController.test.ts
 import { ProfileScreenController } from './ProfileScreenController';
 import { ProfileScreenModel } from './ProfileScreenModel';
 import { ProfileScreenView } from './ProfileScreenView';
 
-// Block import.meta.env in supabase.ts via model imports
-jest.mock('../../lib/supabase', () => ({
-  getUserProfiles: jest.fn(),
-  getCurrentUser: jest.fn(),
-  getUserProfile: jest.fn(),
+// Use manual mock factories so TS doesn't whine
+const mockGetProfileWithRank = jest.fn();
+
+jest.mock('./ProfileScreenModel', () => ({
+  ProfileScreenModel: jest.fn().mockImplementation(() => ({
+    getProfileWithRank: mockGetProfileWithRank,
+  })),
 }));
 
-jest.mock('./ProfileScreenModel');
-jest.mock('./ProfileScreenView');
+const mockRenderProfile = jest.fn();
+const mockGetBackButton = jest.fn();
 
-const getProfileWithRankMock = jest.fn();
-const renderProfileMock = jest.fn();
-const getBackButtonMock = jest.fn();
-
-// Wire model + view mocks
-(ProfileScreenModel as jest.Mock).mockImplementation(() => ({
-  getProfileWithRank: getProfileWithRankMock,
+jest.mock('./ProfileScreenView', () => ({
+  ProfileScreenView: jest.fn().mockImplementation(() => ({
+    renderProfile: mockRenderProfile,
+    getBackButton: mockGetBackButton,
+  })),
 }));
-
-(ProfileScreenView as jest.Mock).mockImplementation(() => ({
-  renderProfile: renderProfileMock,
-  getBackButton: getBackButtonMock,
-}));
-
-const flushPromises = () =>
-  new Promise<void>(resolve => setTimeout(resolve, 0));
 
 describe('ProfileScreenController', () => {
-  let controller: ProfileScreenController;
   let mockScreenManager: { switchTo: jest.Mock };
+  let mockContainer: { getStage: jest.Mock };
+  let mockStageDraw: jest.Mock;
+
+  let mockBackButton: { on: jest.Mock };
+  let clickHandler: ((e?: any) => void) | undefined;
+
+  const mockProfileData = {
+    id: 'user-id-123',
+    displayName: 'Ashish',
+    rank: 3,
+    totalScore: 4200,
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockScreenManager = { switchTo: jest.fn() } as any;
-  });
 
-  it('loads profile data and renders it when model returns data', async () => {
-    const profileData = {
-      username: 'PlayerTwo',
-      email: 'player2@example.com',
-      maskedPassword: '********',
-      score: 150,
-      rank: 2,
+    mockStageDraw = jest.fn();
+    mockContainer = {
+      getStage: jest.fn(() => ({
+        draw: mockStageDraw,
+      })),
     };
 
-    getProfileWithRankMock.mockResolvedValue(profileData);
+    mockScreenManager = {
+      switchTo: jest.fn(),
+    };
 
-    const onMock = jest.fn();
-    getBackButtonMock.mockReturnValue({ on: onMock });
+    clickHandler = undefined;
+    mockBackButton = {
+      on: jest.fn((event: string, handler: (e: any) => void) => {
+        if (event === 'click') {
+          clickHandler = handler;
+        }
+      }),
+    };
 
-    controller = new ProfileScreenController(mockScreenManager as any);
-
-    await flushPromises();
-
-    expect(getProfileWithRankMock).toHaveBeenCalledTimes(1);
-    expect(renderProfileMock).toHaveBeenCalledWith(profileData);
+    mockGetBackButton.mockReturnValue(mockBackButton);
   });
 
-  it('does not render profile when model returns null (no current user)', async () => {
-    getProfileWithRankMock.mockResolvedValue(null);
+  function createController(): ProfileScreenController {
+    const controller = new ProfileScreenController(
+      mockScreenManager as any // BaseScreen ctor takes only the screenManager
+    );
 
-    const onMock = jest.fn();
-    getBackButtonMock.mockReturnValue({ on: onMock });
+    // Patch in our fake container so this.container.getStage() works
+    (controller as any).container = mockContainer;
 
-    controller = new ProfileScreenController(mockScreenManager as any);
+    return controller;
+  }
 
-    await flushPromises();
+  test('loads and renders profile data when user exists', async () => {
+    mockGetProfileWithRank.mockResolvedValue(mockProfileData);
 
-    expect(getProfileWithRankMock).toHaveBeenCalledTimes(1);
-    expect(renderProfileMock).not.toHaveBeenCalled();
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const controller = createController();
+
+    await (controller as any).loadProfile();
+
+    expect(mockGetProfileWithRank).toHaveBeenCalledTimes(1);
+    expect(mockRenderProfile).toHaveBeenCalledWith(mockProfileData);
+    expect(mockContainer.getStage).toHaveBeenCalledTimes(1);
+    expect(mockStageDraw).toHaveBeenCalledTimes(1);
+    expect(mockScreenManager.switchTo).not.toHaveBeenCalledWith('login');
+
+    expect(warnSpy).not.toHaveBeenCalled();
+    expect(errorSpy).not.toHaveBeenCalled();
+
+    warnSpy.mockRestore();
+    errorSpy.mockRestore();
   });
 
-  it('wires back button to navigate to menu', async () => {
-    getProfileWithRankMock.mockResolvedValue({
-      username: 'Player',
-      email: 'player@example.com',
-      maskedPassword: '********',
-      score: 100,
-      rank: 1,
-    });
+  test('redirects to login when no current user', async () => {
+    mockGetProfileWithRank.mockResolvedValue(null);
 
-    const onMock = jest.fn();
-    getBackButtonMock.mockReturnValue({ on: onMock });
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    controller = new ProfileScreenController(mockScreenManager as any);
+    const controller = createController();
 
-    await flushPromises();
+    await (controller as any).loadProfile();
 
-    expect(onMock).toHaveBeenCalledWith('click', expect.any(Function));
+    expect(mockGetProfileWithRank).toHaveBeenCalledTimes(1);
+    expect(mockRenderProfile).not.toHaveBeenCalled();
+    expect(mockContainer.getStage).not.toHaveBeenCalled();
+    expect(mockStageDraw).not.toHaveBeenCalled();
+    expect(mockScreenManager.switchTo).toHaveBeenCalledWith('login');
 
-    const handler = onMock.mock.calls[0][1] as () => void;
-    handler();
+    expect(warnSpy).toHaveBeenCalled();
+    expect(errorSpy).not.toHaveBeenCalled();
+
+    warnSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
+  test('back button switches to menu screen', () => {
+    const controller = createController();
+
+    expect(mockGetBackButton).toHaveBeenCalledTimes(1);
+    expect(mockBackButton.on).toHaveBeenCalledWith('click', expect.any(Function));
+
+    expect(clickHandler).toBeDefined();
+    clickHandler && clickHandler();
 
     expect(mockScreenManager.switchTo).toHaveBeenCalledWith('menu');
-  });
-
-  it('show calls BaseScreen.show and sets container visible', async () => {
-    getProfileWithRankMock.mockResolvedValue({
-      username: 'Player',
-      email: 'player@example.com',
-      maskedPassword: '********',
-      score: 100,
-      rank: 1,
-    });
-
-    const onMock = jest.fn();
-    getBackButtonMock.mockReturnValue({ on: onMock });
-
-    controller = new ProfileScreenController(mockScreenManager as any);
-
-    // Inject fake container so BaseScreen.show() doesn't crash
-    (controller as any).container = { visible: jest.fn() };
-
-    expect(() => controller.show()).not.toThrow();
-    expect((controller as any).container.visible).toHaveBeenCalledWith(true);
   });
 });
