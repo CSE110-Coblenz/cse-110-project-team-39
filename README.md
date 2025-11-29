@@ -3,6 +3,8 @@
 
 An interactive educational math game designed for 2nd and 3rd graders. Players travel through space, battling aliens on different planets by solving math expressions.
 
+This project is licensed under the MIT License.
+
 ## 🌌 About
 
 NumberNova is a single-player card-based game where players create mathematical expressions to defeat aliens and progress through five unique worlds. Each world introduces new operations and difficulty levels, helping students practice fundamental arithmetic skills in an engaging, game-based environment.
