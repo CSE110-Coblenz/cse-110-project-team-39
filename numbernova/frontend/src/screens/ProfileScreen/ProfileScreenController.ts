@@ -10,7 +10,7 @@ export class ProfileScreenController extends BaseScreen {
     private model: ProfileScreenModel;
 
    protected initialize(): void {
-       this.model = new ProfileScreenModel('user123', {
+        this.model = new ProfileScreenModel('user123', {
            score: 1500,
            level: 5,
            ship_color: 'blue',
@@ -20,9 +20,9 @@ export class ProfileScreenController extends BaseScreen {
            games_played: 200,
            games_won: 120,
            currency: 5000,
-       });
+        });
 
-       this.view = new ProfileScreenView(   
+        this.view = new ProfileScreenView(   
               this.container,   
                 this.model.getProfilePictureUrl(),
                 this.model.getProfileName(),
@@ -33,13 +33,23 @@ export class ProfileScreenController extends BaseScreen {
                 this.model.getRank(),
                 this.model.getShipColor(),
                 this.model.getCurrency()
-       );
-   }
+        );
 
-   public show(): void {
+        this.setupEventListeners();
+    }
+
+    public show(): void {
         super.show();
     }
 
+    private setupEventListeners(): void {
+        this.view.onMenuClick(() => {
+            this.returnToMenu();
+        });
+    }
 
+    private returnToMenu(){
+        this.screenManager.switchTo('menu');
+    }
     
 }

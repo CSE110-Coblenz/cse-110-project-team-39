@@ -1,5 +1,6 @@
 import Konva from 'konva';
 import { COLORS, DIMENSIONS, FONTS } from '../../constants';
+type VoidFn = () => void;
 
 export class ProfileScreenView {
     private profile: Konva.layer;
@@ -20,6 +21,20 @@ export class ProfileScreenView {
 
     // button to go back to menu
 
+    private menuButton: {group: Konva.Group, rect: Konva.Rect, text: Konva.Text};
+
+    // button to edit profile
+
+    private editProfileButton : Konva.Group;
+
+
+    // handlers
+    private menuHandler: VoidFn[] = [];
+    private editProfileHandler: VoidFn[] = [];
+
+    //events to handle button clicks
+    onMenuClick(cb: VoidFn) {this.menuHandler.push(cb);}
+    onEditProfileClick(cb: VoidFn) {this.editProfileHandler.push(cb);}
 
     constructor(layer: Konva.Layer, profilePictureUrl: string, profileName: string, gamesWon: number, gamesPlayed: number, score: number, level: number, rank: string, shipColor: string, currency: number) {
         // Profile Picture
@@ -128,6 +143,41 @@ export class ProfileScreenView {
             fill: COLORS.text,
         });
 
+        //create 
+
+        const menuBtnWidth = 220;
+        const menuBtnHeight = 60;
+        const menuBtnX = 30;
+        const menuBtnY = 30;
+        
+        this.menuButton = {
+            group: new Konva.Group(),
+            rect: new Konva.Rect({
+            x: menuBtnX,
+            y: menuBtnY,
+            width: menuBtnWidth,
+            height: menuBtnHeight,
+            fill: COLORS?.primary || '#7b61ff',
+            cornerRadius: 16,
+            listening: true
+            }),
+            text: new Konva.Text({
+            x: menuBtnX + menuBtnWidth / 2,
+            y: menuBtnY + menuBtnHeight / 2,
+            text: 'Return to Main Menu',
+            fontSize: 22,
+            fontFamily: FONTS.label || 'Arial',
+            fill: '#ffffff',
+            align: 'center',
+            verticalAlign: 'middle'
+            })
+        };
+        // Center the text in the button
+        this.menuButton.text.offsetX(this.menuButton.text.width() / 2);
+        this.menuButton.text.offsetY(this.menuButton.text.height() / 2);
+        this.menuButton.group.add(this.menuButton.rect);
+        this.menuButton.group.add(this.menuButton.text);
+
 
         this.createStars(this.stars = new Konva.Group(), 100, 0.2, 1.5);
         layer.add(this.stars);
@@ -142,6 +192,8 @@ export class ProfileScreenView {
         layer.add(this.gamesPlayedText);
         layer.add(this.currencyText);
         layer.add(this.shipColorText);
+        layer.add(this.menuButton.group);
+        this.attachEventHandlers();
         this.profile = layer;
         this.profile.draw();    
     }
@@ -158,6 +210,23 @@ export class ProfileScreenView {
               });
               group.add(s);
             }
+    }
+
+    private updateProfilePicture(newUrl: string) {
+        this.profilePicture.fillPatternImage(newUrl ? undefined : undefined);
+        this.profile.draw();
+    }
+    
+    private updateProfileName(newName: string) {
+        this.usernameText.text(newName);
+        this.statsTitle.text(newName + '\'s Stats');
+        this.profile.draw();
+    }
+
+    private attachEventHandlers(){
+        this.menuButton.group.on('click', () => {
+            this.menuHandler.forEach(fn => fn());
+        });
     }
 }
 
