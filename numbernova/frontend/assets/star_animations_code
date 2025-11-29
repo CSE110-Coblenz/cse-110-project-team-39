@@ -1,0 +1,72 @@
+import Konva from 'konva';
+
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+const stage = new Konva.Stage({
+    container: 'konva-container',
+    width,
+    height,
+});
+
+const layer = new Konva.Layer();
+stage.add(layer);
+
+const background = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width,
+    height,
+    fillLinearGradientStartPoint: { x: 0, y: 0 },
+    fillLinearGradientEndPoint: { x: width, y: height },
+    fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033'],
+});
+
+layer.add(background);
+
+const stars = new Konva.Group({ listening: false });
+
+function makeLayer(count: number, radiusMax: number): Konva.Group {
+    const g = new Konva.Group({ listening: false });
+    for (let i = 0; i < count; i++) {
+        g.add(
+            new Konva.Circle({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * radiusMax + 0.4,
+                fill: '#ffffff',
+            }),
+        );
+    }
+    return g;
+}
+
+stars.add(makeLayer(120, 1.2));
+stars.add(makeLayer(80, 1.8));
+stars.add(makeLayer(40, 2.2));
+
+layer.add(stars);
+layer.draw();
+
+function animateStars(starsGroup: Konva.Group): void {
+    starsGroup.getChildren().forEach((layerNode) => {
+        const layerGroup = layerNode as Konva.Group;
+
+        layerGroup.getChildren().forEach((starNode) => {
+            const star = starNode as Konva.Circle;
+            const duration = Math.random() * 3 + 1;
+
+            const anim = new Konva.Animation((frame) => {
+                if (!frame) return;
+                const period = duration * 1000;
+                const phase = (frame.time % period) / period;
+                const opacity = 0.4 + Math.sin(phase * Math.PI) * 0.6;
+                star.opacity(opacity);
+            });
+
+            anim.start();
+        });
+    });
+}
+
+animateStars(stars);

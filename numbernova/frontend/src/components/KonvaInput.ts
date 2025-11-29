@@ -22,7 +22,7 @@ export class KonvaInput extends Konva.Group {
     // Hidden HTML input for native text handling
     private hiddenInput: HTMLInputElement;
     
-    private value: string = '';
+    private inputValue: string = '';
     private isFocused: boolean = false;
     private placeholder: string;
     private type: 'text' | 'password';
@@ -207,7 +207,7 @@ export class KonvaInput extends Konva.Group {
     private updateCursorPosition(): void {
         // Create a temporary text node to measure the actual width
         const tempText = new Konva.Text({
-            text: this.type === 'password' ? '•'.repeat(this.value.length) : this.value,
+            text: this.type === 'password' ? '•'.repeat(this.inputValue.length) : this.inputValue,
             fontSize: this.fontSize,
             fontFamily: this.fontFamily
         });
@@ -221,7 +221,7 @@ export class KonvaInput extends Konva.Group {
     private setupHiddenInputListeners(): void {
         // Listen to all input events for native text handling
         this.hiddenInput.addEventListener('input', () => {
-            this.value = this.hiddenInput.value;
+            this.inputValue = this.hiddenInput.value;
             this.updateDisplay();
         });
         
@@ -274,15 +274,15 @@ export class KonvaInput extends Konva.Group {
     }
     
     private updateDisplay(): void {
-        if (this.value.length > 0) {
+        if (this.inputValue.length > 0) {
             // Show value, hide placeholder
             this.placeholderText.visible(false);
             this.valueText.visible(true);
             
             if (this.type === 'password') {
-                this.valueText.text('•'.repeat(this.value.length));
+                this.valueText.text('•'.repeat(this.inputValue.length));
             } else {
-                this.valueText.text(this.value);
+                this.valueText.text(this.inputValue);
             }
         } else {
             // Show placeholder, hide value
@@ -293,13 +293,14 @@ export class KonvaInput extends Konva.Group {
         this.updateCursorPosition();
         this.getLayer()?.draw();
     }
-    
+
     public getValue(): string {
-        return this.value;
+        return this.inputValue;
     }
+
     
     public setValue(value: string): void {
-        this.value = value;
+        this.inputValue = value;
         this.hiddenInput.value = value;
         this.updateDisplay();
     }
@@ -308,15 +309,18 @@ export class KonvaInput extends Konva.Group {
         return this.isFocused;
     }
     
-    public destroy(): void {
+    public destroy(): this {
         this.blur();
-        // Remove the hidden input from DOM
+
         if (this.hiddenInput.parentNode) {
             this.hiddenInput.parentNode.removeChild(this.hiddenInput);
         }
-        // Remove window listeners
+
         window.removeEventListener('blur', this.windowBlurHandler);
         document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+
         super.destroy();
+        return this;
     }
+
 }

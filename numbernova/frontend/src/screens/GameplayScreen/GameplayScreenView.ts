@@ -792,7 +792,7 @@ export class GamePlayScreenView {
     }
 
     // Get the card visual in hand (it's hidden)
-    const cardData = cardInSlot.getAttr('cardData');
+  const cardData = (cardInSlot as any).getAttr('cardData');
 
     if (!cardData) {
       onComplete?.();
@@ -961,8 +961,8 @@ export class GamePlayScreenView {
     const leftCardInSlot = leftSlot.getChildren().slice(1)[0];
     const rightCardInSlot = rightSlot.getChildren().slice(1)[0];
 
-    const leftCardData = leftCardInSlot?.getAttr('cardData');
-    const rightCardData = rightCardInSlot?.getAttr('cardData');
+    const leftCardData = leftCardInSlot ? (leftCardInSlot as any).getAttr('cardData') : undefined;
+    const rightCardData = rightCardInSlot ? (rightCardInSlot as any).getAttr('cardData') : undefined;
 
     // Get the hidden card visuals
     const leftCardVisual = leftCardData ? this.cardVisuals.get(leftCardData.id) : null;

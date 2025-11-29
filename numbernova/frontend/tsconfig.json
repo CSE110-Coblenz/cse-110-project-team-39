@@ -1,28 +1,17 @@
 {
-	"compilerOptions": {
-
-		// Treat files as modules even if it doesn't use import/export
-		"moduleDetection": "force",
-
-		// Ignore module structure
-		"module": "ESNext",
-
-		// Allow JSON modules to be imported
-		"resolveJsonModule": true,
-
-		// Allow JS files to be imported from TS and vice versa
-		"allowJs": true,
-
-		// Use correct ESM import behavior
-		"esModuleInterop": true,
-
-		// Disallow features that require cross-file awareness
-		"isolatedModules": true,
-
-		"target": "ES2020",
-		"strict": true,
-		"skipLibCheck": true,
-		"lib": ["ES2020", "DOM", "DOM.Iterable"]
-	},
-	"include": ["src"]
+  "compilerOptions": {
+    "moduleDetection": "force",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "target": "ES2020",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"]
+  },
+  "include": ["src"]
 }
