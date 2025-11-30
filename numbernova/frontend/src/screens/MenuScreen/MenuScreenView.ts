@@ -70,7 +70,7 @@ export class MenuScreenView {
     this.title = new Konva.Text({
       x: DIMENSIONS.width / 2,
       y: 90,
-      text: 'Welcome To Main Menu! 🏚',
+      text: 'Welcome To Main Menu! 🏠',
       fontSize: 68,
       fontFamily: 'Jersey 10',
       fill: '#ffffff',
