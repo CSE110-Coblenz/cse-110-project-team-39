@@ -52,11 +52,10 @@ export class ProfileScreenView {
         this.profilePicGroup = new Konva.Group({
             x: DIMENSIONS.width * 0.25,
             y: DIMENSIONS.height * 0.3,
-            clip: {
-                x: -80,
-                y: -80,
-                width: 160,
-                height: 160
+            clipFunc: (ctx) => {
+                ctx.beginPath();
+                ctx.arc(0, 0, 80, 0, Math.PI * 2, false);
+                ctx.closePath();
             }
         });
 
