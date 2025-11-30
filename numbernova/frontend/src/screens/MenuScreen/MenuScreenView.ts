@@ -70,7 +70,7 @@ export class MenuScreenView {
     this.title = new Konva.Text({
       x: DIMENSIONS.width / 2,
       y: 90,
-      text: 'Welcome To Main Menu!',
+      text: 'Welcome To Main Menu! 🏚',
       fontSize: 68,
       fontFamily: 'Jersey 10',
       fill: '#ffffff',
@@ -132,7 +132,7 @@ export class MenuScreenView {
 
   private createPlanets(): void {
     const planetColors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
-    const planetIcons = ['🪐', '🌍', '🛸', '🚀', '⭐'];
+    const planetIcons = ['➕➖', '➕➖', '✖️➗', '✖️➗', '❗️'];
     const planetConcepts = [
       'Level 1 covers: basic addition & subtraction.',
       'Level 2 covers: intermediate addition & subtraction.',
