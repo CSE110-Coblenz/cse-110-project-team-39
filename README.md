@@ -19,6 +19,7 @@ If users do not have an account created yet, please click the "Create Account" b
  <img width="270" height="305" alt="Screen Shot 2025-11-22 at 3 44 56 PM" src="https://github.com/user-attachments/assets/35b497c6-ba76-4ebc-8fe7-594238ee4156" />
 
 
+<img width="1357" height="646" alt="Screen Shot 2025-11-30 at 1 25 57 AM" src="https://github.com/user-attachments/assets/e78ddfd9-c8f4-444b-8a3a-35e90bff1bd6" />
 
 
 ## 🎮 Game Mechanics
@@ -35,7 +36,7 @@ The game features:
   - World 3: Low number multiplication & division (1–8)  
   - World 4: Higher number multiplication & division (6–12)  
   - World 5: Factorials & exponents (2–6)
-  - <img width="956" height="615" alt="Screen Shot 2025-11-22 at 4 07 04 PM" src="https://github.com/user-attachments/assets/70285954-1414-4d17-8658-930bded1c920" />
+  - <img width="956" height="615" alt="Screen Shot 2025-11-30 at 1 25 57 AM" src="https://github.com/user-attachments/assets/e78ddfd9-c8f4-444b-8a3a-35e90bff1bd6" />
 
   
 
