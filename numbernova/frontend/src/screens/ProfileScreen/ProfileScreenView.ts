@@ -273,12 +273,12 @@ export class ProfileScreenView {
             }
     }
 
-    private updateProfilePicture(newUrl: string) {
+    public updateProfilePicture(newUrl: string) {
         this.profilePicture.fillPatternImage(newUrl ? undefined : undefined);
         this.profile.draw();
     }
     
-    private updateProfileName(newName: string) {
+    public updateProfileName(newName: string) {
         this.usernameText.text(newName);
         this.statsTitle.text(newName + '\'s Stats');
         this.profile.draw();
@@ -296,11 +296,11 @@ export class ProfileScreenView {
 
     //methods to get the text from the text inputs
     public getInputUsername(){
-        this.newUserNameInput.getValue();
+        return this.newUserNameInput.getValue();
     }
 
     public getInputProfileURL(){
-        this.newPictureInput.getValue();
+        return this.newPictureInput.getValue();
     }
 
 

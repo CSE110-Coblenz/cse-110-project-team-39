@@ -57,8 +57,20 @@ export class ProfileScreenController extends BaseScreen {
     }
 
     private updateProfile(){
-        console.log(this.view.getInputProfileURL());
-        console.log(this.view.getInputUsername());
+        const username = this.view.getInputUsername().trim();
+        const profileURL = this.view.getInputProfileURL().trim();
+
+        //handle the profile picture url first
+        if(!(profileURL === "") && profileURL != null){
+            this.model.updateProfilePicture(profileURL);
+            this.view.updateProfilePicture(profileURL);
+        }
+        //handle the username update next
+        if(!(username === "") && username != null){
+            this.model.updateProfileName(username); 
+            this.view.updateProfileName(username);
+        }
+
     }
     
 }
