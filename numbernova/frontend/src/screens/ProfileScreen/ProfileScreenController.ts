@@ -48,12 +48,17 @@ export class ProfileScreenController extends BaseScreen {
         });
 
         this.view.onEditProfileClick(() => {
-            console.log("Editting profile");
+            this.updateProfile();
         })
     }
 
     private returnToMenu(){
         this.screenManager.switchTo('menu');
+    }
+
+    private updateProfile(){
+        console.log(this.view.getInputProfileURL());
+        console.log(this.view.getInputUsername());
     }
     
 }

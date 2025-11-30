@@ -254,6 +254,7 @@ export class ProfileScreenView {
         layer.add(this.menuButton.group);
         layer.add(this.editProfileGroup);
         this.attachEventHandlers();
+        this.setupTabNavigation();
         this.profile = layer;
         this.profile.draw();    
     }
@@ -291,6 +292,65 @@ export class ProfileScreenView {
         this.editProfileButton.group.on('click', () => {
             this.editProfileHandler.forEach(fn => fn());
         });
+    }
+
+    //methods to get the text from the text inputs
+    public getInputUsername(){
+        this.newUserNameInput.getValue();
+    }
+
+    public getInputProfileURL(){
+        this.newPictureInput.getValue();
+    }
+
+
+    private setupTabNavigation(): void {
+        // Keep track of all inputs for management
+        const inputs = [this.newPictureInput, this.newUserNameInput];
+        
+        // When clicking on one input, blur all others
+        inputs.forEach(input => {
+            input.on('click', () => {
+                inputs.forEach(otherInput => {
+                    if (otherInput !== input) {
+                        otherInput.blur();
+                    }
+                });
+            });
+        });
+        
+        // Handle tab navigation between inputs
+        this.newPictureInput.on('tab', (e: any) => {
+            e.evt.preventDefault(); // Prevent default tab behavior
+            this.newPictureInput.blur();
+            if (e.shiftKey) {
+                // Tab backwards - loop to password
+                this.newUserNameInput.focus();
+            } else {
+                // Tab forward to password
+                this.newUserNameInput.focus();
+            }
+        });
+        
+        this.newUserNameInput.on('tab', (e: any) => {
+            e.evt.preventDefault(); // Prevent default tab behavior
+            this.newUserNameInput.blur();
+            if (e.shiftKey) {
+                // Tab backwards to email
+                this.newPictureInput.focus();
+            } else {
+                // Tab forward - loop back to email
+                this.newPictureInput.focus();
+            }
+        });
+        
+        // Handle Enter key from inputs
+        const handleEnter = () => {
+            this.editProfileButton.group.fire('click');
+        };
+        
+        this.newPictureInput.on('enter', handleEnter);
+        this.newUserNameInput.on('enter', handleEnter);
     }
 
 }
