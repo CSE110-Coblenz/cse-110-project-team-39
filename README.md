@@ -19,8 +19,6 @@ If users do not have an account created yet, please click the "Create Account" b
  <img width="270" height="305" alt="Screen Shot 2025-11-22 at 3 44 56 PM" src="https://github.com/user-attachments/assets/35b497c6-ba76-4ebc-8fe7-594238ee4156" />
 
 
-<img width="1357" height="646" alt="Screen Shot 2025-11-30 at 1 25 57 AM" src="https://github.com/user-attachments/assets/e78ddfd9-c8f4-444b-8a3a-35e90bff1bd6" />
-
 
 ## 🎮 Game Mechanics
 
