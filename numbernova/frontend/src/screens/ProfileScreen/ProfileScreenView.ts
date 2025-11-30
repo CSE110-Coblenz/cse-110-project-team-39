@@ -12,7 +12,9 @@ export class ProfileScreenView {
     private levelText : Konva.Text
     private shipColorText : Konva.Text;
     private rankText : Konva.Text;
-    private profilePicture : Konva.Circle;
+    private profileImage : Konva.Image;
+    private profilePicGroup : Konva.Group;
+    private profileBorder : Konva.Circle;
     private usernameText : Konva.Text;
     private gamesWonText : Konva.Text;
     private gamesPlayedText : Konva.Text;
@@ -46,14 +48,36 @@ export class ProfileScreenView {
         //create a profile screen with the profile circle and username on the left side of the screen and the 
         // stats on the right side of the screen
 
-        this.profilePicture = new Konva.Circle({
+
+        this.profilePicGroup = new Konva.Group({
             x: DIMENSIONS.width * 0.25,
             y: DIMENSIONS.height * 0.3,
-            radius: 80,
-            fillPatternImage: profilePictureUrl ? undefined : undefined,
-            stroke: COLORS.text,
-            strokeWidth: 4,
+            clip: {
+                x: -80,
+                y: -80,
+                width: 160,
+                height: 160
+            }
         });
+
+        this.profileBorder = new Konva.Circle({
+            x: 0,
+            y: 0,
+            radius: 80,
+            stroke: COLORS.text,
+            strokeWidth: 4
+        });
+        this.profilePicGroup.add(this.profileBorder);
+
+        this.profileImage = new Konva.Image({
+            x: -80,
+            y: -80,
+            width: 160,
+            height: 160
+        });
+        this.profilePicGroup.add(this.profileImage);
+
+        this.loadProfileImage(profilePictureUrl);
 
         this.usernameText = new Konva.Text({
             x: DIMENSIONS.width * 0.25 - 75,
@@ -240,7 +264,7 @@ export class ProfileScreenView {
         this.editProfileGroup.add(this.editProfileButton.group);
 
         layer.add(this.stars);
-        layer.add(this.profilePicture);
+        layer.add(this.profilePicGroup);
         layer.add(this.usernameText);
         layer.add(this.statsBackground);
         layer.add(this.statsTitle);
@@ -274,8 +298,13 @@ export class ProfileScreenView {
     }
 
     public updateProfilePicture(newUrl: string) {
-        this.profilePicture.fillPatternImage(newUrl ? undefined : undefined);
-        this.profile.draw();
+        const img = new window.Image();
+        img.crossOrigin = "anonymous"; 
+        img.onload = () => {
+            this.profileImage.image(img);
+            this.profile.draw();
+        };
+        img.src = newUrl;
     }
     
     public updateProfileName(newName: string) {
@@ -357,6 +386,18 @@ export class ProfileScreenView {
     public clearInputs(){
         this.newPictureInput.setValue("");
         this.newUserNameInput.setValue("");
+    }
+
+    private loadProfileImage(url: string) {
+        if (!url) return;
+
+        const img = new window.Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+            this.profileImage.image(img);    
+            this.profile.draw();     
+        };
+        img.src = url;
     }
 
 }

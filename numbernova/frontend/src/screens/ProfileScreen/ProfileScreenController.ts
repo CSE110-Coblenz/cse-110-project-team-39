@@ -52,6 +52,7 @@ export class ProfileScreenController extends BaseScreen {
 
         //handle the profile picture url first
         if(!(profileURL === "") && profileURL != null){
+            console.log(profileURL);
             this.model.updateProfilePicture(profileURL);
             this.view.updateProfilePicture(profileURL);
         }
