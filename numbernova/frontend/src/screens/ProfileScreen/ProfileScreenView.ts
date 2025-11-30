@@ -353,5 +353,11 @@ export class ProfileScreenView {
         this.newUserNameInput.on('enter', handleEnter);
     }
 
+    //clear the text inputs
+    public clearInputs(){
+        this.newPictureInput.setValue("");
+        this.newUserNameInput.setValue("");
+    }
+
 }
 

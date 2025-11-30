@@ -10,17 +10,7 @@ export class ProfileScreenController extends BaseScreen {
     private model: ProfileScreenModel;
 
    protected initialize(): void {
-        this.model = new ProfileScreenModel('user123', {
-           score: 1500,
-           level: 5,
-           ship_color: 'blue',
-           rank: '5',
-           profile_name: 'AcePilot',
-           profile_picture_url: 'https://example.com/profile.jpg',
-           games_played: 200,
-           games_won: 120,
-           currency: 5000,
-        });
+        this.model = new ProfileScreenModel('user123');
 
         this.view = new ProfileScreenView(   
               this.container,   
@@ -70,6 +60,8 @@ export class ProfileScreenController extends BaseScreen {
             this.model.updateProfileName(username); 
             this.view.updateProfileName(username);
         }
+
+        this.view.clearInputs();
 
     }
     

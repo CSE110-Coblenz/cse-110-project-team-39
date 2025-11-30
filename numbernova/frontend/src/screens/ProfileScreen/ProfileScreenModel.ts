@@ -11,8 +11,20 @@ export class ProfileScreenModel {
     private gamesWon: number;
     private currency: number;
 
-    constructor(userId: string, initialData?: { score?: number; level?: number; ship_color?: string; rank?: string; profile_name?: string; profile_picture_url?: string; games_played?: number; games_won?: number; currency?: number }) {
+    constructor(userId: string) {
         //Todo: fetch user data from supabase
+        const initialData = {
+            score: null,
+            level: null,
+            ship_color: null,
+            rank: null,
+            profile_name: null,
+            profile_picture_url: null,
+            games_played: null,
+            games_won: null,
+            currency: null
+        };
+
         this.userId = userId;
         this.score = initialData?.score ?? 0;
         this.level = initialData?.level ?? 1;
