@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <favicon href="/assets/icons/favicon.ico" />
+    <!-- Add Jersey 10 Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <title>Number Nova</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0a0a1f;
+            font-family: Jersey 10, Arial, sans-serif;
+        }
+        #game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            background: url('/assets/stars_animation.gif') center/cover no-repeat;
+            background-size: cover;
+        }
+        input::placeholder {
+            color: #b8b8c8;
+            opacity: 0.7;
+        }
+        input::-webkit-input-placeholder {
+            color: #b8b8c8;
+            opacity: 0.7;
+        }
+        input::-moz-placeholder {
+            color: #b8b8c8;
+            opacity: 0.7;
+        }
+        input:-ms-input-placeholder {
+            color: #b8b8c8;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
