@@ -1,5 +1,6 @@
 import Konva from 'konva';
 import { COLORS, DIMENSIONS, FONTS } from '../../constants';
+import { KonvaInput } from '../../components/KonvaInput';
 type VoidFn = () => void;
 
 export class ProfileScreenView {
@@ -25,7 +26,11 @@ export class ProfileScreenView {
 
     // button to edit profile
 
-    private editProfileButton : Konva.Group;
+    private editProfileButton : {group: Konva.Group, rect: Konva.Rect, text: Konva.Text};
+
+    private editProfileGroup: Konva.Group | null;
+    private newUserNameInput: Konva.Input;
+    private newPictureInput: Konva.Input;
 
 
     // handlers
@@ -180,6 +185,60 @@ export class ProfileScreenView {
 
 
         this.createStars(this.stars = new Konva.Group(), 100, 0.2, 1.5);
+
+        this.newUserNameInput = new KonvaInput({
+            x: 0,
+            y: 0,
+            width: DIMENSIONS.inputWidth,
+            height: DIMENSIONS.inputHeight,
+            placeholder: 'enter new username',
+            type: 'text'
+        });
+
+        this.newPictureInput = new KonvaInput({
+            x: 0,
+            y: DIMENSIONS.inputHeight * 2,
+            width: DIMENSIONS.inputWidth,
+            height: DIMENSIONS.inputHeight,
+            placeholder: 'enter new profile picture url',
+            type: 'text'
+        });
+
+        this.editProfileButton = {
+            group: new Konva.Group(),
+            rect: new Konva.Rect({
+            x: 0,
+            y: DIMENSIONS.inputHeight * 4,
+            width: 220,
+            height: 60,
+            fill: COLORS?.primary || '#7b61ff',
+            cornerRadius: 16,
+            listening: true
+            }),
+            text: new Konva.Text({
+            text: 'Update Profile',
+            x: 0 + 20,
+            y: DIMENSIONS.inputHeight * 4 + 20,
+            fontSize: 22,
+            fontFamily: FONTS.label || 'Arial',
+            fill: '#ffffff',
+            align: 'center',
+            verticalAlign: 'middle'
+            })
+        };
+       
+        this.editProfileButton.group.add(this.editProfileButton.rect);
+        this.editProfileButton.group.add(this.editProfileButton.text);
+
+        this.editProfileGroup = new Konva.Group({
+            x: DIMENSIONS.width * 0.25 - 75,
+            y: DIMENSIONS.height * 0.55,
+        });
+
+        this.editProfileGroup.add(this.newUserNameInput);
+        this.editProfileGroup.add(this.newPictureInput);
+        this.editProfileGroup.add(this.editProfileButton.group);
+
         layer.add(this.stars);
         layer.add(this.profilePicture);
         layer.add(this.usernameText);
@@ -193,6 +252,7 @@ export class ProfileScreenView {
         layer.add(this.currencyText);
         layer.add(this.shipColorText);
         layer.add(this.menuButton.group);
+        layer.add(this.editProfileGroup);
         this.attachEventHandlers();
         this.profile = layer;
         this.profile.draw();    
@@ -228,5 +288,6 @@ export class ProfileScreenView {
             this.menuHandler.forEach(fn => fn());
         });
     }
+
 }
 
