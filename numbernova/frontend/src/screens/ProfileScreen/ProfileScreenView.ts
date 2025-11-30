@@ -287,6 +287,10 @@ export class ProfileScreenView {
         this.menuButton.group.on('click', () => {
             this.menuHandler.forEach(fn => fn());
         });
+
+        this.editProfileButton.group.on('click', () => {
+            this.editProfileHandler.forEach(fn => fn());
+        });
     }
 
 }

@@ -46,6 +46,10 @@ export class ProfileScreenController extends BaseScreen {
         this.view.onMenuClick(() => {
             this.returnToMenu();
         });
+
+        this.view.onEditProfileClick(() => {
+            console.log("Editting profile");
+        })
     }
 
     private returnToMenu(){
