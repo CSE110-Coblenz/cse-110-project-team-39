@@ -1,17 +1,23 @@
 {
   "compilerOptions": {
-    "moduleDetection": "force",
+    "target": "ES2020",
     "module": "ESNext",
+    "moduleDetection": "force",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "allowJs": true,
-    "esModuleInterop": true,
-    "isolatedModules": true,
-    "target": "ES2020",
+
+    "jsx": "react-jsx",
+    "allowJs": false,
+
     "strict": true,
     "strictPropertyInitialization": false,
+    "isolatedModules": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"]
+    "noEmit": true,
+
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": ["vite/client", "jest", "node"]
   },
   "include": ["src"]
 }

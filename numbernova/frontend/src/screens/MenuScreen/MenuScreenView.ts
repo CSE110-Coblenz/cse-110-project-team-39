@@ -11,6 +11,8 @@ export class MenuScreenView {
   private menuGroup: Konva.Group;
   private title: Konva.Text;
   private subtitle: Konva.Text;
+  public onPlay?: (handler: VoidFn) => void
+
 
   private logoutBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private leaderboardBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };

@@ -139,11 +139,7 @@ describe('MenuScreenController', () => {
     expect(screenManager.switchTo).toHaveBeenCalledWith('profile')
   })
 
- // it('switches to inventory screen when inventory handler is triggered', () => {
-   // const handler = mockViewInstance.onInventory.mock.calls[0][0]
-    //handler()
-    //expect(screenManager.switchTo).toHaveBeenCalledWith('inventory')
-  //})
+ 
 
   it('sets planet/world numbers and switches to launchTransition on planet click', () => {
     const mockLaunchScreen = { setPlanetNumber: jest.fn() }
