@@ -12,7 +12,6 @@ export class MenuScreenView {
   private menuGroup: Konva.Group;
   private title: Konva.Text;
 
-  private invBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private logoutBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private leaderboardBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private shopBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
@@ -26,7 +25,6 @@ export class MenuScreenView {
   private planetTweens: Map<number, Konva.Tween> = new Map();
   private buttonTweens: Map<Konva.Rect, Konva.Tween> = new Map();
 
-  private inventoryHandlers: VoidFn[] = [];
   private logoutHandlers: VoidFn[] = [];
   private leaderboardHandlers: VoidFn[] = [];
   private shopHandlers: VoidFn[] = [];
@@ -40,7 +38,6 @@ export class MenuScreenView {
   // Planet click handlers
   private planetHandlers: ((planetIndex: number) => void)[] = [];
 
-  onInventory(cb: VoidFn) { this.inventoryHandlers.push(cb); }
   onLogout(cb: VoidFn) { this.logoutHandlers.push(cb); }
   onLeaderboard(cb: VoidFn) { this.leaderboardHandlers.push(cb); }
   onShop(cb: VoidFn) { this.shopHandlers.push(cb); }
@@ -49,7 +46,6 @@ export class MenuScreenView {
   // Planet click event
   onPlanetClick(cb: (planetIndex: number) => void) { this.planetHandlers.push(cb); }
 
-  private emitInventory() { for (const cb of this.inventoryHandlers) cb(); }
   private emitLogout() { for (const cb of this.logoutHandlers) cb(); }
   private emitLeaderboard() { for (const cb of this.leaderboardHandlers) cb(); }
   private emitShop() { for (const cb of this.shopHandlers) cb(); }
@@ -104,8 +100,6 @@ export class MenuScreenView {
     this.createPlanets();
     
 
-    this.invBtn = this.makeButton(DIMENSIONS.width / 2, 500, 'INVENTORY'); // Moved up from 425
-
     this.layer.add(this.bg);
 
     this.menuGroup.add(this.title);
@@ -119,7 +113,6 @@ export class MenuScreenView {
       this.menuGroup.add(planet.group);
     });
     
-    this.menuGroup.add(this.invBtn.group);
     this.layer.add(this.menuGroup);
 
     // Bind button events
@@ -127,7 +120,6 @@ export class MenuScreenView {
     this.bindIconButton(this.leaderboardBtn, () => this.emitLeaderboard());
     this.bindIconButton(this.shopBtn, () => this.emitShop());
     this.bindIconButton(this.playerIconBtn, () => this.emitPlayerIcon());
-    this.bindButton(this.invBtn, () => this.emitInventory());
     
     // Bind planet events
     this.bindPlanetEvents();
