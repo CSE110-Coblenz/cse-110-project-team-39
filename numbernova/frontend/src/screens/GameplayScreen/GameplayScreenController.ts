@@ -9,15 +9,11 @@ export class GameplayScreenController extends BaseScreen {
   private view!: GamePlayScreenView;
   private worldNumber: number = 1;
 
-  protected initialize(): void {
-    // Don't initialize here - wait for setWorldNumber to be called
-    // This is because initialize() runs in constructor before setWorldNumber()
-  }
+  protected initialize(): void {}
 
   private initializeWorld(): void {
     const config = WORLD_CONFIGS[this.worldNumber];
 
-    // Clean up old view if it exists
     if (this.view) {
       this.view.destroy();
     }
@@ -30,28 +26,23 @@ export class GameplayScreenController extends BaseScreen {
   }
 
   private setupEventHandlers(): void {
-    // Exit button
     this.view.onExit(() => {
       console.log('Exiting game...');
       this.screenManager.switchTo('menu');
     });
 
-    // Fight button
     this.view.onFight(() => {
       this.handleFight();
     });
 
-    // Clear button
     this.view.onClear(() => {
       this.view.animatePlayerArm();
       this.model.clearExpression();
       this.render();
     });
 
-    // Swap button
     this.view.onSwap(() => {
       this.view.animatePlayerArm();
-      // Animate swap first, then update model
       this.view.animateSwap(() => {
         this.model.swapNumbers();
         this.render();
@@ -59,28 +50,21 @@ export class GameplayScreenController extends BaseScreen {
       });
     });
 
-    // Card click - try to place in slot with animation
     this.view.onCardClick((card: Card) => {
       const result = this.model.tryPlaceCard(card);
 
       if (result.success && result.targetSlot !== undefined) {
-        // Animate player arm
         this.view.animatePlayerArm();
-
-        // Animate card to slot
         this.view.animateCardToSlot(card.id, result.targetSlot, () => {
           this.render();
           this.updatePlayerResult();
         });
       } else {
-        // Shake card to indicate no space
         this.view.shakeCard(card.id);
       }
     });
 
-    // Slot click - return card to hand
     this.view.onSlotClick((slotIndex: number) => {
-      // Animate player arm and card back to hand
       this.view.animatePlayerArm();
       this.view.animateCardFromSlotToHand(slotIndex, () => {
         this.model.removeCardFromSlot(slotIndex);
@@ -95,25 +79,18 @@ export class GameplayScreenController extends BaseScreen {
 
     this.view.showResult(result.won, result.playerResult, result.alienResult);
 
-    setTimeout(() => {
-      const gameState = this.model.getGameState();
+    const gameState = this.model.getGameState();
 
-      if (gameState === 'complete') {
-        console.log('Player wins the planet!');
-        // TODO: Navigate to victory screen
-        this.screenManager.switchTo('menu');
-      } else if (gameState === 'lost') {
-        console.log('Player lost all lives!');
-        // TODO: Navigate to lose screen
-        this.screenManager.switchTo('menu');
-      } else if (result.won) {
-        this.model.nextRound();
-        this.render();
-      } else {
-        this.model.nextRound();
-        this.render();
-      }
-    }, 2200);
+    if (gameState === 'complete') {
+      console.log('Player wins the planet!');
+      this.screenManager.switchTo('menu');
+    } else if (gameState === 'lost') {
+      console.log('Player lost all lives!');
+      this.screenManager.switchTo('menu');
+    } else {
+      this.model.nextRound();
+      this.render();
+    }
   }
 
   private updatePlayerResult(): void {
@@ -139,7 +116,6 @@ export class GameplayScreenController extends BaseScreen {
 
   public show(): void {
     super.show();
-    // Ensure world is initialized before showing
     if (!this.model || !this.view) {
       this.initializeWorld();
     }
@@ -154,7 +130,6 @@ export class GameplayScreenController extends BaseScreen {
 
   public setWorldNumber(num: number): void {
     this.worldNumber = num;
-    // Re-initialize with new world config
     this.initializeWorld();
   }
 }
