@@ -138,7 +138,7 @@ describe('GameplayScreenController', () => {
     jest.advanceTimersByTime(2200);
 
     expect(model.getGameState).toHaveBeenCalled();
-    expect(screenManager.switchTo).toHaveBeenCalledWith('menu');
+    expect(screenManager.switchTo).toHaveBeenCalledWith('win');
     expect(renderSpy).not.toHaveBeenCalled();
   });
 
@@ -161,7 +161,7 @@ describe('GameplayScreenController', () => {
     jest.advanceTimersByTime(2200);
 
     expect(model.getGameState).toHaveBeenCalled();
-    expect(screenManager.switchTo).toHaveBeenCalledWith('menu');
+    expect(screenManager.switchTo).toHaveBeenCalledWith('lose');
     expect(renderSpy).not.toHaveBeenCalled();
   });
 
