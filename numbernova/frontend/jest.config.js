@@ -15,5 +15,9 @@ module.exports = {
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
     '!src/main.ts'
-  ]
+  ],
+  testEnvironment: 'jest-environment-jsdom',
+  moduleNameMapper: {
+    '^konva$': '<rootDir>/__mocks__/konva.js',
+  },
 };

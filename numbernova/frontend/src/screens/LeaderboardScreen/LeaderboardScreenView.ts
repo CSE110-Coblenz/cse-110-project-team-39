@@ -24,7 +24,7 @@ export class LeaderboardScreenView {
             y: 0,
             width: DIMENSIONS.width,
             height: DIMENSIONS.height,
-            fill: COLORS.background
+            fill: 'transparent'
         });
         this.layer.add(this.background);
     }
@@ -78,7 +78,7 @@ export class LeaderboardScreenView {
         this.title = new Konva.Text({
             x: DIMENSIONS.width / 2,
             y: 50,
-            text: 'Leader Board',
+            text: 'Leaderboard',
             fontSize: 42,
             fontFamily: 'Jersey 10',
             fill: COLORS.text,
@@ -134,7 +134,11 @@ export class LeaderboardScreenView {
             const isCurrentUser = currentUserId && user.id === currentUserId;
             
             // Use username if available, otherwise fall back to profile_name or 'Anonymous'
-            const displayName = user.username || (user as any).profile_name || 'Anonymous';
+            const displayName =
+                (user as any).username ||
+                (user as any).profile_name ||
+                'Anonymous';
+
             const displayScore = user.score || 0;
             const displayRank = user.rank || (index + 1);
             
@@ -143,7 +147,7 @@ export class LeaderboardScreenView {
                 displayName,
                 displayScore,
                 index,
-                isCurrentUser
+                !isCurrentUser
             );
             this.container.add(entry);
             this.leaderboardEntries.push(entry);
@@ -151,7 +155,11 @@ export class LeaderboardScreenView {
 
         // If current user is not in top 10, add them at the bottom
         if (currentUserId && !currentUserInTop10 && currentUserData) {
-            const displayName = currentUserData.username || (currentUserData as any).profile_name || 'You';
+            const displayName =
+                (currentUserData as any).username ||
+                (currentUserData as any).profile_name ||
+                'You';
+
             const displayScore = currentUserData.score || 0;
             const displayRank = currentUserData.rank || leaderboard.length + 1;
             
@@ -166,7 +174,7 @@ export class LeaderboardScreenView {
             this.leaderboardEntries.push(userEntry);
         }
 
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 
     private createLeaderboardEntry(

@@ -1,6 +1,9 @@
-# 🚀👾➗NumberNova
+# 🪐 NumberNova ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 
 An interactive educational math game designed for 2nd and 3rd graders. Players travel through space, battling aliens on different planets by solving math expressions.
+
+This project is licensed under the [MIT License](./LICENSE)
 
 ## 🌌 About
 
@@ -9,15 +12,11 @@ NumberNova is a single-player card-based game where players create mathematical 
 ## 🔐 User Authentication 
 
 Upon launching the game app, users will first be prompted to log into their account by filling in their email address and password. 
-  
-  - <img width="337" height="225" alt="Screen Shot 2025-11-22 at 3 45 15 PM" src="https://github.com/user-attachments/assets/c638aa97-db12-44f5-a6b9-5afe72eee4d1" />
-
-
 
 If users do not have an account created yet, please click the "Create Account" button to fill in the required credentials and sign up to NumberNova.
-
-  - <img width="270" height="305" alt="Screen Shot 2025-11-22 at 3 44 56 PM" src="https://github.com/user-attachments/assets/35b497c6-ba76-4ebc-8fe7-594238ee4156" />
-
+  
+ <img width="337" height="225" alt="Screen Shot 2025-11-22 at 3 45 15 PM" src="https://github.com/user-attachments/assets/c638aa97-db12-44f5-a6b9-5afe72eee4d1" />   
+ <img width="270" height="305" alt="Screen Shot 2025-11-22 at 3 44 56 PM" src="https://github.com/user-attachments/assets/35b497c6-ba76-4ebc-8fe7-594238ee4156" />
 
 
 
@@ -35,7 +34,7 @@ The game features:
   - World 3: Low number multiplication & division (1–8)  
   - World 4: Higher number multiplication & division (6–12)  
   - World 5: Factorials & exponents (2–6)
-  - <img width="956" height="615" alt="Screen Shot 2025-11-22 at 4 07 04 PM" src="https://github.com/user-attachments/assets/70285954-1414-4d17-8658-930bded1c920" />
+  - <img width="956" height="615" alt="Screen Shot 2025-11-30 at 1 25 57 AM" src="https://github.com/user-attachments/assets/e78ddfd9-c8f4-444b-8a3a-35e90bff1bd6" />
 
   
 
@@ -48,6 +47,14 @@ The game features:
 ## 🛠️ Technology
 
 The frontend is built with **TypeScript** and **Konva.js**, using an MVC architecture for a clean separation of game logic, rendering, and user interaction.
+
+| Layer        | Technology         |
+|--------------|--------------------|
+| Frontend     | TypeScript + KonvaJS       |
+| Backend      | PostgreSQL |
+| Database     | Supabase              |
+| Dev Tools	   | Git, GitHub Actions, CI/CD pipelines, YAML |
+---
 
 ## 🚀 Getting Started
 

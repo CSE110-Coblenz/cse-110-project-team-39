@@ -4,7 +4,6 @@ type VoidFn = () => void;
 export class ShopScreenView {
     private layer: Konva.Layer;
     private bg: Konva.Rect;
-    private stars: Konva.Group;
     private title: Konva.Text;
 
 
@@ -82,15 +81,8 @@ export class ShopScreenView {
             y: 0,
             width: DIMENSIONS.width,
             height: DIMENSIONS.height,
-            fill: COLORS.background,
-            fillLinearGradientStartPoint: { x: 0, y: 0 },
-            fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
-            fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
+            fill: 'transparent'
         });
-        
-        //create stars in the background
-        this.stars = new Konva.Group();
-        this.spawnStars(this.stars, 150, 0.2, 1.5);
 
         //title of the shop
         this.title = new Konva.Text({
@@ -140,7 +132,6 @@ export class ShopScreenView {
         this.menuButton.group.add(this.menuButton.text);
         //add all elements to the layer
         this.layer.add(this.bg);
-        this.layer.add(this.stars);
         this.layer.add(this.title);
         this.layer.add(this.menuButton.group);
 
@@ -163,7 +154,7 @@ export class ShopScreenView {
         //create the currency display with the current amount
         this.drawCurrencyDisplay(currency);
 
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 
     //private method to draw the shop
@@ -296,20 +287,6 @@ export class ShopScreenView {
         this.layer.add(this.currencyText);
     }
 
-    //private method to spawn stars (only called once during construction)
-    private spawnStars(group: Konva.Group, count: number, opacityBase: number, maxRadius: number) {
-        for (let i = 0; i < count; i++) {
-          const s = new Konva.Circle({
-            x: Math.random() * DIMENSIONS.width,
-            y: Math.random() * DIMENSIONS.height,
-            radius: Math.random() * maxRadius + 0.4,
-            fill: '#ffffff',
-            opacity: opacityBase + Math.random() * 0.4,
-            listening: false
-          });
-          group.add(s);
-        }
-    }
     //below are public methods to update various parts of the view
 
     // Attach event handlers for color circle clicks
@@ -372,14 +349,14 @@ export class ShopScreenView {
     public updatePerson(color: string){
         this.personGroup.destroyChildren();
         this.drawPerson(color);
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 
     //redraw the currency display with a new amount
     public updateCurrencyDisplay(currency: number){
         this.currencyText.text(`Currency: ${currency}`);
         this.currencyText.offsetX(this.currencyText.width() / 2);
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 
     //redraw the shop with ne= unlocked colors
@@ -390,6 +367,6 @@ export class ShopScreenView {
             colorsUnlocked
         );
         this.attachEventHandlers();
-        this.layer.draw();
+        this.layer.batchDraw();
     }
 }

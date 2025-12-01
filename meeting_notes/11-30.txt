@@ -1,0 +1,16 @@
+Significant debugging completed: over 50 issues fixed to ensure the CI/CD pipeline works correctly with npx command execution.
+Additional test scripts created; more will be added.
+Implemented a popup feature on the main menu explaining game instructions and objectives.
+Completed the Profile MVC, which was previously unimplemented.
+Added placeholder code for the mini-game; more development planned.
+Added temporary code for the Inventory page, but after discussion, the Inventory feature was removed due to redundancy. All related files and references were deleted.
+The entire project is now licensed under the MIT License.
+Win and Lose screens are completed.
+Remaining task: display win/lose status in the main menu.
+Profile UI completed by Saee
+Backend integration pending; Ricardo volunteered to handle backend work.
+Previous Profile MVC implementation may be removed in favor of the newer design.
+The main menu has been visually updated with new design elements and instruction popup.
+GitHub Actions pipeline is now active.
+Additional adjustments may be needed.
+Testing for the Win/Lose screens or providing test scripts is requested so they can be integrated into the pipeline.

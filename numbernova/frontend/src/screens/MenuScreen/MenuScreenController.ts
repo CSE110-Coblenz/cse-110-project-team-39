@@ -10,52 +10,60 @@ export class MenuScreenController extends BaseScreen {
     this.model = new MenuScreenModel()
     this.view = new MenuScreenView(this.container)
 
-    // Handle logout button
     this.view.onLogout?.(() => {
       this.screenManager.switchTo('login')
     })
 
-    // Handle top right buttons
     this.view.onLeaderboard?.(() => {
-      console.log('Leaderboard clicked! Switching to leaderboard screen...');
-      this.screenManager.switchTo('leaderboard');
+      console.log('Leaderboard clicked! Switching to leaderboard screen...')
+      this.screenManager.switchTo('leaderboard')
     })
 
     this.view.onShop?.(() => {
-      console.log('Shop clicked! Switching to shop screen...');
-      this.screenManager.switchTo('shop');
+      console.log('Shop clicked! Switching to shop screen...')
+      this.screenManager.switchTo('shop')
     })
 
     this.view.onPlayerIcon?.(() => {
-      console.log('Player icon clicked! Switching to profile screen...');
-      this.screenManager.switchTo('profile');
+      console.log('Player icon clicked! Switching to profile screen...')
+      this.screenManager.switchTo('profile')
     })
 
-    // ADDED: Handle planet clicks
     this.view.onPlanetClick?.((planetIndex: number) => {
-      console.log(`Planet ${planetIndex + 1} clicked! Launching mission...`);
+      console.log(`Planet ${planetIndex + 1} clicked! Launching mission...`)
 
-      const worldNumber = planetIndex + 1;
+      const worldNumber = planetIndex + 1
 
-      // Set the planet number on BOTH launch transition and gameplay screens
-      const launchScreen = this.screenManager.getScreen('launchTransition') as any;
-      if (launchScreen && launchScreen.setPlanetNumber) {
-        launchScreen.setPlanetNumber(worldNumber);
+      const launchScreen = this.screenManager.getScreen('launchTransition') as any
+      if (launchScreen && typeof launchScreen.setPlanetNumber === 'function') {
+        launchScreen.setPlanetNumber(worldNumber)
       }
 
-      const gameplayScreen = this.screenManager.getScreen('gameplay') as any;
-      if (gameplayScreen && gameplayScreen.setWorldNumber) {
-        gameplayScreen.setWorldNumber(worldNumber);
+      const gameplayScreen = this.screenManager.getScreen('gameplay') as any
+      if (gameplayScreen && typeof gameplayScreen.setWorldNumber === 'function') {
+        gameplayScreen.setWorldNumber(worldNumber)
       }
 
-      // Switch to launch transition screen
-      this.screenManager.switchTo('launchTransition');
+      this.screenManager.switchTo('launchTransition')
     })
 
-    // Handle play button
+    this.view.showTutorial(
+      'Welcome to NumberNova!\n\n' +
+        '• Solve math expressions to defeat aliens.\n' +
+        '• Drag number and operation cards into the slots to form a valid equation.\n' +
+        '• Correct answers score points and damage the alien.\n' +
+        '• Wrong answers cost you lives.\n' +
+        '• Higher scores move you up the leaderboard.\n\n' +
+        'Tap OK to start playing.'
+    )
+
+    const okButton = this.view.getTutorialOkButton()
+    okButton?.on('click', () => {
+      this.view.hideTutorial()
+    })
+
     this.view.onPlay?.(() => {
-      console.log('Play button clicked!');
-      // this.screenManager.switchTo('gameplay'); // When ready
+      console.log('Play button clicked!')
     })
 
     this.container.getStage()?.draw()

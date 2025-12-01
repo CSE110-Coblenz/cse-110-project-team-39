@@ -1,28 +1,23 @@
 {
-	"compilerOptions": {
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
 
-		// Treat files as modules even if it doesn't use import/export
-		"moduleDetection": "force",
+    "jsx": "react-jsx",
+    "allowJs": false,
 
-		// Ignore module structure
-		"module": "ESNext",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true,
 
-		// Allow JSON modules to be imported
-		"resolveJsonModule": true,
-
-		// Allow JS files to be imported from TS and vice versa
-		"allowJs": true,
-
-		// Use correct ESM import behavior
-		"esModuleInterop": true,
-
-		// Disallow features that require cross-file awareness
-		"isolatedModules": true,
-
-		"target": "ES2020",
-		"strict": true,
-		"skipLibCheck": true,
-		"lib": ["ES2020", "DOM", "DOM.Iterable"]
-	},
-	"include": ["src"]
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "types": ["vite/client", "jest", "node"]
+  },
+  "include": ["src"]
 }
