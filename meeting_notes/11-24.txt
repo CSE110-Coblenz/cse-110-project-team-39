@@ -1,0 +1,6 @@
+Discussed again who's doing what
+    - Ashish is debugging star animations and the minigame
+    - halvor is turning star animations into a gif and adjusting the UI 
+    - saee is working on the profile screen
+    - suldana is working on win/lose screens and tracking the levels won or lost
+    - ricardo is working on tracking game stats, score progression, and shop backend data

@@ -5,7 +5,6 @@ import { KonvaInput } from '../../components/KonvaInput';
 export class LoginScreenView {
     private layer: Konva.Layer;
     private background: Konva.Rect;
-    private stars: Konva.Group;
     private loginForm: Konva.Group;
     
     // Form elements
@@ -17,10 +16,9 @@ export class LoginScreenView {
     constructor(layer: Konva.Layer) {
         this.layer = layer;
         this.createBackground();
-        this.createStars();
         this.createLoginForm();
         this.setupTabNavigation();
-        
+
     }
     
     private createBackground(): void {
@@ -29,41 +27,10 @@ export class LoginScreenView {
             y: 0,
             width: window.innerWidth,
             height: window.innerHeight,
-            fillLinearGradientStartPoint: { x: 0, y: 0 },
-            fillLinearGradientEndPoint: { x: DIMENSIONS.width, y: DIMENSIONS.height },
-            fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
-            
+            fill: 'transparent'
         });
         this.layer.add(this.background);
     }
-    
-    private createStars(): void {
-        this.stars = new Konva.Group({ listening: false });
-
-    const makeLayer = (count: number, radiusMax: number, opacity: number, speed: number) => {
-        const g = new Konva.Group({ name: 'starLayer', listening: false });
-        g.setAttr('speed', speed);
-        for (let i = 0; i < count; i++) {
-        g.add(new Konva.Circle({
-            x: Math.random() * window.innerWidth - 170,
-            y: Math.random() * window.innerHeight,
-            radius: Math.random() * radiusMax + 0.4,
-            fill: '#ffffff',
-            opacity: opacity * (0.5 + Math.random() * 0.5)
-        }));
-        }
-        return g;
-    };
-
-  // far, mid, near
-  this.stars.add(makeLayer(120, 1.2, 0.5, 0.05));
-  this.stars.add(makeLayer(80, 1.8, 0.7, 0.12));
-  this.stars.add(makeLayer(40, 2.2, 0.9, 0.22));
-
-  this.layer.add(this.stars);
-}
-
-
 
     private createLoginForm(): void {
         this.loginForm = new Konva.Group({
@@ -105,7 +72,19 @@ export class LoginScreenView {
             stroke: COLORS.inputBorder,
             strokeWidth: 2
         });
-        
+
+        const formTitle = new Konva.Text({
+            x: -DIMENSIONS.loginBoxWidth / 2,
+            y: -80,
+            width: DIMENSIONS.loginBoxWidth,
+            text: 'Log In',
+            fontSize: 35,
+            fontFamily: 'Jersey 10',
+            fill: COLORS.text,
+            align: 'center'
+        });
+
+
         // Create input fields
         this.emailInput = new KonvaInput({
             x: -150,
@@ -142,12 +121,12 @@ export class LoginScreenView {
         
         this.createAccountButton.on('mouseenter', () => {
             this.createAccountButton.fill(COLORS.text);
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         this.createAccountButton.on('mouseleave', () => {
             this.createAccountButton.fill(COLORS.primaryLight);
-            this.layer.draw();
+            this.layer.batchDraw();
         });
 
         // Add this right after the `const loginBox = new Konva.Rect({...});` line inside createLoginForm()
@@ -158,6 +137,7 @@ export class LoginScreenView {
         this.loginForm.add(subtitle);
         this.loginForm.add(loginBox);
         this.loginForm.add(this.emailInput);
+        this.loginForm.add(formTitle);
         this.loginForm.add(this.passwordInput);
         this.loginForm.add(this.loginButton);
         this.loginForm.add(this.createAccountButton);
@@ -208,7 +188,7 @@ export class LoginScreenView {
         // Click outside to unfocus all inputs
         this.layer.on('click', (e) => {
             // If clicking on empty space, blur all inputs
-            if (e.target === this.layer || e.target === this.background) {
+            if (e.target === (this.layer as any) || e.target === this.background) {
                 this.emailInput.blur();
                 this.passwordInput.blur();
             }
@@ -251,17 +231,17 @@ export class LoginScreenView {
         group.add(background);
         group.add(buttonText);
         
-        // Add hover effects
+     // Add hover effects
         group.on('mouseenter', () => {
             background.fill(COLORS.primaryLight);
             document.body.style.cursor = 'pointer';
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         group.on('mouseleave', () => {
             background.fill(COLORS.primary);
             document.body.style.cursor = 'default';
-            this.layer.draw();
+            this.layer.batchDraw();
         });
         
         return group;
@@ -283,25 +263,8 @@ export class LoginScreenView {
         return this.passwordInput.getValue();
     }
     
-    public animateStars(): void {
-        this.stars.children.forEach((star: Konva.Node) => {
-            const duration = Math.random() * 3 + 1;
-            
-            // Create a looping animation for each star individually
-            const anim = new Konva.Animation((frame) => {
-                const period = duration * 1000; // Convert to milliseconds
-                const phase = (frame.time % period) / period;
-                const opacity = 0.2 + Math.sin(phase * Math.PI) * 0.6;
-                star.opacity(opacity);
-            });
-            
-            anim.start();
-        });
-    }
     
     public focusEmailInput(): void {
         this.emailInput.focus();
     }
-
-
 }

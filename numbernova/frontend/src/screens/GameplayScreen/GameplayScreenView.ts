@@ -11,7 +11,6 @@ export class GamePlayScreenView {
 
   // UI Elements
   private background!: Konva.Rect;
-  private stars!: Konva.Group;
   private exitButton!: Konva.Group;
   private scoreText!: Konva.Text;
   private aliensLeftText!: Konva.Text;
@@ -37,6 +36,10 @@ export class GamePlayScreenView {
   private fightButtonBg!: Konva.Rect;
   private fightButtonText!: Konva.Text;
   private clearButton!: Konva.Group;
+  private clearButtonBg!: Konva.Rect;
+
+  // Button tweens for hover effects
+  private buttonTweens: Map<Konva.Node, Konva.Tween> = new Map();
 
   // Callbacks
   private onExitCallback?: () => void;
@@ -57,7 +60,6 @@ export class GamePlayScreenView {
 
   private createUI(): void {
     this.createBackground();
-    this.createStars();
     this.createTopBar();
     this.createCardArea(); // Planet surface first (bottom layer)
     this.createPlayerArea(); // Player on top of planet
@@ -69,70 +71,23 @@ export class GamePlayScreenView {
     this.background = new Konva.Rect({
       x: 0,
       y: 0,
-      width: window.innerWidth,
-      height: window.innerHeight,
-      fillLinearGradientStartPoint: { x: 0, y: 0 },
-      fillLinearGradientEndPoint: { x: window.innerWidth, y: window.innerHeight },
-      fillLinearGradientColorStops: [0, '#060616', 0.5, '#0a0a24', 1, '#0e1033']
+      width: DIMENSIONS.width,
+      height: DIMENSIONS.height,
+      fill: 'transparent'
     });
     this.group.add(this.background);
-  }
-
-  private createStars(): void {
-    this.stars = new Konva.Group({ listening: false });
-
-    const makeLayer = (count: number, radiusMax: number, opacity: number) => {
-      const g = new Konva.Group({ name: 'starLayer', listening: false });
-      for (let i = 0; i < count; i++) {
-        g.add(new Konva.Circle({
-          x: Math.random() * window.innerWidth,
-          y: Math.random() * window.innerHeight,
-          radius: Math.random() * radiusMax + 0.4,
-          fill: '#ffffff',
-          opacity: opacity * (0.5 + Math.random() * 0.5)
-        }));
-      }
-      return g;
-    };
-
-    // far, mid, near - reduced count for better performance
-    this.stars.add(makeLayer(60, 1.2, 0.5));
-    this.stars.add(makeLayer(40, 1.8, 0.7));
-    this.stars.add(makeLayer(20, 2.2, 0.9));
-
-    this.group.add(this.stars);
-
-    // Animate stars with twinkling
-    this.animateStars();
-  }
-
-  private animateStars(): void {
-    this.stars.children.forEach((starLayer: Konva.Node) => {
-      if (starLayer instanceof Konva.Group) {
-        starLayer.children.forEach((star: Konva.Node) => {
-          const duration = Math.random() * 3 + 1;
-
-          const anim = new Konva.Animation((frame) => {
-            const period = duration * 1000;
-            const phase = (frame!.time % period) / period;
-            const opacity = 0.2 + Math.sin(phase * Math.PI) * 0.6;
-            star.opacity(opacity);
-          }, this.layer);
-
-          anim.start();
-        });
-      }
-    });
   }
 
   private createTopBar(): void {
     // Exit Game button (moved farther left)
     this.exitButton = new Konva.Group({ x: 15, y: 15 });
     const exitBg = new Konva.Rect({
-      x: 0,
-      y: 0,
+      x: 80,
+      y: 30,
       width: 160,
       height: 60,
+      offsetX: 80,
+      offsetY: 30,
       fill: COLORS.primary,
       cornerRadius: 30
     });
@@ -144,11 +99,14 @@ export class GamePlayScreenView {
       fontSize: 24,
       fontFamily: 'Jersey 10',
       fill: COLORS.text,
-      align: 'center'
+      align: 'center',
+      listening: false
     });
     this.exitButton.add(exitBg, exitText);
     this.exitButton.on('click tap', () => this.onExitCallback?.());
+    this.addButtonHover(exitBg, true);
     this.group.add(this.exitButton);
+    this.exitButton.moveToTop();
 
     // Title (with !)
     const title = new Konva.Text({
@@ -162,6 +120,7 @@ export class GamePlayScreenView {
       align: 'center'
     });
     this.group.add(title);
+    title.moveToTop();
 
     // Score and aliens left (moved farther right)
     this.scoreText = new Konva.Text({
@@ -185,6 +144,8 @@ export class GamePlayScreenView {
       align: 'right'
     });
     this.group.add(this.scoreText, this.aliensLeftText);
+    this.scoreText.moveToTop();
+    this.aliensLeftText.moveToTop();
   }
 
   private createPlayerArea(): void {
@@ -200,28 +161,34 @@ export class GamePlayScreenView {
     const leftSlot = this.createExpressionSlot(slotStartX, slotY, 0, 'number');
     this.playerExpressionSlots.push(leftSlot);
     this.group.add(leftSlot);
+    leftSlot.moveToTop();
 
     // Operation slot (index 1)
     const opSlot = this.createExpressionSlot(slotStartX + 95, slotY, 1, 'operation');
     this.playerExpressionSlots.push(opSlot);
     this.group.add(opSlot);
+    opSlot.moveToTop();
 
     // Right number slot (index 2)
     const rightSlot = this.createExpressionSlot(slotStartX + 190, slotY, 2, 'number');
     this.playerExpressionSlots.push(rightSlot);
     this.group.add(rightSlot);
+    rightSlot.moveToTop();
 
     // Swap button between number slots
     this.swapButton = this.createSwapButton(slotStartX + 95, slotY - 40);
     this.group.add(this.swapButton);
+    this.swapButton.moveToTop();
 
     // Player character (stick figure) with arm - uses user's ship color from database
     this.playerCharacter = this.createCharacter(centerX, centerY, this.playerShipColor, 'player');
     this.group.add(this.playerCharacter);
+    this.playerCharacter.moveToTop();
 
     // Lives (hearts) to the left side of player - moved up and left
     this.livesGroup = new Konva.Group({ x: centerX - 140, y: centerY + 10 });
     this.group.add(this.livesGroup);
+    this.livesGroup.moveToTop();
 
     // Player result text (hidden - removed for gameplay)
     this.playerResultText = new Konva.Text({
@@ -251,20 +218,24 @@ export class GamePlayScreenView {
     const leftSlot = this.createExpressionSlot(slotStartX, slotY, -1, 'number', true);
     this.alienExpressionSlots.push(leftSlot);
     this.group.add(leftSlot);
+    leftSlot.moveToTop();
 
     // Operation slot
     const opSlot = this.createExpressionSlot(slotStartX + 95, slotY, -1, 'operation', true);
     this.alienExpressionSlots.push(opSlot);
     this.group.add(opSlot);
+    opSlot.moveToTop();
 
     // Right number slot
     const rightSlot = this.createExpressionSlot(slotStartX + 190, slotY, -1, 'number', true);
     this.alienExpressionSlots.push(rightSlot);
     this.group.add(rightSlot);
+    rightSlot.moveToTop();
 
     // Alien character (stick figure - green) with arm
     this.alienCharacter = this.createCharacter(centerX, centerY, '#2d8659', 'alien'); // Darker green
     this.group.add(this.alienCharacter);
+    this.alienCharacter.moveToTop();
 
     // Alien result text (hidden - removed for gameplay)
     this.alienResultText = new Konva.Text({
@@ -320,8 +291,12 @@ export class GamePlayScreenView {
     const btn = new Konva.Group({ x, y });
 
     const bg = new Konva.Rect({
+      x: 40,
+      y: 15,
       width: 80,
       height: 30,
+      offsetX: 40,
+      offsetY: 15,
       fill: '#4ade80',
       cornerRadius: 15
     });
@@ -333,7 +308,8 @@ export class GamePlayScreenView {
       fontSize: 16,
       fontFamily: 'Jersey 10',
       fill: '#000',
-      align: 'center'
+      align: 'center',
+      listening: false
     });
 
     btn.add(bg, text);
@@ -353,11 +329,13 @@ export class GamePlayScreenView {
       text.fill('#000');
       this.swapButton.listening(true);
       this.swapButton.opacity(1);
+      this.addButtonHover(bg, true);
     } else {
       bg.fill('#666');
       text.fill('#999');
       this.swapButton.listening(false);
-      this.swapButton.opacity(0.5);
+      this.swapButton.opacity(1);
+      this.removeButtonHover(bg);
     }
   }
 
@@ -368,12 +346,30 @@ export class GamePlayScreenView {
       this.fightButtonText.fill('#000');
       this.fightButton.listening(true);
       this.fightButton.opacity(1);
+      this.addButtonHover(this.fightButtonBg, true);
     } else {
       this.fightButtonBg.fill('#666');
       this.fightButtonBg.stroke('#444');
       this.fightButtonText.fill('#999');
       this.fightButton.listening(false);
-      this.fightButton.opacity(0.5);
+      this.fightButton.opacity(1);
+      this.removeButtonHover(this.fightButtonBg);
+    }
+  }
+
+  private updateClearButton(hasCards: boolean): void {
+    if (hasCards) {
+      this.clearButtonBg.fill('#e63946');
+      this.clearButtonBg.stroke('#a4161a');
+      this.clearButton.listening(true);
+      this.clearButton.opacity(1);
+      this.addButtonHover(this.clearButtonBg, true);
+    } else {
+      this.clearButtonBg.fill('#666');
+      this.clearButtonBg.stroke('#444');
+      this.clearButton.listening(false);
+      this.clearButton.opacity(1);
+      this.removeButtonHover(this.clearButtonBg);
     }
   }
 
@@ -491,10 +487,13 @@ export class GamePlayScreenView {
 
     // Generate non-overlapping craters
     let attempts = 0;
+    // Extend crater range beyond screen edges to ensure full coverage
+    const craterMinX = -150;
+    const craterMaxX = DIMENSIONS.width + 150;
     while (craters.length < numCraters && attempts < 100) {
       attempts++;
       const radius = 16 + Math.random() * 54; // 16-70px
-      const x = Math.random() * window.innerWidth; // Allow craters across full screen width
+      const x = craterMinX + Math.random() * (craterMaxX - craterMinX); // Allow craters to extend beyond edges
 
       // Calculate planet surface height at this x position
       const dx = x - planetCenterX;
@@ -537,8 +536,8 @@ export class GamePlayScreenView {
           ctx.beginPath();
 
           // Create clipping region for this specific crater area
-          const clipStartX = Math.max(0, crater.x - crater.r - 5);
-          const clipEndX = Math.min(window.innerWidth, crater.x + crater.r + 5);
+          const clipStartX = Math.max(-200, crater.x - crater.r - 5);
+          const clipEndX = Math.min(DIMENSIONS.width + 200, crater.x + crater.r + 5);
 
           // Sample points along the planet surface curve (optimized with larger step)
           const clipPoints: { x: number; y: number }[] = [];
@@ -585,6 +584,21 @@ export class GamePlayScreenView {
       });
 
       craterGroup.add(craterCircle);
+
+      // Cache the crater to avoid recalculating clipFunc every frame
+      // Calculate bounds to cover the clipped region
+      const clipStartX = Math.max(-200, crater.x - crater.r - 5);
+      const clipEndX = Math.min(DIMENSIONS.width + 200, crater.x + crater.r + 5);
+      const cacheWidth = clipEndX - clipStartX;
+      const cacheHeight = DIMENSIONS.height + 100 - crater.y + crater.r;
+
+      craterGroup.cache({
+        x: clipStartX,
+        y: crater.y - crater.r - 10,
+        width: cacheWidth,
+        height: cacheHeight
+      });
+
       this.group.add(craterGroup);
     });
 
@@ -608,6 +622,7 @@ export class GamePlayScreenView {
       align: 'center'
     });
     this.group.add(numLabel);
+    numLabel.moveToTop();
 
     // Operation Cards label
     const opLabel = new Konva.Text({
@@ -621,9 +636,11 @@ export class GamePlayScreenView {
       align: 'center'
     });
     this.group.add(opLabel);
+    opLabel.moveToTop();
 
     this.handCardsGroup = new Konva.Group();
     this.group.add(this.handCardsGroup);
+    this.handCardsGroup.moveToTop();
   }
 
   private createButtons(): void {
@@ -632,8 +649,12 @@ export class GamePlayScreenView {
     // Fight button (bigger) - positioned lower with shadow and outline
     this.fightButton = new Konva.Group({ x: centerX - 90, y: DIMENSIONS.height - 230 });
     this.fightButtonBg = new Konva.Rect({
+      x: 90,
+      y: 30,
       width: 180,
       height: 60,
+      offsetX: 90,
+      offsetY: 30,
       fill: '#4ade80',
       cornerRadius: 30,
       stroke: '#2d7a4a',
@@ -651,17 +672,23 @@ export class GamePlayScreenView {
       fontSize: 28,
       fontFamily: 'Jersey 10',
       fill: '#000',
-      align: 'center'
+      align: 'center',
+      listening: false
     });
     this.fightButton.add(this.fightButtonBg, this.fightButtonText);
     this.fightButton.on('click tap', () => this.onFightCallback?.());
     this.group.add(this.fightButton);
+    this.fightButton.moveToTop();
 
     // Clear button (same size) - positioned lower with shadow and outline - more red
     this.clearButton = new Konva.Group({ x: centerX - 70, y: DIMENSIONS.height - 160 });
-    const clearBg = new Konva.Rect({
+    this.clearButtonBg = new Konva.Rect({
+      x: 70,
+      y: 20,
       width: 140,
       height: 40,
+      offsetX: 70,
+      offsetY: 20,
       fill: '#e63946',
       cornerRadius: 20,
       stroke: '#a4161a',
@@ -679,19 +706,26 @@ export class GamePlayScreenView {
       fontSize: 20,
       fontFamily: 'Jersey 10',
       fill: COLORS.text,
-      align: 'center'
+      align: 'center',
+      listening: false
     });
-    this.clearButton.add(clearBg, clearText);
+    this.clearButton.add(this.clearButtonBg, clearText);
+    this.clearButton.setAttr('bg', this.clearButtonBg);
     this.clearButton.on('click tap', () => this.onClearCallback?.());
     this.group.add(this.clearButton);
+    this.clearButton.moveToTop();
   }
 
   private createCardVisual(card: Card, x: number, y: number): Konva.Group {
     const cardGroup = new Konva.Group({ x, y });
 
     const bg = new Konva.Rect({
+      x: 35,
+      y: 35,
       width: 70,
       height: 70,
+      offsetX: 35,
+      offsetY: 35,
       fill: card.type === 'number' ? '#9575cd' : '#ff9800',
       stroke: '#fff',
       strokeWidth: 2,
@@ -706,7 +740,8 @@ export class GamePlayScreenView {
       fontFamily: 'Jersey 10',
       fill: '#fff',
       align: 'center',
-      verticalAlign: 'middle'
+      verticalAlign: 'middle',
+      listening: false
     });
 
     cardGroup.add(bg, text);
@@ -718,6 +753,9 @@ export class GamePlayScreenView {
     cardGroup.on('click tap', () => {
       this.onCardClickCallback?.(card);
     });
+
+    // Add hover effect
+    this.addButtonHover(bg, true);
 
     return cardGroup;
   }
@@ -740,12 +778,10 @@ export class GamePlayScreenView {
       duration: 0.12,
       easing: Konva.Easings.EaseOut,
       onFinish: () => {
-        this.layer.batchDraw();
         onComplete?.();
       }
     });
     tween.play();
-    this.layer.batchDraw();
   }
 
   public animateCardFromSlotToHand(slotIndex: number, onComplete?: () => void): void {
@@ -758,7 +794,7 @@ export class GamePlayScreenView {
     }
 
     // Get the card visual in hand (it's hidden)
-    const cardData = cardInSlot.getAttr('cardData');
+  const cardData = (cardInSlot as any).getAttr('cardData');
 
     if (!cardData) {
       onComplete?.();
@@ -788,7 +824,6 @@ export class GamePlayScreenView {
       duration: 0.12,
       easing: Konva.Easings.EaseOut,
       onFinish: () => {
-        this.layer.batchDraw();
         onComplete?.();
       }
     });
@@ -816,10 +851,7 @@ export class GamePlayScreenView {
             const shake3 = new Konva.Tween({
               node: cardVisual,
               x: originalX,
-              duration: 0.05,
-              onFinish: () => {
-                this.layer.batchDraw();
-              }
+              duration: 0.05
             });
             shake3.play();
           }
@@ -875,10 +907,7 @@ export class GamePlayScreenView {
           x: targetX,
           y: targetY,
           duration: 0.15,
-          easing: Konva.Easings.EaseInOut,
-          onFinish: () => {
-            this.layer.batchDraw();
-          }
+          easing: Konva.Easings.EaseInOut
         });
         tween.play();
         visual.setAttr('originalX', targetX);
@@ -907,10 +936,7 @@ export class GamePlayScreenView {
           x: targetX,
           y: targetY,
           duration: 0.15,
-          easing: Konva.Easings.EaseInOut,
-          onFinish: () => {
-            this.layer.batchDraw();
-          }
+          easing: Konva.Easings.EaseInOut
         });
         tween.play();
         visual.setAttr('originalX', targetX);
@@ -937,8 +963,8 @@ export class GamePlayScreenView {
     const leftCardInSlot = leftSlot.getChildren().slice(1)[0];
     const rightCardInSlot = rightSlot.getChildren().slice(1)[0];
 
-    const leftCardData = leftCardInSlot?.getAttr('cardData');
-    const rightCardData = rightCardInSlot?.getAttr('cardData');
+    const leftCardData = leftCardInSlot ? (leftCardInSlot as any).getAttr('cardData') : undefined;
+    const rightCardData = rightCardInSlot ? (rightCardInSlot as any).getAttr('cardData') : undefined;
 
     // Get the hidden card visuals
     const leftCardVisual = leftCardData ? this.cardVisuals.get(leftCardData.id) : null;
@@ -969,7 +995,6 @@ export class GamePlayScreenView {
         duration: 0.12,
         easing: Konva.Easings.EaseInOut,
         onFinish: () => {
-          this.layer.batchDraw();
           finishAnimation();
         }
       });
@@ -981,14 +1006,12 @@ export class GamePlayScreenView {
         duration: 0.12,
         easing: Konva.Easings.EaseInOut,
         onFinish: () => {
-          this.layer.batchDraw();
           finishAnimation();
         }
       });
 
       leftTween.play();
       rightTween.play();
-      this.layer.batchDraw();
     } else if (leftCardVisual) {
       // Only left card - move to right
       const tween = new Konva.Tween({
@@ -998,12 +1021,10 @@ export class GamePlayScreenView {
         duration: 0.12,
         easing: Konva.Easings.EaseInOut,
         onFinish: () => {
-          this.layer.batchDraw();
           finishAnimation();
         }
       });
       tween.play();
-      this.layer.batchDraw();
     } else if (rightCardVisual) {
       // Only right card - move to left
       const tween = new Konva.Tween({
@@ -1013,12 +1034,10 @@ export class GamePlayScreenView {
         duration: 0.12,
         easing: Konva.Easings.EaseInOut,
         onFinish: () => {
-          this.layer.batchDraw();
           finishAnimation();
         }
       });
       tween.play();
-      this.layer.batchDraw();
     }
   }
 
@@ -1072,6 +1091,10 @@ export class GamePlayScreenView {
     // Update swap button state (only enable if at least one number is placed)
     const hasAtLeastOneNumber = slots[0].card !== null || slots[2].card !== null;
     this.updateSwapButton(hasAtLeastOneNumber);
+
+    // Update clear button state (only enable if at least one card is placed)
+    const hasAtLeastOneCard = slots[0].card !== null || slots[1].card !== null || slots[2].card !== null;
+    this.updateClearButton(hasAtLeastOneCard);
 
     // Update fight button state
     // For factorial: need left number + operation
@@ -1213,6 +1236,71 @@ export class GamePlayScreenView {
 
   public onSlotClick(callback: (slotIndex: number) => void): void {
     this.onSlotClickCallback = callback;
+  }
+
+  private addButtonHover(node: Konva.Node, isButton: boolean): void {
+    // Remove existing hover listeners if any
+    node.off('mouseenter');
+    node.off('mouseleave');
+
+    node.on('mouseenter', () => {
+      document.body.style.cursor = 'pointer';
+
+      // Destroy existing tween for this node if any
+      const existingTween = this.buttonTweens.get(node);
+      if (existingTween) {
+        existingTween.destroy();
+      }
+
+      const tween = new Konva.Tween({
+        node: node,
+        duration: 0.16,
+        scaleX: 1.1,
+        scaleY: 1.1,
+        shadowBlur: isButton ? 15 : 5
+      });
+
+      this.buttonTweens.set(node, tween);
+      tween.play();
+    });
+
+    node.on('mouseleave', () => {
+      document.body.style.cursor = 'default';
+
+      // Destroy existing tween for this node if any
+      const existingTween = this.buttonTweens.get(node);
+      if (existingTween) {
+        existingTween.destroy();
+      }
+
+      const tween = new Konva.Tween({
+        node: node,
+        duration: 0.16,
+        scaleX: 1,
+        scaleY: 1,
+        shadowBlur: isButton ? 10 : 0
+      });
+
+      this.buttonTweens.set(node, tween);
+      tween.play();
+    });
+  }
+
+  private removeButtonHover(node: Konva.Node): void {
+    // Remove hover listeners
+    node.off('mouseenter');
+    node.off('mouseleave');
+
+    // Destroy any existing tween
+    const existingTween = this.buttonTweens.get(node);
+    if (existingTween) {
+      existingTween.destroy();
+      this.buttonTweens.delete(node);
+    }
+
+    // Reset scale
+    node.scaleX(1);
+    node.scaleY(1);
   }
 
   public destroy(): void {

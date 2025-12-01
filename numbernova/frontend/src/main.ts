@@ -18,6 +18,9 @@ class NumberNovaApp {
     }
 
     private initialize(): void {
+        // Ensure cursor starts as default arrow
+        document.body.style.cursor = 'default';
+
         this.screenManager = new ScreenManager(
             'game-container',
             DIMENSIONS.width,
