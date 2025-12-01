@@ -25,25 +25,12 @@ export class GameplayScreenController extends BaseScreen {
     this.model = new GamePlayScreenModel(config);
     this.view = new GamePlayScreenView(this.container, config);
 
-    this.setupScreenTransitionEvents();
     this.setupEventHandlers();
     this.render();
   }
 
-  private setupScreenTransitionEvents(): void {
-    this.model.onGameComplete(() => {
-      console.log('Game completed! Switching to win screen...');
-      this.screenManager.switchTo('win');
-    });
-
-    this.model.onGameLost(() => {
-      console.log('Game lost! Switching to lose screen...');
-      this.screenManager.switchTo('lose');
-    });
-  }
-
   private setupEventHandlers(): void {
-    // Exit button - MIRRORING menu logout pattern
+    // Exit button
     this.view.onExit(() => {
       console.log('Exiting game...');
       this.screenManager.switchTo('menu');
@@ -105,26 +92,19 @@ export class GameplayScreenController extends BaseScreen {
 
   private handleFight(): void {
     const result = this.model.submitExpression();
-
+  
     this.view.showResult(result.won, result.playerResult, result.alienResult);
-
+  
     setTimeout(() => {
       const gameState = this.model.getGameState();
-
-      // REMOVED the manual screen switching from here
-      // The events set up in setupScreenTransitionEvents() will handle it automatically
-      
-      if (gameState === 'playing') {
-        if (result.won) {
-          this.model.nextRound();
-          this.render();
-        } else {
-          this.model.nextRound();
-          this.render();
-        }
+        if (gameState === 'complete') {
+        this.screenManager.switchTo('win');
+      } else if (gameState === 'lost') {
+        this.screenManager.switchTo('lose');
+      } else if (gameState === 'playing') {
+        this.model.nextRound();
+        this.render();
       }
-      // When gameState is 'complete' or 'lost', the events will automatically trigger
-      // and switch to the appropriate screen
     }, 2200);
   }
 
