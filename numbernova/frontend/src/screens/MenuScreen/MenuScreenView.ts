@@ -18,6 +18,7 @@ export class MenuScreenView {
   private leaderboardBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private shopBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
   private playerIconBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
+  private minigameBtn: { group: Konva.Group; rect: Konva.Rect; text: Konva.Text };
 
   private planetButtons: {
     group: Konva.Group;
@@ -35,6 +36,7 @@ export class MenuScreenView {
   private leaderboardHandlers: VoidFn[] = [];
   private shopHandlers: VoidFn[] = [];
   private playerIconHandlers: VoidFn[] = [];
+  private minigameHandlers: VoidFn[] = [];
 
   private tutorialGroup: Konva.Group | null = null;
   private tutorialTextNode: Konva.Text | null = null;
@@ -46,12 +48,14 @@ export class MenuScreenView {
   onLeaderboard(cb: VoidFn) { this.leaderboardHandlers.push(cb); }
   onShop(cb: VoidFn) { this.shopHandlers.push(cb); }
   onPlayerIcon(cb: VoidFn) { this.playerIconHandlers.push(cb); }
+  onMinigame(cb: VoidFn) { this.minigameHandlers.push(cb); }
   onPlanetClick(cb: (planetIndex: number) => void) { this.planetHandlers.push(cb); }
 
   private emitLogout() { for (const cb of this.logoutHandlers) cb(); }
   private emitLeaderboard() { for (const cb of this.leaderboardHandlers) cb(); }
   private emitShop() { for (const cb of this.shopHandlers) cb(); }
   private emitPlayerIcon() { for (const cb of this.playerIconHandlers) cb(); }
+  private emitMinigame() { for (const cb of this.minigameHandlers) cb(); }
   private emitPlanetClick(planetIndex: number) { for (const cb of this.planetHandlers) cb(planetIndex); }
 
   constructor(layer: Konva.Layer) {
@@ -108,6 +112,9 @@ export class MenuScreenView {
 
     this.createPlanets();
 
+    // Minigame button - centered below the planets
+    this.minigameBtn = this.makeButton(DIMENSIONS.width / 2, 580, 'Minigame', 150, 45);
+
     this.layer.add(this.bg);
 
     this.menuGroup.add(this.title);
@@ -121,12 +128,15 @@ export class MenuScreenView {
       this.menuGroup.add(planet.group);
     });
 
+    this.menuGroup.add(this.minigameBtn.group);
+
     this.layer.add(this.menuGroup);
 
     this.bindButton(this.logoutBtn, () => this.emitLogout());
     this.bindIconButton(this.leaderboardBtn, () => this.emitLeaderboard());
     this.bindIconButton(this.shopBtn, () => this.emitShop());
     this.bindIconButton(this.playerIconBtn, () => this.emitPlayerIcon());
+    this.bindButton(this.minigameBtn, () => this.emitMinigame());
 
     this.bindPlanetEvents();
     this.layer.batchDraw();
