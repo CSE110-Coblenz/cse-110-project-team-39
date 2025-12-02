@@ -79,7 +79,7 @@ export const getUserProfiles = async () => {
 // Helper function to update user profile
 export const updateUserProfile = async (
   userId: string,
-  updates: { score?: number; level?: number; ship_color?: string; tokens?: number; profile_name?: string; profile_picture_url?: string; unlocked_colors?: Record<string, boolean> }
+  updates: { score?: number; level?: number; ship_color?: string; tokens?: number; profile_name?: string; profile_picture_url?: string; unlocked_colors?: Record<string, boolean>; games_won?: number; games_played?: number }
 ) => {
   const { data, error } = await supabase
     .from('user_profiles')
