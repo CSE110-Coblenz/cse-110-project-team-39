@@ -1,6 +1,14 @@
 // GameplayScreenController.test.ts
 
+// Mock Supabase so Jest never evaluates import.meta.env inside supabase.ts
+jest.mock('../../lib/supabase', () => ({
+  getCurrentUser: jest.fn(),
+  getUserProfile: jest.fn().mockResolvedValue(null),
+  updateUserProfile: jest.fn().mockResolvedValue(null),
+}));
+
 import { GameplayScreenController } from './GameplayScreenController';
+
 
 describe('GameplayScreenController', () => {
   const createControllerWithMocks = () => {
@@ -118,7 +126,7 @@ describe('GameplayScreenController', () => {
     expect(view.updatePlayerResult).toHaveBeenCalledWith(42);
   });
 
-  test('handleFight shows result and switches to menu when game is complete', () => {
+  test('handleFight shows result and switches to menu when game is complete', async () => {
     const { controller, model, view, screenManager } = createControllerWithMocks();
 
     model.submitExpression.mockReturnValue({
@@ -135,14 +143,14 @@ describe('GameplayScreenController', () => {
     expect(model.submitExpression).toHaveBeenCalled();
     expect(view.showResult).toHaveBeenCalledWith(true, 12, 8);
 
-    jest.advanceTimersByTime(2200);
+    await jest.advanceTimersByTimeAsync(2200);
 
     expect(model.getGameState).toHaveBeenCalled();
     expect(screenManager.switchTo).toHaveBeenCalledWith('menu');
     expect(renderSpy).not.toHaveBeenCalled();
   });
 
-  test('handleFight shows result and switches to menu when game is lost', () => {
+  test('handleFight shows result and switches to menu when game is lost', async () => {
     const { controller, model, view, screenManager } = createControllerWithMocks();
 
     model.submitExpression.mockReturnValue({
@@ -158,7 +166,7 @@ describe('GameplayScreenController', () => {
 
     expect(view.showResult).toHaveBeenCalledWith(false, 4, 10);
 
-    jest.advanceTimersByTime(2200);
+    await jest.advanceTimersByTimeAsync(2200);
 
     expect(model.getGameState).toHaveBeenCalled();
     expect(screenManager.switchTo).toHaveBeenCalledWith('menu');

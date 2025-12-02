@@ -1,4 +1,15 @@
 // src/screens/MenuScreen/MenuScreenController.test.ts
+
+// Mock Supabase so Jest never evaluates import.meta.env inside supabase.ts
+jest.mock('../../lib/supabase', () => ({
+  signOut: jest.fn().mockResolvedValue({ error: null }),
+}));
+
+// Mock toast notifications
+jest.mock('../../lib/toast', () => ({
+  createNotification: jest.fn(),
+}));
+
 import { MenuScreenController } from './MenuScreenController'
 
 const mockDraw = jest.fn()
@@ -115,9 +126,9 @@ describe('MenuScreenController', () => {
     expect(mockViewInstance.hideTutorial).toHaveBeenCalledTimes(1)
   })
 
-  it('switches to login screen when logout handler is triggered', () => {
+  it('switches to login screen when logout handler is triggered', async () => {
     const logoutHandler = mockViewInstance.onLogout.mock.calls[0][0]
-    logoutHandler()
+    await logoutHandler()
     expect(screenManager.switchTo).toHaveBeenCalledWith('login')
   })
 
