@@ -7,6 +7,7 @@ import { LeaderboardScreenController } from './screens/LeaderboardScreen/Leaderb
 import { ProfileScreenController } from './screens/ProfileScreen/ProfileScreenController';
 import { LaunchTransitionScreenController } from './screens/LaunchTransitionScreen/LaunchTransitionScreenController';
 import { GameplayScreenController } from './screens/GameplayScreen/GameplayScreenController';
+import { MinigameScreenController } from './screens/MinigameScreen/MinigameScreenController';
 import { DIMENSIONS } from './constants';
 
 class NumberNovaApp {
@@ -46,6 +47,9 @@ class NumberNovaApp {
 
         // Register gameplay screen
         this.screenManager.registerScreen('gameplay', new GameplayScreenController(this.screenManager));
+
+        // Register minigame screen
+        this.screenManager.registerScreen('minigame', new MinigameScreenController(this.screenManager));
     }
 }
 

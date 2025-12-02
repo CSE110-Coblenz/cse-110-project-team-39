@@ -43,6 +43,11 @@ export class MenuScreenController extends BaseScreen {
       this.screenManager.switchTo('profile')
     })
 
+    this.view.onMinigame?.(() => {
+      console.log('Minigame clicked! Switching to minigame screen...')
+      this.screenManager.switchTo('minigame')
+    })
+
     this.view.onPlanetClick?.((planetIndex: number) => {
       console.log(`Planet ${planetIndex + 1} clicked! Launching mission...`)
 
