@@ -14,10 +14,7 @@ export class GameplayScreenController extends BaseScreen {
   private currentUserScore: number = 0;
   private gamesPlayedIncremented: boolean = false;
 
-  protected initialize(): void {
-    // Don't initialize here - wait for setWorldNumber to be called
-    // This is because initialize() runs in constructor before setWorldNumber()
-  }
+  protected initialize(): void {}
 
   private async initializeWorld(): Promise<void> {
     try {
@@ -35,6 +32,9 @@ export class GameplayScreenController extends BaseScreen {
         this.screenManager.switchTo('menu');
         return;
       }
+    if (this.view) {
+      this.view.destroy();
+    }
 
       // Store user data
       this.userId = currentUser.id;
@@ -60,28 +60,23 @@ export class GameplayScreenController extends BaseScreen {
   }
 
   private setupEventHandlers(): void {
-    // Exit button
     this.view.onExit(() => {
       console.log('Exiting game...');
       this.screenManager.switchTo('menu');
     });
 
-    // Fight button
     this.view.onFight(() => {
       this.handleFight();
     });
 
-    // Clear button
     this.view.onClear(() => {
       this.view.animatePlayerArm();
       this.model.clearExpression();
       this.render();
     });
 
-    // Swap button
     this.view.onSwap(() => {
       this.view.animatePlayerArm();
-      // Animate swap first, then update model
       this.view.animateSwap(() => {
         this.model.swapNumbers();
         this.render();
@@ -89,28 +84,21 @@ export class GameplayScreenController extends BaseScreen {
       });
     });
 
-    // Card click - try to place in slot with animation
     this.view.onCardClick((card: Card) => {
       const result = this.model.tryPlaceCard(card);
 
       if (result.success && result.targetSlot !== undefined) {
-        // Animate player arm
         this.view.animatePlayerArm();
-
-        // Animate card to slot
         this.view.animateCardToSlot(card.id, result.targetSlot, () => {
           this.render();
           this.updatePlayerResult();
         });
       } else {
-        // Shake card to indicate no space
         this.view.shakeCard(card.id);
       }
     });
 
-    // Slot click - return card to hand
     this.view.onSlotClick((slotIndex: number) => {
-      // Animate player arm and card back to hand
       this.view.animatePlayerArm();
       this.view.animateCardFromSlotToHand(slotIndex, () => {
         this.model.removeCardFromSlot(slotIndex);
@@ -204,7 +192,6 @@ export class GameplayScreenController extends BaseScreen {
 
   public async show(): Promise<void> {
     super.show();
-    // Ensure world is initialized before showing
     if (!this.model || !this.view) {
       await this.initializeWorld();
     }
