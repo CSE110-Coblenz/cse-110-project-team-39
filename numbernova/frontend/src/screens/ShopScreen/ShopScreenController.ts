@@ -12,7 +12,8 @@ export class ShopScreenController extends BaseScreen {
 
 
     protected initialize(): void {
-        this.loadShopData();
+        // Don't load data during initialization - wait until screen is shown
+        // This prevents navigation side effects during app startup
     }
 
     private async loadShopData(): Promise<void> {
@@ -21,7 +22,7 @@ export class ShopScreenController extends BaseScreen {
             const currentUser = await getCurrentUser();
             if (!currentUser) {
                 console.error('No user logged in');
-                this.returnToMenu();
+                // Don't navigate here - just return. The screen will handle this when shown.
                 return;
             }
 
@@ -60,8 +61,11 @@ export class ShopScreenController extends BaseScreen {
     public async show(): Promise<void> {
         super.show();
 
-        // Reload shop data every time screen is shown to reflect updated tokens/colors
-        if (this.model && this.view) {
+        // Load shop data when screen is shown
+        if (!this.model || !this.view) {
+            await this.loadShopData();
+        } else {
+            // Reload shop data to reflect updated tokens/colors
             await this.refreshShopData();
         }
     }
