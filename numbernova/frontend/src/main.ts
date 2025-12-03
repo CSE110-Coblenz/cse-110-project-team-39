@@ -7,8 +7,7 @@ import { LeaderboardScreenController } from './screens/LeaderboardScreen/Leaderb
 import { ProfileScreenController } from './screens/ProfileScreen/ProfileScreenController';
 import { LaunchTransitionScreenController } from './screens/LaunchTransitionScreen/LaunchTransitionScreenController';
 import { GameplayScreenController } from './screens/GameplayScreen/GameplayScreenController';
-import { WinScreenController } from './screens/WinScreen/WinScreenController';
-import { LoseScreenController } from './screens/LoseScreen/LoseScreenController';
+import { ResultScreenController } from './screens/ResultScreen/ResultScreenController';
 import { DIMENSIONS } from './constants';
 
 class NumberNovaApp {
@@ -49,9 +48,8 @@ class NumberNovaApp {
         // Register gameplay screen
         this.screenManager.registerScreen('gameplay', new GameplayScreenController(this.screenManager));
 
-        // Register win and lose screens
-        this.screenManager.registerScreen('win', new WinScreenController(this.screenManager));
-        this.screenManager.registerScreen('lose', new LoseScreenController(this.screenManager));
+        // Register result screen (displays both win and lose states)
+        this.screenManager.registerScreen('result', new ResultScreenController(this.screenManager));
     }
 }
 

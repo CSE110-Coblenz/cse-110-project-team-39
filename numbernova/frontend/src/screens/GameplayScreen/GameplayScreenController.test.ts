@@ -118,7 +118,7 @@ describe('GameplayScreenController', () => {
     expect(view.updatePlayerResult).toHaveBeenCalledWith(42);
   });
 
-  test('handleFight shows result and switches to menu when game is complete', () => {
+  test('handleFight shows result and switches to result screen when game is complete', () => {
     const { controller, model, view, screenManager } = createControllerWithMocks();
 
     model.submitExpression.mockReturnValue({
@@ -127,6 +127,9 @@ describe('GameplayScreenController', () => {
       alienResult: 8,
     });
     model.getGameState.mockReturnValue('complete');
+
+    const resultScreen = { setResult: jest.fn() };
+    screenManager.getScreen = jest.fn().mockReturnValue(resultScreen);
 
     const renderSpy = jest.spyOn(controller as any, 'render');
 
@@ -138,11 +141,12 @@ describe('GameplayScreenController', () => {
     jest.advanceTimersByTime(2200);
 
     expect(model.getGameState).toHaveBeenCalled();
-    expect(screenManager.switchTo).toHaveBeenCalledWith('win');
+    expect(resultScreen.setResult).toHaveBeenCalledWith(true);
+    expect(screenManager.switchTo).toHaveBeenCalledWith('result');
     expect(renderSpy).not.toHaveBeenCalled();
   });
 
-  test('handleFight shows result and switches to menu when game is lost', () => {
+  test('handleFight shows result and switches to result screen when game is lost', () => {
     const { controller, model, view, screenManager } = createControllerWithMocks();
 
     model.submitExpression.mockReturnValue({
@@ -151,6 +155,9 @@ describe('GameplayScreenController', () => {
       alienResult: 10,
     });
     model.getGameState.mockReturnValue('lost');
+
+    const resultScreen = { setResult: jest.fn() };
+    screenManager.getScreen = jest.fn().mockReturnValue(resultScreen);
 
     const renderSpy = jest.spyOn(controller as any, 'render');
 
@@ -161,7 +168,8 @@ describe('GameplayScreenController', () => {
     jest.advanceTimersByTime(2200);
 
     expect(model.getGameState).toHaveBeenCalled();
-    expect(screenManager.switchTo).toHaveBeenCalledWith('lose');
+    expect(resultScreen.setResult).toHaveBeenCalledWith(false);
+    expect(screenManager.switchTo).toHaveBeenCalledWith('result');
     expect(renderSpy).not.toHaveBeenCalled();
   });
 

@@ -97,10 +97,18 @@ export class GameplayScreenController extends BaseScreen {
   
     setTimeout(() => {
       const gameState = this.model.getGameState();
-        if (gameState === 'complete') {
-        this.screenManager.switchTo('win');
+      if (gameState === 'complete') {
+        const resultScreen = this.screenManager.getScreen('result') as any;
+        if (resultScreen && typeof resultScreen.setResult === 'function') {
+          resultScreen.setResult(true);
+        }
+        this.screenManager.switchTo('result');
       } else if (gameState === 'lost') {
-        this.screenManager.switchTo('lose');
+        const resultScreen = this.screenManager.getScreen('result') as any;
+        if (resultScreen && typeof resultScreen.setResult === 'function') {
+          resultScreen.setResult(false);
+        }
+        this.screenManager.switchTo('result');
       } else if (gameState === 'playing') {
         this.model.nextRound();
         this.render();
