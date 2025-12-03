@@ -48,6 +48,7 @@ describe('GameplayScreenController', () => {
 
     const screenManager = {
       switchTo: jest.fn(),
+      getScreen: jest.fn(),
     };
 
     // Bypass TS privacy by going through `any`
