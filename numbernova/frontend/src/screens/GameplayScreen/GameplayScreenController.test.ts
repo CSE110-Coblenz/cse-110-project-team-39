@@ -127,7 +127,7 @@ describe('GameplayScreenController', () => {
     expect(view.updatePlayerResult).toHaveBeenCalledWith(42);
   });
 
-  test('handleFight shows result and switches to result screen when game is complete', () => {
+  test('handleFight shows result and switches to result screen when game is complete', async () => {
     const { controller, model, view, screenManager } = createControllerWithMocks();
 
     model.submitExpression.mockReturnValue({
@@ -155,7 +155,7 @@ describe('GameplayScreenController', () => {
     expect(renderSpy).not.toHaveBeenCalled();
   });
 
-  test('handleFight shows result and switches to result screen when game is lost', () => {
+  test('handleFight shows result and switches to result screen when game is lost', async () => {
     const { controller, model, view, screenManager } = createControllerWithMocks();
 
     model.submitExpression.mockReturnValue({
