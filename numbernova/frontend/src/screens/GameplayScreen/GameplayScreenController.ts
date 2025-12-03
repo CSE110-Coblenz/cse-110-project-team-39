@@ -118,13 +118,13 @@ export class GameplayScreenController extends BaseScreen {
       if (gameState === 'complete') {
         const resultScreen = this.screenManager.getScreen('result') as any;
         if (resultScreen && typeof resultScreen.setResult === 'function') {
-          resultScreen.setResult(true);
+          resultScreen.setResult(true, this.worldNumber);
         }
         this.screenManager.switchTo('result');
       } else if (gameState === 'lost') {
         const resultScreen = this.screenManager.getScreen('result') as any;
         if (resultScreen && typeof resultScreen.setResult === 'function') {
-          resultScreen.setResult(false);
+          resultScreen.setResult(false, this.worldNumber);
         }
         this.screenManager.switchTo('result');
       } else if (gameState === 'playing') {

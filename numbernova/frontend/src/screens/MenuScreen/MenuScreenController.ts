@@ -91,5 +91,32 @@ export class MenuScreenController extends BaseScreen {
 
   public show(): void {
     super.show()
+    // Load and display level states
+    const levelStates = new Map<number, 'won' | 'lost' | null>();
+    for (let i = 1; i <= 5; i++) {
+      const state =
+        this.model && typeof (this.model as any).getLevelState === 'function'
+          ? (this.model as any).getLevelState(i)
+          : null;
+      levelStates.set(i, state);
+    }
+      if (this.view && typeof (this.view as any).setLevelStates === 'function') {
+        (this.view as any).setLevelStates(levelStates);
+      }
+  }
+
+  public saveLevelResult(level: number, result: 'won' | 'lost'): void {
+    this.model.setLevelState(level, result);
+    const levelStates = new Map<number, 'won' | 'lost' | null>();
+    for (let i = 1; i <= 5; i++) {
+      const state =
+        this.model && typeof (this.model as any).getLevelState === 'function'
+          ? (this.model as any).getLevelState(i)
+          : null;
+      levelStates.set(i, state);
+    }
+      if (this.view && typeof (this.view as any).setLevelStates === 'function') {
+        (this.view as any).setLevelStates(levelStates);
+      }
   }
 }
