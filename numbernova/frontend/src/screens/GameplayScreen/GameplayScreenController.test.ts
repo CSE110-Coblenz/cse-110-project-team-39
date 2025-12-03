@@ -64,6 +64,8 @@ describe('GameplayScreenController', () => {
     controller.view = view;
     controller.screenManager = screenManager;
     controller.container = {} as any;
+    // default world number for tests (class property initializers don't run on Object.create)
+    controller.worldNumber = 1;
 
     // Outside this helper we can still type it nicely
     return {
@@ -150,7 +152,7 @@ describe('GameplayScreenController', () => {
     await jest.advanceTimersByTimeAsync(2200);
 
     expect(model.getGameState).toHaveBeenCalled();
-    expect(resultScreen.setResult).toHaveBeenCalledWith(true);
+    expect(resultScreen.setResult).toHaveBeenCalledWith(true, 1);
     expect(screenManager.switchTo).toHaveBeenCalledWith('result');
     expect(renderSpy).not.toHaveBeenCalled();
   });
@@ -177,7 +179,7 @@ describe('GameplayScreenController', () => {
     await jest.advanceTimersByTimeAsync(2200);
 
     expect(model.getGameState).toHaveBeenCalled();
-    expect(resultScreen.setResult).toHaveBeenCalledWith(false);
+    expect(resultScreen.setResult).toHaveBeenCalledWith(false, 1);
     expect(screenManager.switchTo).toHaveBeenCalledWith('result');
     expect(renderSpy).not.toHaveBeenCalled();
   });

@@ -25,6 +25,7 @@ export class MenuScreenView {
     circle: Konva.Circle;
     text: Konva.Text;
     conceptButton: Konva.Group;
+    statusIcon?: Konva.Text;
   }[] = [];
 
   private twinkleAnim?: Konva.Animation;
@@ -43,6 +44,7 @@ export class MenuScreenView {
   private tutorialOkButton: Konva.Group | null = null;
 
   private planetHandlers: ((planetIndex: number) => void)[] = [];
+  private levelStates: Map<number, 'won' | 'lost' | null> = new Map();
 
   onLogout(cb: VoidFn) { this.logoutHandlers.push(cb); }
   onLeaderboard(cb: VoidFn) { this.leaderboardHandlers.push(cb); }
@@ -57,6 +59,52 @@ export class MenuScreenView {
   private emitPlayerIcon() { for (const cb of this.playerIconHandlers) cb(); }
   private emitMinigame() { for (const cb of this.minigameHandlers) cb(); }
   private emitPlanetClick(planetIndex: number) { for (const cb of this.planetHandlers) cb(planetIndex); }
+
+  public setLevelStates(states: Map<number, 'won' | 'lost' | null>): void {
+    this.levelStates = states;
+    this.updateLevelStatusIcons();
+  }
+
+  private updateLevelStatusIcons(): void {
+    this.planetButtons.forEach((planet, index) => {
+      const levelNumber = index + 1;
+      const state = this.levelStates.get(levelNumber);
+      
+      // Remove old status icon if it exists
+      if (planet.statusIcon) {
+        planet.statusIcon.destroy();
+      }
+
+      if (state === 'won') {
+        const checkmark = new Konva.Text({
+          x: planet.circle.x() + 60,
+          y: planet.circle.y() - 60,
+          text: '✓',
+          fontSize: 40,
+          fill: '#4ecdc4',
+          fontWeight: 'bold',
+          listening: false
+        });
+        checkmark.offsetX(checkmark.width() / 2);
+        planet.group.add(checkmark);
+        planet.statusIcon = checkmark;
+      } else if (state === 'lost') {
+        const xMark = new Konva.Text({
+          x: planet.circle.x() + 60,
+          y: planet.circle.y() - 60,
+          text: '✗',
+          fontSize: 40,
+          fill: '#ff6b6b',
+          fontWeight: 'bold',
+          listening: false
+        });
+        xMark.offsetX(xMark.width() / 2);
+        planet.group.add(xMark);
+        planet.statusIcon = xMark;
+      }
+    });
+    this.layer.batchDraw();
+  }
 
   constructor(layer: Konva.Layer) {
     this.layer = layer;
