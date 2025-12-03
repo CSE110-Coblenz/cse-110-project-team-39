@@ -182,7 +182,7 @@ describe('GameplayScreenController', () => {
       playerResult: 15,
       alienResult: 7,
     });
-    model.getGameState.mockReturnValue('in_progress');
+    model.getGameState.mockReturnValue('playing');
 
     const renderSpy = jest.spyOn(controller as any, 'render');
 
