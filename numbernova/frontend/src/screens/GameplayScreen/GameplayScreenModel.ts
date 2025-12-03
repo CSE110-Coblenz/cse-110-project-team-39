@@ -11,6 +11,10 @@ export class GamePlayScreenModel {
   private playerExpression: ExpressionSlot[] = [];
   private gameState: GameState = 'playing';
 
+  // Add event handlers
+  private gameCompleteHandlers: (() => void)[] = [];
+  private gameLostHandlers: (() => void)[] = [];
+
   constructor(config: WorldConfig) {
     this.config = config;
     this.playerLives = config.playerLives;
@@ -19,6 +23,19 @@ export class GamePlayScreenModel {
     this.dealNewHand();
   }
 
+  // Event registration methods
+  onGameComplete(cb: () => void) { this.gameCompleteHandlers.push(cb); }
+  onGameLost(cb: () => void) { this.gameLostHandlers.push(cb); }
+
+  // Private emit methods
+  private emitGameComplete() { 
+    for (const cb of this.gameCompleteHandlers) cb(); 
+  }
+
+  private emitGameLost() { 
+    for (const cb of this.gameLostHandlers) cb(); 
+  }
+  
   private initializeExpressionSlots(): void {
     // Slots: [Number 0] [Operation 1] [Number 2]
     this.playerExpression = [
@@ -505,12 +522,14 @@ export class GamePlayScreenModel {
 
       if (this.currentAlienIndex >= this.config.alienCount) {
         this.gameState = 'complete';
+        this.emitGameComplete();
       }
     } else {
       this.playerLives--;
 
       if (this.playerLives <= 0) {
         this.gameState = 'lost';
+        this.emitGameLost();
       }
     }
 

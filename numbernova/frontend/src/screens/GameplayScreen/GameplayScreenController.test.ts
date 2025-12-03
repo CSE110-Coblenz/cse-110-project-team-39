@@ -56,6 +56,7 @@ describe('GameplayScreenController', () => {
 
     const screenManager = {
       switchTo: jest.fn(),
+      getScreen: jest.fn(),
     };
 
     // Bypass TS privacy by going through `any`
@@ -126,7 +127,7 @@ describe('GameplayScreenController', () => {
     expect(view.updatePlayerResult).toHaveBeenCalledWith(42);
   });
 
-  test('handleFight shows result and switches to menu when game is complete', async () => {
+  test('handleFight shows result and switches to result screen when game is complete', async () => {
     const { controller, model, view, screenManager } = createControllerWithMocks();
 
     model.submitExpression.mockReturnValue({
@@ -135,6 +136,9 @@ describe('GameplayScreenController', () => {
       alienResult: 8,
     });
     model.getGameState.mockReturnValue('complete');
+
+    const resultScreen = { setResult: jest.fn() };
+    screenManager.getScreen = jest.fn().mockReturnValue(resultScreen);
 
     const renderSpy = jest.spyOn(controller as any, 'render');
 
@@ -146,11 +150,12 @@ describe('GameplayScreenController', () => {
     await jest.advanceTimersByTimeAsync(2200);
 
     expect(model.getGameState).toHaveBeenCalled();
-    expect(screenManager.switchTo).toHaveBeenCalledWith('menu');
+    expect(resultScreen.setResult).toHaveBeenCalledWith(true);
+    expect(screenManager.switchTo).toHaveBeenCalledWith('result');
     expect(renderSpy).not.toHaveBeenCalled();
   });
 
-  test('handleFight shows result and switches to menu when game is lost', async () => {
+  test('handleFight shows result and switches to result screen when game is lost', async () => {
     const { controller, model, view, screenManager } = createControllerWithMocks();
 
     model.submitExpression.mockReturnValue({
@@ -159,6 +164,9 @@ describe('GameplayScreenController', () => {
       alienResult: 10,
     });
     model.getGameState.mockReturnValue('lost');
+
+    const resultScreen = { setResult: jest.fn() };
+    screenManager.getScreen = jest.fn().mockReturnValue(resultScreen);
 
     const renderSpy = jest.spyOn(controller as any, 'render');
 
@@ -169,7 +177,8 @@ describe('GameplayScreenController', () => {
     await jest.advanceTimersByTimeAsync(2200);
 
     expect(model.getGameState).toHaveBeenCalled();
-    expect(screenManager.switchTo).toHaveBeenCalledWith('menu');
+    expect(resultScreen.setResult).toHaveBeenCalledWith(false);
+    expect(screenManager.switchTo).toHaveBeenCalledWith('result');
     expect(renderSpy).not.toHaveBeenCalled();
   });
 
@@ -181,7 +190,7 @@ describe('GameplayScreenController', () => {
       playerResult: 15,
       alienResult: 7,
     });
-    model.getGameState.mockReturnValue('in_progress');
+    model.getGameState.mockReturnValue('playing');
 
     const renderSpy = jest.spyOn(controller as any, 'render');
 

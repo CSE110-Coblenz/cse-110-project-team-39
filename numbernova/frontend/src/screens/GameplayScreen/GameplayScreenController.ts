@@ -110,24 +110,24 @@ export class GameplayScreenController extends BaseScreen {
 
   private handleFight(): void {
     const result = this.model.submitExpression();
-
+  
     this.view.showResult(result.won, result.playerResult, result.alienResult);
-
-    setTimeout(async () => {
+  
+    setTimeout(() => {
       const gameState = this.model.getGameState();
-
       if (gameState === 'complete') {
-        console.log('Player wins the planet!');
-        await this.handleGameWin();
-        this.screenManager.switchTo('menu');
+        const resultScreen = this.screenManager.getScreen('result') as any;
+        if (resultScreen && typeof resultScreen.setResult === 'function') {
+          resultScreen.setResult(true);
+        }
+        this.screenManager.switchTo('result');
       } else if (gameState === 'lost') {
-        console.log('Player lost all lives!');
-        await this.handleGameLose();
-        this.screenManager.switchTo('menu');
-      } else if (result.won) {
-        this.model.nextRound();
-        this.render();
-      } else {
+        const resultScreen = this.screenManager.getScreen('result') as any;
+        if (resultScreen && typeof resultScreen.setResult === 'function') {
+          resultScreen.setResult(false);
+        }
+        this.screenManager.switchTo('result');
+      } else if (gameState === 'playing') {
         this.model.nextRound();
         this.render();
       }
