@@ -1,6 +1,8 @@
 import { MenuScreenView } from './MenuScreenView'
 import { MenuScreenModel } from './MenuScreenModel'
 import { BaseScreen } from '../../core/BaseScreen'
+import { signOut } from '../../lib/supabase'
+import { createNotification } from '../../lib/toast'
 
 export class MenuScreenController extends BaseScreen {
   private view: MenuScreenView
@@ -10,8 +12,20 @@ export class MenuScreenController extends BaseScreen {
     this.model = new MenuScreenModel()
     this.view = new MenuScreenView(this.container)
 
-    this.view.onLogout?.(() => {
-      this.screenManager.switchTo('login')
+
+    // Handle logout button
+    this.view.onLogout?.(async () => {
+      const { error } = await signOut();
+
+      if (error) {
+        console.error('Error during logout:', error);
+        createNotification('Failed to logout. Please try again.', 'error');
+        return;
+      }
+
+      createNotification('Logged out successfully', 'success');
+      this.screenManager.switchTo('login');
+
     })
 
     this.view.onLeaderboard?.(() => {
@@ -27,6 +41,11 @@ export class MenuScreenController extends BaseScreen {
     this.view.onPlayerIcon?.(() => {
       console.log('Player icon clicked! Switching to profile screen...')
       this.screenManager.switchTo('profile')
+    })
+
+    this.view.onMinigame?.(() => {
+      console.log('Minigame clicked! Switching to minigame screen...')
+      this.screenManager.switchTo('minigame')
     })
 
     this.view.onPlanetClick?.((planetIndex: number) => {

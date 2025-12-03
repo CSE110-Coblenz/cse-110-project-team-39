@@ -8,6 +8,7 @@ import { ProfileScreenController } from './screens/ProfileScreen/ProfileScreenCo
 import { LaunchTransitionScreenController } from './screens/LaunchTransitionScreen/LaunchTransitionScreenController';
 import { GameplayScreenController } from './screens/GameplayScreen/GameplayScreenController';
 import { ResultScreenController } from './screens/ResultScreen/ResultScreenController';
+import { MinigameScreenController } from './screens/MinigameScreen/MinigameScreenController';
 import { DIMENSIONS } from './constants';
 
 class NumberNovaApp {
@@ -50,6 +51,8 @@ class NumberNovaApp {
 
         // Register result screen (displays both win and lose states)
         this.screenManager.registerScreen('result', new ResultScreenController(this.screenManager));
+        // Register minigame screen
+        this.screenManager.registerScreen('minigame', new MinigameScreenController(this.screenManager));
     }
 }
 

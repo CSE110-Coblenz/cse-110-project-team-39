@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <favicon href="/assets/icons/favicon.ico" />
+    <link rel="icon" href="/assets/icons/favicon.ico" />
     <!-- Add Jersey 10 Font -->
     <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
     <!-- Toastify CSS -->
@@ -18,6 +18,22 @@
             background-color: #0a0a1f;
             font-family: Jersey 10, Arial, sans-serif;
         }
+        /*
+         * PERFORMANCE OPTIMIZATION: Stars Animation GIF
+         *
+         * PROBLEM: Originally each screen had JavaScript-animated stars using Konva.
+         * - Created 120+ star circles per screen
+         * - Each star ran its own animation loop (opacity sine wave)
+         * - Hundreds of concurrent animations = LAG and high CPU usage
+         *
+         * SOLUTION: Replaced JS animations with a single GIF background.
+         * - Recorded the original animation as a GIF
+         * - Set it as CSS background here (ONE image, no JS)
+         * - Browser handles GIF natively (hardware accelerated)
+         * - All Konva screens use 'transparent' fill so this GIF shows through
+         *
+         * Result: Removed ~228 lines of JS code, smooth 60fps animation
+         */
         #game-container {
             display: flex;
             justify-content: center;
