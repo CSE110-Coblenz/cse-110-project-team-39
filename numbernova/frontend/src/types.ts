@@ -22,3 +22,10 @@ export interface Alien {
 
 // Game state
 export type GameState = 'playing' | 'won' | 'lost' | 'complete';
+
+// Minigame expression slot (for 5-slot expression: Num Op Num Op Num)
+export interface MinigameExpressionSlot {
+  index: number;
+  slotType: 'number' | 'operation';
+  card: Card | null;
+}
