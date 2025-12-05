@@ -3,12 +3,12 @@ PROGRESS/
 IGNORE/
 
 # Frontend
-numbernova/frontend/node_modules/
-numbernova/frontend/package-lock.json
+src/frontend/node_modules/
+src/frontend/package-lock.json
 
 # Backend
-numbernova/frontend/.env
-numbernova/frontend/.env.local
+src/frontend/.env
+src/frontend/.env.local
 
 # Environment variables (general)
 .env
