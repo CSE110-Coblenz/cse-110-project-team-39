@@ -1,0 +1,6 @@
+minigame PR has been made into a pull request, has been reviewed and merged
+discussed creating a team video, halvor created one during the meeting
+video has been shared as a youtube link
+tiny lag has been reported in the win/lose screens, but it's been accepted as fine
+world 1 does have less aliens but it's alright
+demo video also got submitted into gradescope after the meeting
